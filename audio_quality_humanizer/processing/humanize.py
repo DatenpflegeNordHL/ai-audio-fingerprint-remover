@@ -11,6 +11,7 @@ import soundfile as sf
 from audio_quality_humanizer.analysis.audio_loader import load_audio
 from audio_quality_humanizer.analysis.compare import compare_audio
 from audio_quality_humanizer.analysis.metrics import analyze_audio
+from audio_quality_humanizer.processing.guardrails import calculate_signal_guardrail_report
 from audio_quality_humanizer.processing.presets import get_preset
 from audio_quality_humanizer.processing.safety_gates import evaluate_processing_safety
 
@@ -70,6 +71,13 @@ def humanize_audio(
         shutil.copy2(input_path, output_path)
         reverted = True
 
+    final_loaded = load_audio(output_path)
+    guardrail_report = calculate_signal_guardrail_report(
+        loaded["audio"],
+        final_loaded["audio"],
+        loaded["samplerate"],
+    )["guardrails"]
+
     return {
         "action": "humanize",
         "preset": preset_config["name"],
@@ -83,6 +91,7 @@ def humanize_audio(
         "after_analysis": after_analysis,
         "comparison": comparison,
         "safety": safety,
+        "guardrails": guardrail_report,
         "notes": [
             "Humanize applies conservative audible-quality processing only.",
             "Humanize does not evaluate or alter watermarks, fingerprints, provenance markers, origin markers, detector signals, C2PA markers, or attribution systems.",

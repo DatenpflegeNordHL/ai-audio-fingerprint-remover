@@ -38,6 +38,9 @@ def test_humanize_subtle_preserves_input_and_reports(tmp_path):
     assert "after_analysis" in report
     assert "comparison" in report
     assert "safety" in report
+    assert report["guardrails"]["input_valid"] is True
+    assert report["guardrails"]["output_valid"] is True
+    assert report["guardrails"]["shape_changed"] is False
     assert report["before_analysis"]["samplerate"] == report["after_analysis"]["samplerate"]
     assert report["before_analysis"]["channels"] == report["after_analysis"]["channels"]
     assert abs(report["comparison"]["compatibility"]["duration_delta_ms"]) <= 10.0

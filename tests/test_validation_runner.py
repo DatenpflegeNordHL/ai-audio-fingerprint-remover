@@ -57,6 +57,9 @@ def test_run_validation_processes_sample_and_keeps_original(tmp_path):
     assert result["id"] == "sample_01"
     assert result["recommended_preset"] in {"subtle", "balanced", None}
     assert result["original_unchanged"] is True
+    assert result["guardrails"]["input_valid"] is True
+    assert result["performance"]["operation"] == "validate_sample"
+    assert report["performance"]["operation"] == "validate_samples"
     assert Path(result["report"]).exists()
     assert output_dir.exists()
     assert sha256_file(sample_path) == original_hash

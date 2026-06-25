@@ -18,6 +18,8 @@ AUDIT_JSON = PROJECT_REBORN_DIR / "audit" / "project_reborn_audit_map.json"
 AUDIT_MARKDOWN = PROJECT_REBORN_DIR / "audit" / "PROJECT_REBORN_AUDIT_MAP.md"
 PLAN_JSON = PROJECT_REBORN_DIR / "planning" / "project_reborn_top5_plan.json"
 PLAN_MARKDOWN = PROJECT_REBORN_DIR / "planning" / "PROJECT_REBORN_TOP5_PLAN.md"
+DESIGN_JSON = ROOT / "docs" / "design" / "v0_10_0_design_spec.json"
+DESIGN_MARKDOWN = ROOT / "docs" / "design" / "V0_10_0_DESIGN_SPEC.md"
 README = PROJECT_REBORN_DIR / "README.md"
 REQUIRED_ENTRY_FIELDS = {
     "reborn_id",
@@ -85,6 +87,8 @@ FORBIDDEN_PLAN_CLAIMS = {
     "already_safe",
     "active_feature",
 }
+IMPLEMENTED_V0_10_CANDIDATES = {"reborn_008", "reborn_015", "reborn_022"}
+DEFERRED_V0_10_CANDIDATES = {"reborn_025", "reborn_005"}
 
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -102,6 +106,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
     audit_markdown = project_dir / "audit" / "PROJECT_REBORN_AUDIT_MAP.md"
     plan_json = project_dir / "planning" / "project_reborn_top5_plan.json"
     plan_markdown = project_dir / "planning" / "PROJECT_REBORN_TOP5_PLAN.md"
+    design_json = root / "docs" / "design" / "v0_10_0_design_spec.json"
+    design_markdown = root / "docs" / "design" / "V0_10_0_DESIGN_SPEC.md"
     readme = project_dir / "README.md"
 
     for path in (
@@ -112,6 +118,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
         audit_markdown,
         plan_json,
         plan_markdown,
+        design_json,
+        design_markdown,
         source_drawer,
     ):
         if not path.exists():
@@ -150,6 +158,9 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
 
     if plan_json.exists() and plan_markdown.exists():
         _validate_plan(root, plan_json, plan_markdown, errors)
+
+    if design_json.exists() and design_markdown.exists():
+        _validate_design_spec(root, design_json, design_markdown, errors)
 
     for path in project_dir.rglob("__init__.py"):
         errors.append(f"Project Reborn must not contain __init__.py: {path.relative_to(root)}")
@@ -330,6 +341,73 @@ def _validate_no_plan_claims(label: str, text: str, errors: list[str]) -> None:
     for claim in sorted(FORBIDDEN_PLAN_CLAIMS):
         if claim in lowered:
             errors.append(f"{label} contains forbidden planning claim: {claim}")
+
+
+def _validate_design_spec(root: Path, design_json: Path, design_markdown: Path, errors: list[str]) -> None:
+    design = _load_catalog(design_json, errors)
+    if design is None:
+        return
+
+    if design.get("version_target") != "0.10.0":
+        errors.append("v0.10 design spec version_target must be 0.10.0.")
+    if design.get("status") != "safe_core_implemented":
+        errors.append("v0.10 design spec status must be safe_core_implemented.")
+    if design.get("active_package") != "audio-quality-humanizer":
+        errors.append("v0.10 design spec active_package must be audio-quality-humanizer.")
+
+    source_documents = design.get("source_documents", [])
+    if not isinstance(source_documents, list):
+        errors.append("v0.10 design spec source_documents must be a list.")
+        source_documents = []
+    for relative_path in source_documents:
+        if not isinstance(relative_path, str):
+            errors.append("v0.10 design spec source_documents entries must be strings.")
+            continue
+        if not (root / relative_path).exists():
+            errors.append(f"v0.10 design spec source document does not exist: {relative_path}")
+
+    implemented = _candidate_ids(design.get("implemented_candidates", []), "implemented_candidates", errors)
+    deferred = _candidate_ids(design.get("deferred_candidates", []), "deferred_candidates", errors)
+    if implemented != IMPLEMENTED_V0_10_CANDIDATES:
+        errors.append(
+            "v0.10 design spec implemented candidates must be "
+            f"{sorted(IMPLEMENTED_V0_10_CANDIDATES)}, found {sorted(implemented)}."
+        )
+    if deferred != DEFERRED_V0_10_CANDIDATES:
+        errors.append(
+            "v0.10 design spec deferred candidates must be "
+            f"{sorted(DEFERRED_V0_10_CANDIDATES)}, found {sorted(deferred)}."
+        )
+
+    markdown_text = design_markdown.read_text(encoding="utf-8")
+    for required_text in (
+        "Status: implemented safe core",
+        "Candidate 1",
+        "Candidate 2",
+        "Candidate 3",
+        "Candidate 4",
+        "Candidate 5",
+        "No Project Reborn source code was copied, imported, executed, packaged, or exposed",
+    ):
+        if required_text not in markdown_text:
+            errors.append(f"v0.10 design markdown missing required text: {required_text}")
+
+
+def _candidate_ids(value: Any, label: str, errors: list[str]) -> set[str]:
+    if not isinstance(value, list):
+        errors.append(f"v0.10 design spec {label} must be a list.")
+        return set()
+    ids: set[str] = set()
+    for item in value:
+        if not isinstance(item, dict):
+            errors.append(f"v0.10 design spec {label} entries must be objects.")
+            continue
+        reborn_id = item.get("reborn_id")
+        if not isinstance(reborn_id, str):
+            errors.append(f"v0.10 design spec {label} entry missing reborn_id: {item}")
+            continue
+        ids.add(reborn_id)
+    return ids
 
 
 def _validate_not_imported_by_package(root: Path, errors: list[str]) -> None:

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.10.0
+
+- Added signal guardrails and signal-hygiene reporting.
+- Added minimal performance metadata helpers.
+- Added synthetic regression tests for edge-case audio handling.
+- Documented deferred Project Reborn candidates for future safe review.
+
 ## v0.9.4
 
 - Added Project Reborn Top-5 manual review plan.

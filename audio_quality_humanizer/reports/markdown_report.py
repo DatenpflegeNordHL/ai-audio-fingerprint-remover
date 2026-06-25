@@ -85,6 +85,7 @@ def _render_markdown(report: dict) -> str:
         if key in metrics_source:
             lines.append(f"| `{key}` | `{_format_value(metrics_source[key])}` |")
 
+    _add_guardrails_section(lines, report)
     _add_list_section(lines, "Warnings", report.get("warnings", metrics_source.get("warnings", [])))
     _add_list_section(lines, "Blocking Issues", report.get("blocking_issues", []))
     _add_list_section(lines, "Recommendations", report.get("recommendations", []))
@@ -220,6 +221,7 @@ def _render_humanize_markdown(report: dict) -> str:
     ]
 
     _add_processing_steps_table(lines, report.get("processing_steps", []))
+    _add_guardrails_section(lines, report)
     _add_before_after_metrics_table(lines, report.get("before_analysis", {}), report.get("after_analysis", {}))
     _add_table_section(lines, "Metric Deltas", comparison.get("metric_deltas", {}))
     _add_list_section(lines, "Safety Blocking Issues", safety.get("blocking_issues", []))
@@ -279,6 +281,8 @@ def _render_doctor_markdown(report: dict) -> str:
         if key in analysis:
             lines.append(f"| `{key}` | `{_format_value(analysis[key])}` |")
 
+    _add_guardrails_section(lines, report)
+    _add_performance_section(lines, report)
     _add_list_section(lines, "Release Blocking Issues", release.get("blocking_issues", []))
     _add_list_section(lines, "Warnings", report.get("warnings", []))
     _add_list_section(lines, "Recommendations", report.get("recommendations", []))
@@ -414,6 +418,7 @@ def _render_validate_samples_markdown(report: dict) -> str:
     ]
 
     _add_table_section(lines, "Recommended Preset Counts", summary.get("recommended_preset_counts", {}))
+    _add_performance_section(lines, report)
 
     lines.extend(
         [
@@ -522,3 +527,69 @@ def _doctor_suggested_action(report: dict) -> str:
 
 def _first_item(values: list[Any]) -> Any:
     return values[0] if values else None
+
+
+def _add_guardrails_section(lines: list[str], report: dict) -> None:
+    guardrails = _guardrails_for_report(report)
+    if not guardrails:
+        return
+
+    nan_count = int(guardrails.get("nan_count_before", 0) or 0) + int(guardrails.get("nan_count_after", 0) or 0)
+    inf_count = int(guardrails.get("inf_count_before", 0) or 0) + int(guardrails.get("inf_count_after", 0) or 0)
+    lines.extend(
+        [
+            "",
+            "## Signal Guardrails",
+            "",
+            f"- Input valid: `{guardrails.get('input_valid')}`",
+            f"- Output valid: `{_format_value(guardrails.get('output_valid'))}`",
+            f"- NaN values detected: `{nan_count}`",
+            f"- Infinite values detected: `{inf_count}`",
+            f"- Shape changed: `{guardrails.get('shape_changed')}`",
+            f"- Length changed: `{guardrails.get('length_changed')}`",
+            f"- Actions: `{_format_value(_join_values(guardrails.get('actions', [])))}`",
+            f"- Warnings: `{_format_value(_join_values(guardrails.get('warnings', [])))}`",
+        ]
+    )
+
+
+def _add_performance_section(lines: list[str], report: dict) -> None:
+    performance = report.get("performance", {})
+    if not performance:
+        return
+
+    lines.extend(
+        [
+            "",
+            "## Performance Metadata",
+            "",
+            "| Field | Value |",
+            "| --- | --- |",
+        ]
+    )
+    for key in (
+        "operation",
+        "elapsed_seconds",
+        "input_size_bytes",
+        "output_size_bytes",
+        "report_size_bytes",
+        "python_version",
+        "platform",
+    ):
+        if key in performance:
+            lines.append(f"| `{key}` | `{_format_value(performance[key])}` |")
+
+
+def _guardrails_for_report(report: dict) -> dict:
+    if isinstance(report.get("guardrails"), dict) and report["guardrails"]:
+        return report["guardrails"]
+    analysis = report.get("analysis", {})
+    if isinstance(analysis, dict) and isinstance(analysis.get("guardrails"), dict):
+        return analysis["guardrails"]
+    return {}
+
+
+def _join_values(values: list[Any]) -> str:
+    if not values:
+        return "None."
+    return "; ".join(str(value) for value in values)

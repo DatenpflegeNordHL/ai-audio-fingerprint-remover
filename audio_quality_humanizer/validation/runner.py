@@ -9,6 +9,7 @@ from audio_quality_humanizer.analysis.release_check import SUPPORTED_TARGETS
 from audio_quality_humanizer.metadata.cleaner import sha256_file
 from audio_quality_humanizer.reports.json_report import write_json_report
 from audio_quality_humanizer.validation.manifest import load_manifest, validate_manifest
+from audio_quality_humanizer.validation.performance import add_file_sizes, measure_operation
 from audio_quality_humanizer.workflows.doctor import doctor_file
 from audio_quality_humanizer.workflows.preset_eval import DEFAULT_PRESETS, preset_eval
 
@@ -38,23 +39,24 @@ def run_validation(
     validated_manifest = validate_manifest(manifest, manifest_path)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    warnings = []
-    results = []
-    for sample in validated_manifest["samples"]:
-        result = _run_one_sample(
-            sample=sample,
-            manifest_target=validated_manifest.get("target"),
-            output_dir=output_dir,
-            default_target=default_target,
-        )
-        results.append(result)
-        if result["error"] is not None and fail_fast:
-            warnings.append("Validation stopped early because fail_fast is enabled.")
-            break
+    with measure_operation("validate_samples") as performance:
+        warnings = []
+        results = []
+        for sample in validated_manifest["samples"]:
+            result = _run_one_sample(
+                sample=sample,
+                manifest_target=validated_manifest.get("target"),
+                output_dir=output_dir,
+                default_target=default_target,
+            )
+            results.append(result)
+            if result["error"] is not None and fail_fast:
+                warnings.append("Validation stopped early because fail_fast is enabled.")
+                break
 
-    failed_samples = sum(1 for result in results if result["error"] is not None or not result["original_unchanged"])
-    processed_samples = sum(1 for result in results if result["error"] is None)
-    passed_samples = sum(1 for result in results if _result_passed(result))
+        failed_samples = sum(1 for result in results if result["error"] is not None or not result["original_unchanged"])
+        processed_samples = sum(1 for result in results if result["error"] is None)
+        passed_samples = sum(1 for result in results if _result_passed(result))
 
     return {
         "action": "validate_samples",
@@ -68,6 +70,7 @@ def run_validation(
         "passed_samples": passed_samples,
         "results": results,
         "summary": _summary(results),
+        "performance": add_file_sizes(performance, input_path=manifest_path),
         "warnings": warnings,
         "notes": [
             "Validation is local and does not commit audio.",
@@ -98,41 +101,46 @@ def _run_one_sample(sample: dict[str, Any], manifest_target: str | None, output_
         "recommended_preset": None,
         "preset_eval_warning_count": 0,
         "original_unchanged": False,
+        "guardrails": {},
+        "performance": {},
         "error": None,
     }
 
+    doctor: dict | None = None
+    preset_report: dict | None = None
+    performance: dict[str, Any] = {}
     try:
-        if not sample_path.exists():
-            raise FileNotFoundError(f"Validation sample does not exist: {sample_path}")
-        if not sample_path.is_file():
-            raise ValueError(f"Validation sample path is not a file: {sample_path}")
+        with measure_operation("validate_sample") as performance:
+            if not sample_path.exists():
+                raise FileNotFoundError(f"Validation sample does not exist: {sample_path}")
+            if not sample_path.is_file():
+                raise ValueError(f"Validation sample path is not a file: {sample_path}")
 
-        before_hash = sha256_file(sample_path)
-        doctor = doctor_file(sample_path, target=sample_target)
-        preset_report = preset_eval(sample_path, sample_output_dir, target=sample_target, presets=sample_presets)
-        after_hash = sha256_file(sample_path)
+            before_hash = sha256_file(sample_path)
+            doctor = doctor_file(sample_path, target=sample_target)
+            preset_report = preset_eval(sample_path, sample_output_dir, target=sample_target, presets=sample_presets)
+            after_hash = sha256_file(sample_path)
 
-        result.update(
-            {
-                "doctor_passed": bool(doctor.get("passed")),
-                "doctor_score": doctor.get("score"),
-                "recommended_preset": preset_report.get("recommended_preset"),
-                "preset_eval_warning_count": _preset_warning_count(preset_report),
-                "original_unchanged": before_hash == after_hash,
-            }
-        )
-        write_json_report(
-            {
-                "action": "validate_sample",
-                "result": result,
-                "doctor": doctor,
-                "preset_eval": preset_report,
-            },
-            report_path,
-        )
+            result.update(
+                {
+                    "doctor_passed": bool(doctor.get("passed")),
+                    "doctor_score": doctor.get("score"),
+                    "recommended_preset": preset_report.get("recommended_preset"),
+                    "preset_eval_warning_count": _preset_warning_count(preset_report),
+                    "original_unchanged": before_hash == after_hash,
+                    "guardrails": doctor.get("guardrails", {}),
+                }
+            )
     except Exception as exc:
         result["error"] = str(exc)
-        write_json_report({"action": "validate_sample", "result": result}, report_path)
+
+    result["performance"] = add_file_sizes(performance, input_path=sample_path)
+    payload = {"action": "validate_sample", "result": result}
+    if doctor is not None:
+        payload["doctor"] = doctor
+    if preset_report is not None:
+        payload["preset_eval"] = preset_report
+    write_json_report(payload, report_path)
 
     return result
 

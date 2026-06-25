@@ -25,6 +25,9 @@ def test_doctor_file_returns_combined_report(tmp_path):
     assert "provenance" in report
     assert "analysis" in report
     assert "release_check" in report
+    assert report["guardrails"]["input_valid"] is True
+    assert report["performance"]["operation"] == "doctor"
+    assert report["performance"]["elapsed_seconds"] >= 0.0
     assert isinstance(report["passed"], bool)
     assert isinstance(report["score"], int)
     notes = " ".join(report["notes"])
@@ -61,4 +64,7 @@ def test_doctor_markdown_report_can_be_written(tmp_path):
     write_markdown_report(report, markdown_path)
 
     assert markdown_path.exists()
-    assert "Doctor Preflight" in markdown_path.read_text(encoding="utf-8")
+    text = markdown_path.read_text(encoding="utf-8")
+    assert "Doctor Preflight" in text
+    assert "Signal Guardrails" in text
+    assert "Performance Metadata" in text

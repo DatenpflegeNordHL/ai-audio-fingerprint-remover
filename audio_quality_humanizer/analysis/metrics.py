@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 
 from audio_quality_humanizer.analysis.audio_loader import load_audio
+from audio_quality_humanizer.processing.guardrails import calculate_signal_guardrail_report
 
 
 EPSILON = 1e-12
@@ -38,6 +39,7 @@ def analyze_audio(path: Path) -> dict:
     short_window_metrics = _short_window_metrics(audio, samplerate)
     spectrum_metrics = _spectrum_metrics(audio, samplerate)
     stereo_metrics = _stereo_metrics(audio, samplerate)
+    guardrail_report = calculate_signal_guardrail_report(audio, samplerate=samplerate)["guardrails"]
 
     overcompression_warning = (
         short_window_metrics["dynamic_range_estimate_db"] < 6.0
@@ -95,6 +97,7 @@ def analyze_audio(path: Path) -> dict:
         "mono_compatibility_warning": mono_compatibility_warning,
         "low_end_stereo_warning": low_end_stereo_warning,
         "warnings": warnings,
+        "guardrails": guardrail_report,
         "notes": [
             "loudness_lufs_approx is an RMS-based approximation and is not EBU/ITU compliant LUFS.",
             "Analysis is read-only and does not alter audio files.",

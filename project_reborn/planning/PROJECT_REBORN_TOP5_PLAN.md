@@ -2,7 +2,7 @@
 
 Current active package: `audio-quality-humanizer`
 
-Current version target: `0.9.4`
+Current version target: `0.10.0`
 
 Internal drawer: `Project Reborn`
 
@@ -21,6 +21,15 @@ Old filenames are historical labels only. Future work must inspect behavior, des
 | 3 | `reborn_022` | Audio-quality regression test ideas | `audio_quality_humanizer.validation` | `candidate_for_v0_10_design` |
 | 4 | `reborn_025` | Comparison report metrics review | `audio_quality_humanizer.compare` | `needs_deeper_manual_review` |
 | 5 | `reborn_005` | Metadata privacy and analysis stats review | `audio_quality_humanizer.metadata` | `needs_deeper_manual_review` |
+
+## v0.10.0 Status
+
+- Candidate 1, `reborn_008`, moved into the v0.10.0 safe-core implementation.
+- Candidate 2, `reborn_015`, moved into the v0.10.0 minimal implementation.
+- Candidate 3, `reborn_022`, moved into v0.10.0 synthetic regression scaffolding.
+- Candidate 4, `reborn_025`, is deferred for deeper manual review.
+- Candidate 5, `reborn_005`, is deferred for deeper manual review.
+- Project Reborn remains reference-only, non-installed, unpackaged, and hidden from the CLI.
 
 ## Manual Review Notes
 

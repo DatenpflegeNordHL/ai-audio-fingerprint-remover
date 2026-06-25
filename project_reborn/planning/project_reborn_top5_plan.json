@@ -2,7 +2,7 @@
   "project": "Project Reborn",
   "plan_type": "top5_manual_review_plan",
   "active_package": "audio-quality-humanizer",
-  "version_target": "0.9.4",
+  "version_target": "0.10.0",
   "source_audit": "project_reborn/audit/project_reborn_audit_map.json",
   "review_method": "manual_text_only",
   "safety_boundary": [
@@ -19,6 +19,14 @@
     "needs_deeper_manual_review": 2,
     "keep_as_reference_only": 0,
     "discard_after_confirmation": 0
+  },
+  "v0_10_status": {
+    "reborn_008": "moved_to_v0_10_safe_core_implementation",
+    "reborn_015": "moved_to_v0_10_minimal_implementation",
+    "reborn_022": "moved_to_v0_10_regression_scaffolding",
+    "reborn_025": "deferred_for_deeper_manual_review",
+    "reborn_005": "deferred_for_deeper_manual_review",
+    "project_reborn_boundary": "reference_only_non_installed_unpacked_hidden_from_cli"
   },
   "top5": [
     {

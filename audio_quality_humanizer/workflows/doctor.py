@@ -7,16 +7,18 @@ from pathlib import Path
 from audio_quality_humanizer.analysis.metrics import analyze_audio
 from audio_quality_humanizer.analysis.release_check import release_check
 from audio_quality_humanizer.metadata.cleaner import inspect_metadata, inspect_provenance
+from audio_quality_humanizer.validation.performance import add_file_sizes, measure_operation
 
 
 def doctor_file(input_path: Path, target: str = "streaming") -> dict:
     """Run metadata, provenance, analysis, and release preflight checks."""
 
     input_path = Path(input_path)
-    metadata = inspect_metadata(input_path)
-    provenance = inspect_provenance(input_path)
-    analysis = analyze_audio(input_path)
-    release = release_check(input_path, target=target)
+    with measure_operation("doctor") as performance:
+        metadata = inspect_metadata(input_path)
+        provenance = inspect_provenance(input_path)
+        analysis = analyze_audio(input_path)
+        release = release_check(input_path, target=target)
 
     possible_provenance_keys = provenance.get("possible_provenance_keys", [])
     metadata_read_error = metadata.get("metadata", {}).get("metadata_read_error")
@@ -52,6 +54,8 @@ def doctor_file(input_path: Path, target: str = "streaming") -> dict:
         "provenance": provenance,
         "analysis": analysis,
         "release_check": release,
+        "guardrails": analysis.get("guardrails", {}),
+        "performance": add_file_sizes(performance, input_path=input_path),
         "blocking_issues": release.get("blocking_issues", []),
         "warnings": warnings,
         "recommendations": _dedupe(recommendations),

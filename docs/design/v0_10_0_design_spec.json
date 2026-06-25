@@ -1,0 +1,100 @@
+{
+  "version_target": "0.10.0",
+  "status": "safe_core_implemented",
+  "active_package": "audio-quality-humanizer",
+  "source_documents": [
+    "project_reborn/planning/PROJECT_REBORN_TOP5_PLAN.md",
+    "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
+  ],
+  "safety_boundary": [
+    "The v0.10.0 safe core was rewritten from first principles inside audio_quality_humanizer/.",
+    "No Project Reborn source code was copied, imported, executed, packaged, or exposed through the CLI.",
+    "Project Reborn remains a non-installed internal reference drawer.",
+    "Signal guardrails are quality and workflow-safety checks, not attribution, recognition, provenance, detector, bypass, or evasion tools.",
+    "Performance metadata is operational metadata only.",
+    "Regression scaffolding uses synthetic audio only."
+  ],
+  "non_goals": [
+    "Do not add watermark removal.",
+    "Do not add fingerprint removal.",
+    "Do not add detector bypass.",
+    "Do not add recognition failure testing.",
+    "Do not add provenance removal.",
+    "Do not add origin marker removal.",
+    "Do not add C2PA marker removal.",
+    "Do not add source-attribution removal.",
+    "Do not add detector APIs.",
+    "Do not add recognition APIs.",
+    "Do not add bypass or evasion APIs.",
+    "Do not add claims about reduced detectability.",
+    "Do not modify validation audio or final exports as part of guardrail reporting."
+  ],
+  "implemented_candidates": [
+    {
+      "reborn_id": "reborn_008",
+      "candidate": "processing_guardrails_and_signal_hygiene",
+      "status": "implemented_safe_core",
+      "module": "audio_quality_humanizer.processing.guardrails"
+    },
+    {
+      "reborn_id": "reborn_015",
+      "candidate": "workflow_performance_harness_design",
+      "status": "implemented_minimal",
+      "module": "audio_quality_humanizer.validation.performance"
+    },
+    {
+      "reborn_id": "reborn_022",
+      "candidate": "audio_quality_regression_test_ideas",
+      "status": "implemented_regression_scaffolding",
+      "module": "tests"
+    }
+  ],
+  "deferred_candidates": [
+    {
+      "reborn_id": "reborn_025",
+      "candidate": "comparison_report_metrics_review",
+      "status": "deferred_deeper_manual_review",
+      "reason": "Read-only comparison metric expansion needs deeper review to avoid legacy comparison framing and unsafe interpretations."
+    },
+    {
+      "reborn_id": "reborn_005",
+      "candidate": "metadata_privacy_and_analysis_stats_review",
+      "status": "deferred_deeper_manual_review",
+      "reason": "Metadata/privacy and analysis-stat expansion needs deeper review because the source file has the highest legacy-framing risk."
+    }
+  ],
+  "acceptance_criteria": [
+    "Version is 0.10.0.",
+    "Candidate 1 is implemented.",
+    "Candidate 2 is implemented minimally.",
+    "Candidate 3 is implemented as regression scaffolding.",
+    "Candidate 4 is deferred.",
+    "Candidate 5 is deferred.",
+    "No Project Reborn source file is copied, imported, executed, packaged, or exposed.",
+    "Project Reborn remains excluded from package discovery.",
+    "Project Reborn has no __init__.py.",
+    "Safety scan passes.",
+    "CLI smoke passes.",
+    "Build check passes."
+  ],
+  "test_plan": [
+    "Unit-test guardrail validation with synthetic numeric, non-numeric, silent, NaN, and infinite arrays.",
+    "Unit-test samplerate validation and processing-result shape/length/peak checks.",
+    "Unit-test sanitization to confirm NaN and infinite values are replaced without normalization.",
+    "Unit-test performance helpers for elapsed seconds and platform metadata.",
+    "Unit-test design JSON for implemented and deferred candidate status.",
+    "Run pytest.",
+    "Run root cleanliness, Project Reborn, safety scan, CLI smoke, and build checks.",
+    "Confirm built wheels still exclude project_reborn/."
+  ],
+  "report_field_changes": [
+    "analyze, humanize, doctor, and validate-samples can include additive guardrails fields.",
+    "doctor and validate-samples can include additive performance fields.",
+    "Markdown reports can render neutral Signal Guardrails and Performance Metadata sections."
+  ],
+  "cli_impact": [
+    "No new CLI command is added.",
+    "Existing commands keep their current arguments.",
+    "Project Reborn is not exposed through CLI help."
+  ]
+}

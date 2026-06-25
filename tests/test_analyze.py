@@ -23,6 +23,8 @@ def test_analyze_audio_returns_required_metrics(tmp_path):
     assert "loudness_lufs_approx" in report
     assert "crest_factor_db" in report
     assert "clipping_sample_count" in report
+    assert report["guardrails"]["input_valid"] is True
+    assert report["guardrails"]["samplerate_valid"] is True
     assert isinstance(report["warnings"], list)
 
 

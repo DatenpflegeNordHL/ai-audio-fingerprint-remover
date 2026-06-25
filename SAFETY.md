@@ -120,6 +120,16 @@ Future Project Reborn rewrites must ignore old unsafe behavior and preserve the 
 
 Future extraction from Project Reborn requires safe rewrite into `audio_quality_humanizer/`.
 
+v0.10.0 safe core was rewritten from first principles inside the active package.
+
+Project Reborn was not copied, imported, executed, packaged, or exposed for v0.10.0.
+
+Signal guardrails are quality and workflow-safety checks, not attribution, recognition, provenance, detector, bypass, or evasion tools.
+
+Performance metadata is operational metadata only.
+
+v0.10.0 regression tests use synthetic audio only.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

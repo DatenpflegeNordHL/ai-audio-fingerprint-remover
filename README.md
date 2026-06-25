@@ -18,6 +18,10 @@ The v0.8 `preset-eval` command runs existing conservative presets on processed c
 
 The v0.9 `validate-samples` command runs local real-world validation over user-supplied audio samples without committing those audio files to Git.
 
+## v0.10.0 safe core
+
+v0.10.0 adds signal guardrails, optional performance metadata, and synthetic regression scaffolding. These features were designed from Project Reborn planning notes but rewritten from first principles inside the active package. Project Reborn remains non-installed and inert.
+
 ## Safety Boundary
 
 This tool does not remove audio watermarks.
@@ -192,6 +196,8 @@ Project Reborn is a non-installed reference drawer for historical experimental s
 
 Project Reborn now includes a static audit map at `project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md`. The audit is static only. It does not execute or import Project Reborn files.
 
+The v0.10.0 design spec is available at `docs/design/V0_10_0_DESIGN_SPEC.md`.
+
 See `project_reborn/catalog/PROJECT_REBORN_CATALOG.md`.
 
 Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, preset-eval, and validate-samples can also write Markdown reports with `--markdown`.
@@ -207,6 +213,7 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 - v0.7 CI hardening and safety automation implemented
 - v0.8 preset evaluation and report polish implemented
 - v0.9 real-world validation harness implemented
+- v0.10 safe core guardrails and performance metadata implemented
 - future: release packaging
 - future: optional standards-compliant LUFS, optional true-peak approximation
 - future: optional real-world benchmark docs
