@@ -1,3 +1,5 @@
-"""Safe first milestone for audio metadata inspection and cleaning."""
+"""Safe local audio quality workflow helpers."""
 
-__version__ = "0.1.0"
+from audio_quality_humanizer.__version__ import __version__
+
+__all__ = ["__version__"]

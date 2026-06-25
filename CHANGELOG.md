@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.1
+
+- Added version flag.
+- Added wheel/source build validation.
+- Improved install documentation.
+
 ## v0.9
 
 - Added real-world validation harness for local user-supplied audio samples.

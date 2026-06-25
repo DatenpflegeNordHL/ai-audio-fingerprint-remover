@@ -57,6 +57,14 @@ def scan_public_files() -> list[tuple[str, str]]:
 def scan_cli_help() -> list[tuple[str, str]]:
     parser = _build_parser()
     findings = scan_text("cli:root", parser.format_help())
+    version_stdout = io.StringIO()
+    with contextlib.redirect_stdout(version_stdout):
+        try:
+            parser.parse_args(["--version"])
+        except SystemExit as exc:
+            if exc.code != 0:
+                raise
+    findings.extend(scan_text("cli:version", version_stdout.getvalue()))
     for command in CLI_COMMANDS:
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):

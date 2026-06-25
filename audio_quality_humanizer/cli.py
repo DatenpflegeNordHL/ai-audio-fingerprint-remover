@@ -6,6 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from audio_quality_humanizer.__version__ import __version__
 from audio_quality_humanizer.analysis.compare import compare_audio
 from audio_quality_humanizer.analysis.metrics import analyze_audio
 from audio_quality_humanizer.analysis.release_check import SUPPORTED_TARGETS, release_check
@@ -59,6 +60,11 @@ def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ai-humanizer",
         description="Inspect metadata and run read-only audio quality preflights locally.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"audio-quality-humanizer {__version__}",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 

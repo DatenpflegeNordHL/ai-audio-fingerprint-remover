@@ -20,6 +20,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main() -> int:
     cli = _cli_executable()
+    version_output = _run_capture([str(cli), "--version"])
+    if "audio-quality-humanizer" not in version_output:
+        print("CLI version output did not include package name.")
+        return 1
     with tempfile.TemporaryDirectory() as temp_dir_name:
         temp_dir = Path(temp_dir_name)
         sample_path = temp_dir / "sample.wav"
@@ -217,6 +221,16 @@ def _run(command: list[str]) -> None:
         f"{ROOT}{os.pathsep}{existing_pythonpath}" if existing_pythonpath else str(ROOT)
     )
     subprocess.run(command, check=True, env=env)
+
+
+def _run_capture(command: list[str]) -> str:
+    env = os.environ.copy()
+    existing_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = (
+        f"{ROOT}{os.pathsep}{existing_pythonpath}" if existing_pythonpath else str(ROOT)
+    )
+    result = subprocess.run(command, check=True, env=env, text=True, stdout=subprocess.PIPE)
+    return result.stdout
 
 
 if __name__ == "__main__":

@@ -86,6 +86,12 @@ Validation-status must not evaluate watermark, fingerprint, provenance, or detec
 
 Validation-status may list local report paths but must not upload or expose audio.
 
+Packaging and build checks are safety-neutral.
+
+Release artifacts must preserve the same safety boundary as the source tree.
+
+Packaging must not weaken the safety scan or unsafe wording tests.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

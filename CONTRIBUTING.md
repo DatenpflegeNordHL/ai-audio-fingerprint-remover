@@ -3,7 +3,7 @@
 ## Setup
 
 ```bash
-python -m pip install -e ".[test]"
+python -m pip install -e ".[dev,test]"
 ```
 
 ## Checks
@@ -12,7 +12,10 @@ python -m pip install -e ".[test]"
 pytest
 python tools/safety_scan.py
 python tools/cli_smoke.py
+python tools/build_check.py
 ```
+
+Run the packaging build check before releases so the wheel install and `ai-humanizer` console script are verified outside editable mode.
 
 ## Safety Boundary
 

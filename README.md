@@ -45,8 +45,50 @@ Real-world validation uses local user-supplied audio only. Validation samples ar
 ## Installation
 
 ```bash
-pip install -e .[test]
+python -m pip install -e ".[dev,test]"
 ```
+
+## Installation modes
+
+Check Python first:
+
+```bash
+python3 --version
+```
+
+Python >=3.10 is required. If macOS system `python3` is 3.9, install a newer Python with pyenv, Homebrew, or python.org. Do not rely on `python` existing on macOS.
+
+Editable development install:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev,test]"
+ai-humanizer --version
+pytest
+python tools/safety_scan.py
+python tools/cli_smoke.py
+```
+
+Build and install a wheel locally:
+
+```bash
+python -m build
+python -m pip install dist/*.whl
+ai-humanizer --version
+```
+
+Run the build check:
+
+```bash
+python tools/build_check.py
+```
+
+Troubleshooting:
+
+- If `python: command not found`, use `python3` or `.venv/bin/python`.
+- If Python is 3.9, use a newer interpreter.
+- If editable install has `.pth` quirks, build and install the wheel, then verify with `ai-humanizer --version`.
 
 ## Usage
 
