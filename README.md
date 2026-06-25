@@ -134,6 +134,16 @@ ai-humanizer validate-samples validation_manifest.json --output-dir validation_o
 
 Validation runs doctor and preset-eval for each manifest sample, then recommends presets per real track when an eligible result exists. Real audio samples stay local, are ignored by Git by default, and originals are never modified. Validation does not evaluate or alter watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior, and validation reports are not legal clearance or platform certification.
 
+## Local validation troubleshooting
+
+```bash
+pwd
+ai-humanizer validation-status --find
+ai-humanizer validation-status --root /Users/s4zander/Documents/ai-audio-fingerprint-remover --find --markdown validation_status.md
+```
+
+If `cat validation.md` says the file was not found, you are probably in the wrong folder or validation has not been run yet. On macOS, use `python3` or `.venv/bin/python`; `python` is not always installed as a command. Local validation files are ignored by Git by design, so use `validation-status --find` to locate generated reports before opening them.
+
 Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, preset-eval, and validate-samples can also write Markdown reports with `--markdown`.
 
 ## Roadmap

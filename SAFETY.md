@@ -78,6 +78,14 @@ Validation must never be used to optimize toward reduced recognizability, attrib
 
 Validation results are not legal clearance or platform certification.
 
+Validation-status is diagnostic only.
+
+Validation-status must not read or process audio content.
+
+Validation-status must not evaluate watermark, fingerprint, provenance, or detector behavior.
+
+Validation-status may list local report paths but must not upload or expose audio.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

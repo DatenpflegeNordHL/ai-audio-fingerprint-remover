@@ -36,6 +36,12 @@ VALIDATION_SAFETY_NOTE = (
     "origin markers, C2PA markers, or attribution systems."
 )
 
+VALIDATION_STATUS_SAFETY_NOTE = (
+    "This status command only inspects local file paths and validation report presence. "
+    "It does not read, process, evaluate, or alter audio, watermarks, fingerprints, "
+    "detector signals, provenance markers, origin markers, C2PA markers, or attribution systems."
+)
+
 
 def write_markdown_report(report: dict, path: Path) -> None:
     """Write a compact Markdown report."""
@@ -45,6 +51,8 @@ def write_markdown_report(report: dict, path: Path) -> None:
 
 
 def _render_markdown(report: dict) -> str:
+    if report.get("action") == "validation_status":
+        return _render_validation_status_markdown(report)
     if report.get("action") == "validate_samples":
         return _render_validate_samples_markdown(report)
     if report.get("action") == "preset_eval":
@@ -433,6 +441,46 @@ def _render_validate_samples_markdown(report: dict) -> str:
     _add_list_section(lines, "Warnings", report.get("warnings", []))
     _add_list_section(lines, "Notes", report.get("notes", []))
     lines.extend(["", "## Safety Note", "", VALIDATION_SAFETY_NOTE, ""])
+    return "\n".join(lines)
+
+
+def _render_validation_status_markdown(report: dict) -> str:
+    lines = [
+        "# Validation Status Report",
+        "",
+        "## Summary",
+        "",
+        f"- Current Directory: `{report.get('cwd', '')}`",
+        f"- Inspected Root: `{report.get('root', '')}`",
+        f"- Looks Like Project Root: `{report.get('looks_like_project_root')}`",
+        f"- Project Root Hint: `{_format_value(report.get('project_root_hint'))}`",
+        f"- Virtualenv Python Exists: `{report.get('venv_python_exists')}`",
+        f"- Virtualenv CLI Exists: `{report.get('venv_cli_exists')}`",
+        f"- Validation Manifest Exists: `{report.get('validation_manifest_exists')}`",
+        f"- Validation JSON Exists: `{report.get('validation_json_exists')}`",
+        f"- Validation Markdown Exists: `{report.get('validation_markdown_exists')}`",
+        f"- Validation Samples Directory Exists: `{report.get('validation_samples_dir_exists')}`",
+        f"- Validation Outputs Directory Exists: `{report.get('validation_outputs_dir_exists')}`",
+    ]
+
+    lines.extend(
+        [
+            "",
+            "## Found Reports",
+            "",
+            "| Path |",
+            "| --- |",
+        ]
+    )
+    for path in report.get("found_reports", []):
+        lines.append(f"| `{path}` |")
+    if not report.get("found_reports"):
+        lines.append("| None |")
+
+    _add_list_section(lines, "Suggested Commands", report.get("suggested_commands", []))
+    _add_list_section(lines, "Warnings", report.get("warnings", []))
+    _add_list_section(lines, "Notes", report.get("notes", []))
+    lines.extend(["", "## Safety Note", "", VALIDATION_STATUS_SAFETY_NOTE, ""])
     return "\n".join(lines)
 
 

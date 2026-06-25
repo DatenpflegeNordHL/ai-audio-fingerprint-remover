@@ -19,6 +19,7 @@ from audio_quality_humanizer.processing.presets import SUPPORTED_PRESETS
 from audio_quality_humanizer.reports.json_report import write_json_report
 from audio_quality_humanizer.reports.markdown_report import write_markdown_report
 from audio_quality_humanizer.validation.runner import run_validation
+from audio_quality_humanizer.validation.status import validation_status
 from audio_quality_humanizer.workflows.batch import SUPPORTED_BATCH_MODES, batch_run
 from audio_quality_humanizer.workflows.doctor import doctor_file
 from audio_quality_humanizer.workflows.preset_eval import preset_eval
@@ -30,11 +31,12 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         report = args.handler(args)
-        if args.report:
-            write_json_report(report, Path(args.report))
+        json_path = getattr(args, "json", None) or getattr(args, "report", None)
+        if json_path:
+            write_json_report(report, Path(json_path))
         if getattr(args, "markdown", None):
             write_markdown_report(report, Path(args.markdown))
-        print(_status_message(report, args.report))
+        print(_status_message(report, getattr(args, "report", None)))
         if getattr(args, "fail_on_issue", False) and not report.get("passed", True):
             return 2
         if getattr(args, "fail_on_error", False) and (
@@ -247,6 +249,31 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     validate_parser.set_defaults(handler=_handle_validate_samples)
 
+    validation_status_parser = subparsers.add_parser(
+        "validation-status",
+        help="Inspect local validation setup and report locations.",
+    )
+    validation_status_parser.add_argument(
+        "--root",
+        type=Path,
+        default=Path.cwd(),
+        help="Directory to inspect. Defaults to the current working directory.",
+    )
+    validation_status_parser.add_argument(
+        "--find",
+        action="store_true",
+        help="Search recursively for local validation reports.",
+    )
+    validation_status_parser.add_argument(
+        "--max-depth",
+        type=int,
+        default=4,
+        help="Maximum recursive search depth when --find is used.",
+    )
+    validation_status_parser.add_argument("--json", type=Path, help="Write JSON status report.")
+    validation_status_parser.add_argument("--markdown", type=Path, help="Write Markdown status report.")
+    validation_status_parser.set_defaults(handler=_handle_validation_status)
+
     return parser
 
 
@@ -320,6 +347,10 @@ def _handle_validate_samples(args: argparse.Namespace) -> dict:
     )
 
 
+def _handle_validation_status(args: argparse.Namespace) -> dict:
+    return validation_status(args.root, find=args.find, max_depth=args.max_depth)
+
+
 def _parse_presets(value: str | None) -> list[str] | None:
     if value is None:
         return None
@@ -358,6 +389,15 @@ def _status_message(report: dict, report_path: Path | None) -> str:
             f"{report.get('total_samples')}; failed {report.get('failed_samples')}; "
             f"passed {report.get('passed_samples')}{suffix}"
         )
+    if action == "validation_status":
+        found_count = len(report.get("found_reports", []))
+        if not report.get("looks_like_project_root"):
+            return "validation status complete; this does not look like the project root; see suggested cd command"
+        if found_count:
+            return f"validation status complete; found {found_count} validation report(s)"
+        if not report.get("validation_markdown_exists"):
+            return "validation status complete; validation.md not found; see suggested validate-samples command"
+        return "validation status complete"
     if action == "batch":
         return (
             f"batch complete; mode {report.get('mode')}; processed {report.get('processed_files')}/"

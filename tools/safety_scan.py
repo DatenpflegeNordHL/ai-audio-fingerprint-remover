@@ -36,6 +36,7 @@ CLI_COMMANDS = (
     "batch",
     "preset-eval",
     "validate-samples",
+    "validation-status",
 )
 
 

@@ -110,6 +110,16 @@ def main() -> int:
                 "--markdown",
                 str(temp_dir / "validation.md"),
             ],
+            [
+                "validation-status",
+                "--root",
+                str(temp_dir),
+                "--find",
+                "--json",
+                str(temp_dir / "validation_status.json"),
+                "--markdown",
+                str(temp_dir / "validation_status.md"),
+            ],
         ]
         for args in commands:
             _run([str(cli), *args])
@@ -138,6 +148,8 @@ def main() -> int:
             validation_dir / "sample_01.validation.json",
             temp_dir / "validation.json",
             temp_dir / "validation.md",
+            temp_dir / "validation_status.json",
+            temp_dir / "validation_status.md",
         ]
         missing = [path for path in expected if not path.exists()]
         if missing:
