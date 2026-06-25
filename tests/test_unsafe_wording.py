@@ -26,7 +26,7 @@ def test_safety_document_exists():
 def test_cli_help_excludes_unsafe_flags():
     parser = _build_parser()
     help_parts = [parser.format_help()]
-    for command in ["analyze", "release-check", "compare", "inspect-metadata", "clean-metadata"]:
+    for command in ["analyze", "release-check", "compare", "humanize", "inspect-metadata", "clean-metadata"]:
         stdout = io.StringIO()
         with pytest.raises(SystemExit), contextlib.redirect_stdout(stdout):
             parser.parse_args([command, "--help"])
@@ -49,7 +49,7 @@ def test_cli_help_excludes_unsafe_flags():
 
 def test_safety_checker_catches_unsafe_sample_phrases():
     text = """
-    This imaginary tool offers watermark removal, detector bypass,
+    This imaginary tool offers watermark removal, detector bypass, bypass detectors,
     evade detection mode, neutralize watermark, verify removal,
     watermarks detected and removed, spectral watermark detection,
     and watermark elimination.
@@ -59,6 +59,7 @@ def test_safety_checker_catches_unsafe_sample_phrases():
 
     assert "watermark removal" in matches
     assert "detector bypass" in matches
+    assert "bypass detectors" in matches
     assert "evade detection" in matches
     assert "neutralize watermark" in matches
     assert "verify removal" in matches
@@ -82,3 +83,20 @@ def test_analysis_package_does_not_reference_legacy_modules():
 
     for module in forbidden_modules:
         assert module not in analysis_source
+
+
+def test_processing_package_does_not_reference_legacy_modules():
+    processing_source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT / "audio_quality_humanizer" / "processing").glob("*.py")
+    )
+    forbidden_modules = [
+        "ai_audio_fingerprint_remover",
+        "aggressive_watermark_remover",
+        "sota_watermark_remover",
+        "enhanced_suno_detector",
+        "optimized_suno_detector",
+    ]
+
+    for module in forbidden_modules:
+        assert module not in processing_source

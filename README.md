@@ -8,6 +8,8 @@ The v0.2 and v0.3 commands add read-only audio quality analysis and release-read
 
 The v0.4 compare command checks whether a candidate file introduces technical quality or release-readiness regressions relative to a reference file.
 
+The v0.5 humanize command adds conservative audio-quality processing presets guarded by before/after analysis, compare, and safety gates.
+
 ## Safety Boundary
 
 This tool does not remove audio watermarks.
@@ -23,6 +25,8 @@ Metadata cleaning may remove ordinary user-editable tags such as title, artist, 
 Analyze and release-check do not alter audio. They do not evaluate or alter watermarks, fingerprints, provenance markers, origin markers, or detector signals. LUFS is currently approximate and RMS-based, not EBU/ITU compliant integrated loudness.
 
 Compare is also read-only. It checks technical regressions only and does not check watermark, fingerprint, provenance, origin-marker, or detector behavior.
+
+Humanize may alter audible audio quality, but it does not target watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior. It does not use time-stretch, pitch-shift, neural resynthesis, stem separation, phase randomization, or legacy remover modules.
 
 ## Installation
 
@@ -72,7 +76,16 @@ ai-humanizer compare before.wav after.wav --target club --fail-on-regression
 
 Compare is useful after metadata cleaning, future humanizing, mastering, or format conversion. It checks whether the candidate introduces technical regressions and can return a non-zero exit code with `--fail-on-regression`.
 
-Each command runs locally and writes a JSON report when `--report` is provided. Analyze and release-check can also write Markdown reports with `--markdown`.
+Apply conservative audio-quality processing:
+
+```bash
+ai-humanizer humanize input.wav output.wav --preset subtle --target streaming --report humanize.json --markdown humanize.md
+ai-humanizer humanize input.wav output.wav --preset afro-club --target club --fail-on-safety
+```
+
+Humanize keeps the original input untouched. Safety gates analyze before/after metrics and compare the result; if safety gates fail, the output is reverted or not left as a misleading processed result.
+
+Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, and humanize can also write Markdown reports with `--markdown`.
 
 ## Roadmap
 
@@ -80,7 +93,7 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 - v0.2 analyze
 - v0.3 release-check
 - v0.4 compare implemented
-- v0.5 conservative humanize
+- v0.5 conservative humanize implemented
 - later authorized rebuild for owned/licensed tracks only
 
 ## License

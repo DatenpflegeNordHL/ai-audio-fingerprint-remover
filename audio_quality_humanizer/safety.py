@@ -16,6 +16,7 @@ UNSAFE_TERMS = (
     "removing fingerprints",
     "detector bypass",
     "bypass detector",
+    "bypass detectors",
     "bypass detection",
     "evade detection",
     "undetectable",
@@ -39,6 +40,23 @@ def assert_no_unsafe_public_claims(text: str) -> list[str]:
     matched: list[str] = []
     for term in UNSAFE_TERMS:
         pattern = r"\b" + re.escape(term.casefold()).replace(r"\ ", r"\s+") + r"\b"
-        if re.search(pattern, normalized):
+        matches = list(re.finditer(pattern, normalized))
+        if any(not _is_safety_boundary_denial(normalized, match.start()) for match in matches):
             matched.append(term)
     return matched
+
+
+def _is_safety_boundary_denial(text: str, match_start: int) -> bool:
+    prefix = text[max(0, match_start - 60) : match_start]
+    prefix = re.split(r"[.!?\n;:]", prefix)[-1]
+    denial_markers = (
+        "does not ",
+        "do not ",
+        "doesn't ",
+        "not ",
+        "never ",
+        "must never ",
+        "must not ",
+        "no ",
+    )
+    return any(marker in prefix for marker in denial_markers)

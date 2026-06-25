@@ -12,6 +12,12 @@ SAFETY_NOTE = (
     "origin markers, detector signals, or source-attribution systems."
 )
 
+HUMANIZE_SAFETY_NOTE = (
+    "This report describes conservative audible-quality processing. "
+    "It does not evaluate or alter watermarks, fingerprints, provenance markers, "
+    "origin markers, detector signals, C2PA markers, or attribution systems."
+)
+
 
 def write_markdown_report(report: dict, path: Path) -> None:
     """Write a compact Markdown report."""
@@ -21,6 +27,8 @@ def write_markdown_report(report: dict, path: Path) -> None:
 
 
 def _render_markdown(report: dict) -> str:
+    if report.get("action") == "humanize":
+        return _render_humanize_markdown(report)
     if report.get("action") == "compare":
         return _render_compare_markdown(report)
 
@@ -55,6 +63,8 @@ def _title_for_report(report: dict) -> str:
     action = report.get("action")
     if action == "compare":
         return "Audio Compare Preflight"
+    if action == "humanize":
+        return "Conservative Humanize Report"
     if action == "release_check":
         return "Release-Readiness Preflight"
     if action == "analyze":
@@ -141,3 +151,49 @@ def _add_regression_section(lines: list[str], regressions: list[dict[str, str]])
         severity = item.get("severity", "unknown")
         message = item.get("message", "")
         lines.append(f"- `{severity}`: {message}")
+
+
+def _render_humanize_markdown(report: dict) -> str:
+    safety = report.get("safety", {})
+    comparison = report.get("comparison", {})
+    lines = [
+        "# Conservative Humanize Report",
+        "",
+        f"- Action: `{report.get('action', 'humanize')}`",
+        f"- Preset: `{report.get('preset', '')}`",
+        f"- Target: `{report.get('target', '')}`",
+        f"- Input: `{report.get('input', '')}`",
+        f"- Output: `{report.get('output', '')}`",
+        f"- Passed: `{report.get('passed')}`",
+        f"- Reverted: `{report.get('reverted')}`",
+        f"- Compare Score: `{comparison.get('score')}`",
+    ]
+
+    _add_processing_steps_table(lines, report.get("processing_steps", []))
+    _add_before_after_metrics_table(lines, report.get("before_analysis", {}), report.get("after_analysis", {}))
+    _add_table_section(lines, "Metric Deltas", comparison.get("metric_deltas", {}))
+    _add_list_section(lines, "Safety Blocking Issues", safety.get("blocking_issues", []))
+    _add_list_section(lines, "Warnings", safety.get("warnings", []))
+    _add_list_section(lines, "Recommendations", safety.get("recommendations", []))
+
+    lines.extend(["", "## Safety Note", "", HUMANIZE_SAFETY_NOTE, ""])
+    return "\n".join(lines)
+
+
+def _add_processing_steps_table(lines: list[str], steps: list[dict[str, Any]]) -> None:
+    lines.extend(["", "## Processing Steps", "", "| Step | Applied | Detail |", "| --- | --- | --- |"])
+    if not steps:
+        lines.append("| None |  |  |")
+        return
+    for step in steps:
+        name = step.get("name", "")
+        applied = step.get("applied", False)
+        details = ", ".join(f"{key}={_format_value(value)}" for key, value in step.items() if key not in {"name", "applied"})
+        lines.append(f"| `{name}` | `{applied}` | `{details}` |")
+
+
+def _add_before_after_metrics_table(lines: list[str], before: dict, after: dict) -> None:
+    lines.extend(["", "## Before / After Key Metrics", "", "| Metric | Before | After |", "| --- | --- | --- |"])
+    for key in _key_metric_names():
+        if key in before or key in after:
+            lines.append(f"| `{key}` | `{_format_value(before.get(key))}` | `{_format_value(after.get(key))}` |")
