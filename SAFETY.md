@@ -108,6 +108,16 @@ Project Reborn audit terms are review flags, not product claims.
 
 No audit result makes a file safe to import.
 
+Project Reborn Top-5 planning is manual text review only.
+
+Project Reborn Top-5 planning notes are not product claims.
+
+Project Reborn Top-5 planning does not make reference files importable, installable, packaged, or user-facing.
+
+Project Reborn Top-5 planning must not copy code into the active package.
+
+Future Project Reborn rewrites must ignore old unsafe behavior and preserve the current package safety boundary.
+
 Future extraction from Project Reborn requires safe rewrite into `audio_quality_humanizer/`.
 
 CI enforces a public-claim safety scan.

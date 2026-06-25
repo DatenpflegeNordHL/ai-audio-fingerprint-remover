@@ -16,6 +16,8 @@ CATALOG_JSON = PROJECT_REBORN_DIR / "catalog" / "project_reborn_catalog.json"
 CATALOG_MARKDOWN = PROJECT_REBORN_DIR / "catalog" / "PROJECT_REBORN_CATALOG.md"
 AUDIT_JSON = PROJECT_REBORN_DIR / "audit" / "project_reborn_audit_map.json"
 AUDIT_MARKDOWN = PROJECT_REBORN_DIR / "audit" / "PROJECT_REBORN_AUDIT_MAP.md"
+PLAN_JSON = PROJECT_REBORN_DIR / "planning" / "project_reborn_top5_plan.json"
+PLAN_MARKDOWN = PROJECT_REBORN_DIR / "planning" / "PROJECT_REBORN_TOP5_PLAN.md"
 README = PROJECT_REBORN_DIR / "README.md"
 REQUIRED_ENTRY_FIELDS = {
     "reborn_id",
@@ -37,9 +39,50 @@ REQUIRED_AUDIT_ENTRY_FIELDS = {
     "recommendation",
     "review_status",
 }
+REQUIRED_PLAN_ENTRY_FIELDS = {
+    "rank",
+    "reborn_id",
+    "current_path",
+    "historical_filename",
+    "audit_category",
+    "audit_priority",
+    "future_module",
+    "feature_direction",
+    "complexity",
+    "dependency_risk",
+    "safety_risk",
+    "manual_text_evidence",
+    "safe_observed_ideas",
+    "ignore_parts",
+    "recommendation",
+    "next_step",
+}
 FORBIDDEN_REVIEW_STATUSES = {
     "ready_to_use",
     "safe_to_import",
+    "active_feature",
+}
+FORBIDDEN_PLAN_NEXT_STEPS = {
+    "ready_to_import",
+    "active_feature",
+    "already_safe",
+}
+ALLOWED_PLAN_NEXT_STEPS = {
+    "candidate_for_v0_10_design",
+    "needs_deeper_manual_review",
+    "keep_as_reference_only",
+    "discard_after_confirmation",
+}
+FORBIDDEN_PLAN_CLAIMS = {
+    "safe to import",
+    "safe-to-import",
+    "ready to import",
+    "ready-to-import",
+    "already safe",
+    "active feature",
+    "safe_to_import",
+    "ready_to_import",
+    "already_safe",
     "active_feature",
 }
 
@@ -57,9 +100,20 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
     catalog_markdown = project_dir / "catalog" / "PROJECT_REBORN_CATALOG.md"
     audit_json = project_dir / "audit" / "project_reborn_audit_map.json"
     audit_markdown = project_dir / "audit" / "PROJECT_REBORN_AUDIT_MAP.md"
+    plan_json = project_dir / "planning" / "project_reborn_top5_plan.json"
+    plan_markdown = project_dir / "planning" / "PROJECT_REBORN_TOP5_PLAN.md"
     readme = project_dir / "README.md"
 
-    for path in (readme, catalog_json, catalog_markdown, audit_json, audit_markdown, source_drawer):
+    for path in (
+        readme,
+        catalog_json,
+        catalog_markdown,
+        audit_json,
+        audit_markdown,
+        plan_json,
+        plan_markdown,
+        source_drawer,
+    ):
         if not path.exists():
             errors.append(f"Missing required Project Reborn path: {path.relative_to(root)}")
 
@@ -93,6 +147,9 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
 
     if audit_json.exists():
         _validate_audit(root, audit_json, source_drawer, errors)
+
+    if plan_json.exists() and plan_markdown.exists():
+        _validate_plan(root, plan_json, plan_markdown, errors)
 
     for path in project_dir.rglob("__init__.py"):
         errors.append(f"Project Reborn must not contain __init__.py: {path.relative_to(root)}")
@@ -166,6 +223,113 @@ def _validate_audit(root: Path, audit_json: Path, source_drawer: Path, errors: l
             relative_path = path.relative_to(root).as_posix()
             if relative_path not in entry_by_path:
                 errors.append(f"Missing audit entry for {relative_path}")
+
+
+def _validate_plan(root: Path, plan_json: Path, plan_markdown: Path, errors: list[str]) -> None:
+    plan = _load_catalog(plan_json, errors)
+    if plan is None:
+        return
+
+    if plan.get("project") != "Project Reborn":
+        errors.append("Top-5 plan project must be Project Reborn.")
+    if plan.get("plan_type") != "top5_manual_review_plan":
+        errors.append("Top-5 plan plan_type must be top5_manual_review_plan.")
+    if plan.get("review_method") != "manual_text_only":
+        errors.append("Top-5 plan review_method must be manual_text_only.")
+
+    entries = plan.get("top5", [])
+    if not isinstance(entries, list):
+        errors.append("Top-5 plan entries must be a list.")
+        entries = []
+    if len(entries) != 5:
+        errors.append(f"Top-5 plan must contain exactly 5 entries, found {len(entries)}.")
+
+    ranks: set[int] = set()
+    reborn_ids: set[str] = set()
+    next_step_counts = {step: 0 for step in ALLOWED_PLAN_NEXT_STEPS}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            errors.append("Top-5 plan entry must be an object.")
+            continue
+        _validate_plan_entry(root, entry, ranks, reborn_ids, next_step_counts, errors)
+
+    if ranks and ranks != {1, 2, 3, 4, 5}:
+        errors.append(f"Top-5 plan ranks must be 1 through 5, found {sorted(ranks)}.")
+
+    summary = plan.get("selection_summary", {})
+    if not isinstance(summary, dict):
+        errors.append("Top-5 plan selection_summary must be an object.")
+    else:
+        if summary.get("reviewed_entries") != 5:
+            errors.append("Top-5 plan selection_summary.reviewed_entries must be 5.")
+        if summary.get("selected_top5") != 5:
+            errors.append("Top-5 plan selection_summary.selected_top5 must be 5.")
+        for step, count in next_step_counts.items():
+            if summary.get(step, 0) != count:
+                errors.append(
+                    f"Top-5 plan selection_summary.{step} must match entry count {count}."
+                )
+
+    _validate_no_plan_claims("Top-5 plan JSON", json.dumps(plan, sort_keys=True), errors)
+    _validate_no_plan_claims(
+        "Top-5 plan markdown",
+        plan_markdown.read_text(encoding="utf-8"),
+        errors,
+    )
+
+
+def _validate_plan_entry(
+    root: Path,
+    entry: dict[str, Any],
+    ranks: set[int],
+    reborn_ids: set[str],
+    next_step_counts: dict[str, int],
+    errors: list[str],
+) -> None:
+    missing = sorted(field for field in REQUIRED_PLAN_ENTRY_FIELDS if not entry.get(field))
+    if missing:
+        errors.append(f"Top-5 plan entry missing required fields {missing}: {entry}")
+
+    rank = entry.get("rank")
+    if isinstance(rank, int):
+        ranks.add(rank)
+    else:
+        errors.append(f"Top-5 plan entry rank must be an integer: {entry}")
+
+    reborn_id = entry.get("reborn_id")
+    if isinstance(reborn_id, str):
+        if reborn_id in reborn_ids:
+            errors.append(f"Top-5 plan contains duplicate reborn_id: {reborn_id}")
+        reborn_ids.add(reborn_id)
+    else:
+        errors.append(f"Top-5 plan entry reborn_id must be a string: {entry}")
+
+    current_path = entry.get("current_path")
+    if isinstance(current_path, str):
+        if not (root / current_path).exists():
+            errors.append(f"Top-5 plan current_path does not exist: {current_path}")
+    else:
+        errors.append(f"Top-5 plan entry current_path must be a string: {entry}")
+
+    next_step = entry.get("next_step")
+    if next_step in FORBIDDEN_PLAN_NEXT_STEPS:
+        errors.append(f"Top-5 plan entry {reborn_id} uses forbidden next_step: {next_step}")
+    if next_step not in ALLOWED_PLAN_NEXT_STEPS:
+        errors.append(f"Top-5 plan entry {reborn_id} uses unknown next_step: {next_step}")
+    else:
+        next_step_counts[next_step] += 1
+
+    for list_field in ("manual_text_evidence", "safe_observed_ideas", "ignore_parts"):
+        value = entry.get(list_field)
+        if not isinstance(value, list) or not value or not all(isinstance(item, str) for item in value):
+            errors.append(f"Top-5 plan entry {reborn_id} {list_field} must be a non-empty string list.")
+
+
+def _validate_no_plan_claims(label: str, text: str, errors: list[str]) -> None:
+    lowered = text.casefold()
+    for claim in sorted(FORBIDDEN_PLAN_CLAIMS):
+        if claim in lowered:
+            errors.append(f"{label} contains forbidden planning claim: {claim}")
 
 
 def _validate_not_imported_by_package(root: Path, errors: list[str]) -> None:

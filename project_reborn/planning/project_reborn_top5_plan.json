@@ -1,0 +1,177 @@
+{
+  "project": "Project Reborn",
+  "plan_type": "top5_manual_review_plan",
+  "active_package": "audio-quality-humanizer",
+  "version_target": "0.9.4",
+  "source_audit": "project_reborn/audit/project_reborn_audit_map.json",
+  "review_method": "manual_text_only",
+  "safety_boundary": [
+    "No Project Reborn code was executed.",
+    "No Project Reborn code was imported.",
+    "No Project Reborn code was copied into audio_quality_humanizer/.",
+    "No Project Reborn code was packaged or exposed through the CLI.",
+    "Planning notes are future-review inputs only, not product claims."
+  ],
+  "selection_summary": {
+    "reviewed_entries": 5,
+    "selected_top5": 5,
+    "candidate_for_v0_10_design": 3,
+    "needs_deeper_manual_review": 2,
+    "keep_as_reference_only": 0,
+    "discard_after_confirmation": 0
+  },
+  "top5": [
+    {
+      "rank": 1,
+      "reborn_id": "reborn_008",
+      "current_path": "project_reborn/source_drawer/reborn_008_reference.py",
+      "historical_filename": "audio_processing_fixes.py",
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "future_module": "audio_quality_humanizer.processing",
+      "feature_direction": "processing_guardrails_and_signal_hygiene",
+      "complexity": "medium",
+      "dependency_risk": "medium",
+      "safety_risk": "medium",
+      "manual_text_evidence": [
+        "Text-only review found validate_audio_content, safe_filter_design, safe_filter_apply, safe_nan_cleanup, safe_time_stretch, safe_stft_processing, and harmonic_enhancement.",
+        "The file mixes useful guardrail names with legacy unsafe removal and tone-detection framing."
+      ],
+      "safe_observed_ideas": [
+        "Validate signal arrays before and after processing.",
+        "Bound filter parameters by sample rate, audio length, and filter stability.",
+        "Clean NaN and infinite values with explicit fallback behavior.",
+        "Add short-audio and STFT guardrails for unusual inputs.",
+        "Explore harmonic enhancement as a conservative quality-control idea only."
+      ],
+      "ignore_parts": [
+        "Legacy functions and class names tied to watermark removal or suspicious-tone behavior.",
+        "Any logic intended to change recognizability, attribution, provenance, or detector behavior.",
+        "Any behavior that treats detection results as a processing target."
+      ],
+      "recommendation": "Rewrite guardrails from first principles as conservative processing validation helpers.",
+      "next_step": "candidate_for_v0_10_design"
+    },
+    {
+      "rank": 2,
+      "reborn_id": "reborn_015",
+      "current_path": "project_reborn/source_drawer/reborn_015_reference.py",
+      "historical_filename": "performance_optimization.py",
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "future_module": "audio_quality_humanizer.validation",
+      "feature_direction": "workflow_performance_harness_design",
+      "complexity": "medium",
+      "dependency_risk": "high",
+      "safety_risk": "low",
+      "manual_text_evidence": [
+        "Text-only review found PerformanceConfig, PerformanceOptimizer, MemoryMonitor, StreamingProcessor, chunk splitting, chunk reconstruction, batch feature processing, and benchmark scaffolding.",
+        "The reusable direction is operational structure for validation and performance checks, not a new audio effect."
+      ],
+      "safe_observed_ideas": [
+        "Chunk size and overlap configuration for large-file workflows.",
+        "Sequential chunk processing with fallback to the original chunk on failure.",
+        "Reconstruction checks that preserve length and channel structure.",
+        "Memory usage reporting as diagnostic metadata.",
+        "Benchmark scaffolding for comparing workflow cost across presets or validation jobs."
+      ],
+      "ignore_parts": [
+        "GPU, JIT, multiprocessing, and psutil dependency assumptions unless a new design proves they are needed.",
+        "Any chunk worker that calls legacy processing behavior.",
+        "Any real-time workflow until the active CLI has a clear user need and safety gates."
+      ],
+      "recommendation": "Design a small validation/performance harness around existing workflows before considering optional heavy dependencies.",
+      "next_step": "candidate_for_v0_10_design"
+    },
+    {
+      "rank": 3,
+      "reborn_id": "reborn_022",
+      "current_path": "project_reborn/source_drawer/reborn_022_reference.py",
+      "historical_filename": "test_improvements.py",
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "future_module": "audio_quality_humanizer.validation",
+      "feature_direction": "audio_quality_regression_test_ideas",
+      "complexity": "low",
+      "dependency_risk": "medium",
+      "safety_risk": "medium",
+      "manual_text_evidence": [
+        "Text-only review found create_test_audio, compute_audio_metrics, calculate_snr, short-audio tests, edge-case tests, and preservation-style assertions.",
+        "The file imports legacy modules and contains detector/removal assertions that must not be reused."
+      ],
+      "safe_observed_ideas": [
+        "Small synthetic audio fixtures that avoid external media.",
+        "Edge-case tests for NaN values, quiet input, short clips, and mono/stereo shapes.",
+        "SNR and broad-quality metrics for regression assertions.",
+        "Tests that verify conservative processing preserves core audio properties."
+      ],
+      "ignore_parts": [
+        "Legacy imports from old remover modules.",
+        "Assertions about detection or removal outcomes.",
+        "Any test naming that implies source-attribution or detector effects."
+      ],
+      "recommendation": "Translate only neutral test shapes into new tests for existing safe workflows.",
+      "next_step": "candidate_for_v0_10_design"
+    },
+    {
+      "rank": 4,
+      "reborn_id": "reborn_025",
+      "current_path": "project_reborn/source_drawer/reborn_025_reference.py",
+      "historical_filename": "watermark_comparison.py",
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "future_module": "audio_quality_humanizer.compare",
+      "feature_direction": "comparison_report_metrics_review",
+      "complexity": "medium",
+      "dependency_risk": "high",
+      "safety_risk": "high",
+      "manual_text_evidence": [
+        "Text-only review found _calculate_basic_metrics, _compare_spectral_content, _calculate_quality_metrics, compare_files, and generate_report.",
+        "The file includes detector dependencies and unsafe report sections that must stay out of active code."
+      ],
+      "safe_observed_ideas": [
+        "Basic metrics such as SNR, correlation, RMSE, and dynamic-range change.",
+        "Spectral-content summaries by frequency band.",
+        "Quality-metric deltas such as spectral centroid, rolloff, RMS, and bandwidth.",
+        "A structured report layout for before/after quality checks."
+      ],
+      "ignore_parts": [
+        "The legacy analyzer class name and any detector dependency.",
+        "Any category, score, or report section about watermark outcomes.",
+        "Any interpretation that compare can prove attribution, recognition, provenance, or detector changes."
+      ],
+      "recommendation": "Review only neutral metric/report concepts, then rewrite them into the existing read-only compare boundary.",
+      "next_step": "needs_deeper_manual_review"
+    },
+    {
+      "rank": 5,
+      "reborn_id": "reborn_005",
+      "current_path": "project_reborn/source_drawer/reborn_005_reference.py",
+      "historical_filename": "ai_audio_fingerprint_remover.py",
+      "audit_category": "metadata_privacy_reference",
+      "audit_priority": "high",
+      "future_module": "audio_quality_humanizer.metadata",
+      "feature_direction": "metadata_privacy_and_analysis_stats_review",
+      "complexity": "high",
+      "dependency_risk": "medium",
+      "safety_risk": "high",
+      "manual_text_evidence": [
+        "Text-only review found ProcessingConfig, ProcessingStats, AudioProcessor, AdvancedAudioAnalysis, clean_metadata_comprehensive, calculate_spectral_entropy, calculate_complexity_measures, and chunk reconstruction helpers.",
+        "The file is dominated by legacy unsafe framing, so any future work needs a fresh design and stricter safety review."
+      ],
+      "safe_observed_ideas": [
+        "Processing configuration and timing statistics as product-neutral operational metadata.",
+        "Metadata inspection and explicit reporting of changed container tags.",
+        "Spectral entropy, flatness, and simple complexity metrics as audio-quality analysis candidates after renaming and redefining their purpose.",
+        "Chunked processing structure for long files, only if rewritten with current safety gates."
+      ],
+      "ignore_parts": [
+        "Any fingerprint, watermark, or remover behavior.",
+        "Any pattern-normalization, attribution-targeting, or recognizability-targeting logic.",
+        "Legacy CLI behavior and user-facing claims."
+      ],
+      "recommendation": "Do a deeper manual review focused only on metadata/statistics and analysis metrics before any design work.",
+      "next_step": "needs_deeper_manual_review"
+    }
+  ]
+}

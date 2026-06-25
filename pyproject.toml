@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "audio-quality-humanizer"
-version = "0.9.3"
+version = "0.9.4"
 description = "Local CLI for audio metadata inspection, metadata cleaning, and provenance-risk reporting."
 requires-python = ">=3.10"
 dependencies = [
@@ -29,3 +29,4 @@ include = ["audio_quality_humanizer*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]

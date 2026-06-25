@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.4
+
+- Added Project Reborn Top-5 manual review plan.
+- Ranked five promising Project Reborn entries for future safe rewrite.
+- Extended Project Reborn checks to validate planning files and planning safety statuses.
+
 ## v0.9.3
 
 - Added static Project Reborn audit map.
