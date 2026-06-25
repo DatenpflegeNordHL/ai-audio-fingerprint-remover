@@ -9,6 +9,7 @@ GATE_MARKDOWN = ROOT / "docs" / "design" / "CANDIDATE_REALITY_GATE.md"
 GATE_JSON = ROOT / "docs" / "design" / "candidate_reality_gate.json"
 README = ROOT / "README.md"
 SAFETY = ROOT / "SAFETY.md"
+GITIGNORE = ROOT / ".gitignore"
 
 
 def _gate() -> dict:
@@ -25,10 +26,22 @@ def test_candidate_reality_gate_requires_validation_layers():
 
     assert gate["status"] == "required_for_future_candidates"
     assert gate["synthetic_tests_required"] is True
-    assert gate["real_local_audio_validation_required_for_user_facing_audio_behavior"] is True
-    assert gate["no_op_check_required_for_user_facing_audio_behavior"] is True
+    assert gate["real_local_audio_validation_required"] is True
+    assert gate["no_op_check_required"] is True
     assert gate["deep_search_decision_required"] is True
-    assert gate["generated_local_validation_outputs_must_stay_ignored"] is True
+    assert gate["deep_search_stop_required_when_external_information_needed"] is True
+    assert gate["safe_wording_check_required"] is True
+
+
+def test_candidate_reality_gate_records_deep_search_values():
+    assert _gate()["allowed_deep_search_decisions"] == [
+        "not_needed_internal_repo_only",
+        "needed_external_standards",
+        "needed_current_library_behavior",
+        "needed_platform_or_policy_claims",
+        "needed_market_or_product_research",
+        "needed_security_or_safety_policy_check",
+    ]
 
 
 def test_candidate_reality_gate_records_forbidden_claims():
@@ -37,7 +50,7 @@ def test_candidate_reality_gate_records_forbidden_claims():
     assert "watermark removal" in claims
     assert "fingerprint removal" in claims
     assert "detector bypass" in claims
-    assert "provenance suppression" in claims
+    assert "provenance removal" in claims
     assert "source-attribution removal" in claims
 
 
@@ -59,7 +72,23 @@ def test_readme_and_safety_reference_candidate_reality_gate_requirements():
     assert "Candidate Reality Gate" in readme
     assert "Deep Search decision" in readme
     assert "real local audio validation" in readme
-    assert "no-op checks" in readme
+    assert "no-op check" in readme
     assert "Deep Search decision" in safety
     assert "Real local audio validation is required" in safety
+    assert "implementation must stop" in safety
     assert "Synthetic tests alone are not enough" in safety
+
+
+def test_gitignore_ignores_local_validation_outputs():
+    ignored = GITIGNORE.read_text(encoding="utf-8")
+
+    for pattern in (
+        "validation_samples/",
+        "validation_outputs/",
+        "final_exports/",
+        "v010_validation_outputs/",
+        "dist/",
+        "build/",
+        "*.egg-info/",
+    ):
+        assert pattern in ignored

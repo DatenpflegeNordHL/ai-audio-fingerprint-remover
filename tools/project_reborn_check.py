@@ -314,9 +314,11 @@ def _validate_plan(root: Path, plan_json: Path, plan_markdown: Path, errors: lis
             gate,
             (
                 "deep_search_decision_required",
+                "deep_search_stop_required_when_external_information_needed",
                 "synthetic_tests_required",
-                "real_local_audio_validation_required_for_user_facing_audio_behavior",
-                "no_op_check_required_for_user_facing_audio_behavior",
+                "real_local_audio_validation_required",
+                "no_op_check_required",
+                "safe_wording_check_required",
             ),
             "Top-5 plan candidate_reality_gate",
             errors,
@@ -330,6 +332,8 @@ def _validate_plan(root: Path, plan_json: Path, plan_markdown: Path, errors: lis
             errors.append("Top-5 plan reborn_025_deep_review status must be deep_review_design_only.")
         if review.get("implementation_status") != "deferred":
             errors.append("Top-5 plan reborn_025_deep_review implementation_status must be deferred.")
+        if review.get("deep_search_stop_required") is not True:
+            errors.append("Top-5 plan reborn_025_deep_review deep_search_stop_required must be true.")
 
 
 def _validate_plan_entry(
@@ -446,9 +450,11 @@ def _validate_design_spec(root: Path, design_json: Path, design_markdown: Path, 
             gate,
             (
                 "deep_search_decision_required",
+                "deep_search_stop_required_when_external_information_needed",
                 "synthetic_tests_required",
-                "real_local_audio_validation_required_for_user_facing_audio_behavior",
-                "no_op_check_required_for_user_facing_audio_behavior",
+                "real_local_audio_validation_required",
+                "no_op_check_required",
+                "safe_wording_check_required",
             ),
             "v0.10 design spec candidate_reality_gate",
             errors,
@@ -476,10 +482,11 @@ def _validate_candidate_reality_gate(
         gate,
         (
             "deep_search_decision_required",
+            "deep_search_stop_required_when_external_information_needed",
             "synthetic_tests_required",
-            "real_local_audio_validation_required_for_user_facing_audio_behavior",
-            "no_op_check_required_for_user_facing_audio_behavior",
-            "generated_local_validation_outputs_must_stay_ignored",
+            "real_local_audio_validation_required",
+            "no_op_check_required",
+            "safe_wording_check_required",
         ),
         "Candidate Reality Gate",
         errors,
@@ -487,6 +494,16 @@ def _validate_candidate_reality_gate(
     forbidden_claims = gate.get("forbidden_claims", [])
     if not isinstance(forbidden_claims, list) or not forbidden_claims:
         errors.append("Candidate Reality Gate forbidden_claims must be a non-empty list.")
+    allowed_decisions = gate.get("allowed_deep_search_decisions", [])
+    if allowed_decisions != [
+        "not_needed_internal_repo_only",
+        "needed_external_standards",
+        "needed_current_library_behavior",
+        "needed_platform_or_policy_claims",
+        "needed_market_or_product_research",
+        "needed_security_or_safety_policy_check",
+    ]:
+        errors.append("Candidate Reality Gate allowed_deep_search_decisions do not match required values.")
     boundary = gate.get("project_reborn_boundary", {})
     if not isinstance(boundary, dict):
         errors.append("Candidate Reality Gate project_reborn_boundary must be an object.")
@@ -498,9 +515,9 @@ def _validate_candidate_reality_gate(
     markdown = gate_markdown.read_text(encoding="utf-8")
     for required_text in (
         "Deep Search decision",
-        "Synthetic tests alone are not enough",
-        "Real local audio validation is required",
-        "No-op checks are required",
+        "Synthetic tests are required, but not sufficient.",
+        "A user-facing audio candidate must be tested with at least one local user-supplied audio file.",
+        "A no-op check must prove that unchanged input stays unchanged",
         "Generated local validation outputs must stay ignored and uncommitted",
     ):
         if required_text not in markdown:
@@ -523,6 +540,12 @@ def _validate_reborn_025_deep_review(
         errors.append("reborn_025 deep review implementation_status must be deferred.")
     if review.get("deep_search_decision") != "not_needed_internal_repo_only":
         errors.append("reborn_025 deep review deep_search_decision must be not_needed_internal_repo_only.")
+    if review.get("deep_search_stop_required") is not True:
+        errors.append("reborn_025 deep review deep_search_stop_required must be true.")
+    for key in ("future_synthetic_tests", "future_real_audio_validation", "no_op_check_plan", "proposed_v0_11_scope"):
+        value = review.get(key)
+        if not isinstance(value, list) or not value:
+            errors.append(f"reborn_025 deep review {key} must be a non-empty list.")
     scope = review.get("future_scope", {})
     if not isinstance(scope, dict):
         errors.append("reborn_025 deep review future_scope must be an object.")
@@ -551,9 +574,10 @@ def _validate_reborn_025_deep_review(
 
     markdown = review_markdown.read_text(encoding="utf-8")
     for required_text in (
-        "Status: deep review design-only",
+        "Manual text-only review. Design only. No implementation.",
         "Implementation status: deferred",
-        "Deep Search decision: `not_needed_internal_repo_only`",
+        "`not_needed_internal_repo_only`",
+        "If future implementation needs current external standards",
         "No Project Reborn source was executed, imported, copied, packaged, or exposed",
     ):
         if required_text not in markdown:

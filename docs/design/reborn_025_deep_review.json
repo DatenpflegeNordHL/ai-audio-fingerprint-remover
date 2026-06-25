@@ -1,9 +1,10 @@
 {
   "reborn_id": "reborn_025",
   "status": "deep_review_design_only",
-  "implementation_status": "deferred",
   "deep_search_decision": "not_needed_internal_repo_only",
-  "deep_search_reason": "The review only inspects local repository planning material and one local Project Reborn reference file as text.",
+  "deep_search_stop_required": true,
+  "implementation_status": "deferred",
+  "deep_search_reason": "This review only inspects local Project Reborn reference material and current active compare boundaries.",
   "source_inspection": {
     "path": "project_reborn/source_drawer/reborn_025_reference.py",
     "method": "manual_text_only",
@@ -34,6 +35,33 @@
     "claims about detector success or failure",
     "scores implying bypass, evasion, concealment, removal, or reduced detectability"
   ],
+  "future_synthetic_tests": [
+    "identical input no-op comparison",
+    "gain-only change comparison",
+    "clipped input comparison",
+    "silence comparison",
+    "mono and stereo shape handling",
+    "sample-rate mismatch reporting"
+  ],
+  "future_real_audio_validation": [
+    "use user-supplied local WAV or FLAC samples",
+    "run compare reports before release",
+    "keep generated reports and audio ignored by Git",
+    "do not commit real audio or generated validation outputs"
+  ],
+  "no_op_check_plan": [
+    "compare a local sample to an identical copy",
+    "confirm unchanged technical metrics stay unchanged within tolerance",
+    "confirm different values for gain-changed, clipped, sanitized, and stereo-width changed synthetic files",
+    "confirm only expected path or runtime metadata differs"
+  ],
+  "proposed_v0_11_scope": [
+    "add neutral read-only compare metric expansion",
+    "no new CLI command",
+    "extend existing compare",
+    "report metrics under safe names",
+    "no detector/provenance/recognition language"
+  ],
   "future_scope": {
     "active_boundary": "existing read-only compare workflow",
     "new_cli_command": false,
@@ -44,25 +72,6 @@
     "requires_real_local_audio_validation": true,
     "requires_no_op_check": true
   },
-  "synthetic_test_plan": [
-    "identical input no-op comparison",
-    "gain-only change comparison",
-    "clipped input comparison",
-    "silence comparison",
-    "mono and stereo shape handling",
-    "sample-rate mismatch reporting"
-  ],
-  "real_local_audio_validation_plan": [
-    "use user-supplied local WAV or FLAC samples",
-    "run compare reports before release",
-    "keep generated reports and audio ignored by Git",
-    "do not commit real audio or generated validation outputs"
-  ],
-  "no_op_check_plan": [
-    "compare a local sample to an identical copy",
-    "confirm unchanged technical metrics stay unchanged within tolerance",
-    "confirm only expected path or runtime metadata differs"
-  ],
   "project_reborn_boundary": {
     "reference_only": true,
     "execute_source": false,

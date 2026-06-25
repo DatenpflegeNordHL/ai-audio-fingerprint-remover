@@ -216,9 +216,11 @@ The v0.10.0 design spec is available at `docs/design/V0_10_0_DESIGN_SPEC.md`.
 
 ## Candidate Reality Gate
 
-Future feature candidates must pass the Candidate Reality Gate before active package work begins. The gate requires a documented Deep Search decision, synthetic tests, real local audio validation for user-facing audio behavior, no-op checks for user-facing audio behavior, and ignored/uncommitted generated validation outputs.
+Future audio features must pass the Candidate Reality Gate: synthetic tests, real local audio validation, no-op check, safe wording check, and a documented Deep Search decision.
 
-The gate is documented at `docs/design/CANDIDATE_REALITY_GATE.md`. The deferred `reborn_025` deep review is documented at `docs/design/REBORN_025_DEEP_REVIEW.md`.
+If external current information is required, work stops until the user provides a research update or approves a constrained internal-only scope.
+
+See `docs/design/CANDIDATE_REALITY_GATE.md`. The deferred `reborn_025` deep review is documented at `docs/design/REBORN_025_DEEP_REVIEW.md`.
 
 See `project_reborn/catalog/PROJECT_REBORN_CATALOG.md`.
 

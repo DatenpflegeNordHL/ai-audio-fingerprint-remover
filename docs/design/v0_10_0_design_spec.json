@@ -15,15 +15,18 @@
     "Signal guardrails are quality and workflow-safety checks, not attribution, recognition, provenance, detector, bypass, or evasion tools.",
     "Performance metadata is operational metadata only.",
     "Regression scaffolding uses synthetic audio only.",
-    "Future feature candidates must pass the Candidate Reality Gate before active package work begins."
+    "Future feature candidates must pass the Candidate Reality Gate before active package work begins.",
+    "Deep Search stop rule is required when current external information is needed."
   ],
   "candidate_reality_gate": {
     "status": "required_for_future_candidates",
     "document": "docs/design/CANDIDATE_REALITY_GATE.md",
     "deep_search_decision_required": true,
+    "deep_search_stop_required_when_external_information_needed": true,
     "synthetic_tests_required": true,
-    "real_local_audio_validation_required_for_user_facing_audio_behavior": true,
-    "no_op_check_required_for_user_facing_audio_behavior": true
+    "real_local_audio_validation_required": true,
+    "no_op_check_required": true,
+    "safe_wording_check_required": true
   },
   "non_goals": [
     "Do not add watermark removal.",
@@ -85,6 +88,7 @@
     "Candidate 4 is deferred.",
     "Candidate 5 is deferred.",
     "Candidate Reality Gate is required for future feature candidates.",
+    "Deep Search stop rule is required when current external information is needed.",
     "reborn_025 remains deep-review design-only and deferred.",
     "Future user-facing audio behavior requires real local audio validation and no-op checks.",
     "No Project Reborn source file is copied, imported, executed, packaged, or exposed.",

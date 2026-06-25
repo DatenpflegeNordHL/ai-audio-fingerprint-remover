@@ -41,6 +41,7 @@ def test_reborn_025_deep_review_statuses_and_decision():
     assert review["status"] == "deep_review_design_only"
     assert review["implementation_status"] == "deferred"
     assert review["deep_search_decision"] == "not_needed_internal_repo_only"
+    assert review["deep_search_stop_required"] is True
 
 
 def test_reborn_025_deep_review_safe_ideas_and_rejections():
@@ -57,6 +58,7 @@ def test_reborn_025_deep_review_safe_ideas_and_rejections():
 
 def test_reborn_025_deep_review_defers_runtime_changes():
     scope = _review()["future_scope"]
+    review = _review()
 
     assert scope["new_cli_command"] is False
     assert scope["dsp_change"] is False
@@ -65,6 +67,10 @@ def test_reborn_025_deep_review_defers_runtime_changes():
     assert scope["requires_candidate_reality_gate"] is True
     assert scope["requires_real_local_audio_validation"] is True
     assert scope["requires_no_op_check"] is True
+    assert review["future_synthetic_tests"]
+    assert review["future_real_audio_validation"]
+    assert review["no_op_check_plan"]
+    assert review["proposed_v0_11_scope"]
 
 
 def test_reborn_025_deep_review_does_not_activate_project_reborn():

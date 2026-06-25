@@ -47,12 +47,10 @@ def test_v0_10_design_json_records_implemented_and_deferred_candidates():
     assert {item["reborn_id"] for item in design["implemented_candidates"]} == IMPLEMENTED
     assert {item["reborn_id"] for item in design["deferred_candidates"]} == DEFERRED
     assert design["candidate_reality_gate"]["deep_search_decision_required"] is True
-    assert (
-        design["candidate_reality_gate"][
-            "real_local_audio_validation_required_for_user_facing_audio_behavior"
-        ]
-        is True
-    )
+    assert design["candidate_reality_gate"]["deep_search_stop_required_when_external_information_needed"] is True
+    assert design["candidate_reality_gate"]["real_local_audio_validation_required"] is True
+    assert design["candidate_reality_gate"]["no_op_check_required"] is True
+    assert design["candidate_reality_gate"]["safe_wording_check_required"] is True
 
 
 def test_v0_10_design_markdown_records_safe_boundaries():
@@ -62,6 +60,7 @@ def test_v0_10_design_markdown_records_safe_boundaries():
     assert "Candidate 1, `reborn_008`, is implemented" in text
     assert "Candidate 4, `reborn_025`, is deferred" in text
     assert "Candidate Reality Gate" in text
+    assert "Deep Search stop rule" in text
     assert "real local audio validation" in text
     assert "no-op checks" in text
     assert "No Project Reborn source code was copied, imported, executed, packaged, or exposed" in text

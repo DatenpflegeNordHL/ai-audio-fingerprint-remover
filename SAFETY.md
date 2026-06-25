@@ -132,11 +132,15 @@ v0.10.0 regression tests use synthetic audio only.
 
 Every future feature candidate must document a Deep Search decision before active package work begins.
 
+If current external information is required, implementation must stop until the user provides an update or approves a constrained internal-only scope.
+
 Real local audio validation is required for future user-facing audio behavior.
 
 Synthetic tests alone are not enough for future user-facing audio behavior.
 
 No-op checks are required for future user-facing audio behavior.
+
+Project Reborn remains inert.
 
 Local validation outputs are intentionally ignored.
 

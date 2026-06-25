@@ -32,15 +32,18 @@
     "status": "required_for_future_candidates",
     "document": "docs/design/CANDIDATE_REALITY_GATE.md",
     "deep_search_decision_required": true,
+    "deep_search_stop_required_when_external_information_needed": true,
     "synthetic_tests_required": true,
-    "real_local_audio_validation_required_for_user_facing_audio_behavior": true,
-    "no_op_check_required_for_user_facing_audio_behavior": true
+    "real_local_audio_validation_required": true,
+    "no_op_check_required": true,
+    "safe_wording_check_required": true
   },
   "reborn_025_deep_review": {
     "status": "deep_review_design_only",
     "implementation_status": "deferred",
     "document": "docs/design/REBORN_025_DEEP_REVIEW.md",
     "deep_search_decision": "not_needed_internal_repo_only",
+    "deep_search_stop_required": true,
     "future_implementation_requires_real_local_audio_validation": true,
     "future_implementation_requires_no_op_check": true
   },

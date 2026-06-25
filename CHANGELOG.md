@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.10.3
+
+- Added Candidate Reality Gate for future feature candidates.
+- Added Deep Search stop rule for current external information.
+- Added deep review plan for deferred Project Reborn candidate `reborn_025`.
+- Required real local audio validation and no-op checks for future user-facing audio behavior.
+
 ## v0.10.2
 
 - Added Candidate Reality Gate for future feature candidates.

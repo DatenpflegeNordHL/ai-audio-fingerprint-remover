@@ -1,24 +1,33 @@
 # reborn_025 Deep Review
 
-Status: deep review design-only
+## Status
+
+Manual text-only review. Design only. No implementation.
 
 Implementation status: deferred
 
-Deep Search decision: `not_needed_internal_repo_only`
+## Deep Search Decision
 
-Deep Search reason: this review only inspects local repository planning material and one local Project Reborn reference file as text. It makes no external factual claims and does not depend on current outside information.
+`not_needed_internal_repo_only`
+
+Reason:
+This review only inspects local Project Reborn reference material and current active compare boundaries.
+
+## Stop Rule
+
+If future implementation needs current external standards, current library behavior, current platform policies, or current third-party project behavior, stop and request a Codex update before continuing.
 
 Source inspected as text only: `project_reborn/source_drawer/reborn_025_reference.py`
 
 No Project Reborn source was executed, imported, copied, packaged, or exposed.
 
-## Review Summary
+## What the Legacy File Appears To Do
 
-`reborn_025` contains a legacy comparison/report script with detector dependencies and unsafe report framing. Those parts remain rejected.
+Based on text-only inspection, the file appears to load original and processed audio, convert both inputs to mono for analysis, align length, calculate basic quality deltas, call a detector-dependent branch, calculate spectral-band and quality-metric deltas, and generate a textual before/after report.
 
 The only reusable direction is a future read-only compare/report design around neutral audio-quality deltas. That future work remains deferred and must pass the Candidate Reality Gate before any active package work begins.
 
-## Safe Ideas For Future Design
+## Safe Ideas
 
 - SNR-style comparison.
 - RMSE-style comparison.
@@ -31,7 +40,7 @@ The only reusable direction is a future read-only compare/report design around n
 - Frequency-band summary deltas.
 - Structured before/after quality report sections.
 
-## Rejected Ideas
+## Unsafe or Rejected Ideas
 
 Reject detector dependencies.
 
@@ -47,22 +56,49 @@ Reject any claim about detector success or failure.
 
 Reject any score that implies bypass, evasion, concealment, removal, or reduced detectability.
 
-## Deferred Future Scope
+## Candidate Reality Gate Plan
 
-A future compare expansion may add neutral read-only metrics to the existing `compare` boundary. It must not add a new CLI command. It must not change current scoring without a separate approved design. It must not modify audio.
+Future implementation must be tested before release.
 
-Future work must include:
+### Synthetic Tests
 
 - Synthetic tests for identical input, gain-only changes, clipped input, silence, mono/stereo shape handling, and sample-rate mismatch.
-- Real local audio validation with user-supplied files before release.
-- A no-op check proving identical input stays unchanged at the report boundary except for expected timestamps, paths, or runtime metadata.
-- Safety wording review for JSON, Markdown, CLI help, README, and release notes.
-- Confirmation that generated local validation reports and audio remain ignored and uncommitted.
 
-## Current Decision
+### Real Local Audio Validation
 
-`reborn_025` stays deferred.
+Require validation against local user-supplied audio files, but do not commit them.
 
-This document is planning and safety review only.
+Use placeholder paths only:
+
+```bash
+ai-humanizer compare local_input_original.wav local_input_processed.wav \
+  --target club \
+  --report local_compare.json \
+  --markdown local_compare.md
+```
+
+### No-Op Check
+
+The future compare metrics must show different values when comparing:
+
+- identical files
+- gain-changed files
+- clipped files
+- sanitized files
+- stereo-width changed synthetic files
+
+## Proposed v0.11.0 Scope
+
+Design only:
+
+- add neutral read-only compare metric expansion
+- no new CLI command
+- extend existing `compare`
+- report metrics under safe names
+- no detector/provenance/recognition language
+
+## Deferred
+
+Implementation deferred to a later milestone.
 
 No code, DSP, scoring, CLI, packaging, or report behavior changes are approved by this review.
