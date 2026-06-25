@@ -6,6 +6,8 @@ The v0.1 MVP helps you see what editable metadata is present, identify metadata 
 
 The v0.2 and v0.3 commands add read-only audio quality analysis and release-readiness preflight checks. These checks are pragmatic technical reports, not official distributor or platform certification.
 
+The v0.4 compare command checks whether a candidate file introduces technical quality or release-readiness regressions relative to a reference file.
+
 ## Safety Boundary
 
 This tool does not remove audio watermarks.
@@ -19,6 +21,8 @@ This tool does not remove provenance markers or origin markers.
 Metadata cleaning may remove ordinary user-editable tags such as title, artist, album, comments, or similar container metadata. Metadata keys that look potentially provenance-related are reported as a risk signal and are not silently removed by default.
 
 Analyze and release-check do not alter audio. They do not evaluate or alter watermarks, fingerprints, provenance markers, origin markers, or detector signals. LUFS is currently approximate and RMS-based, not EBU/ITU compliant integrated loudness.
+
+Compare is also read-only. It checks technical regressions only and does not check watermark, fingerprint, provenance, origin-marker, or detector behavior.
 
 ## Installation
 
@@ -59,6 +63,15 @@ ai-humanizer release-check input.wav --target streaming --report release.json --
 ai-humanizer release-check input.wav --target club --report club_release.json
 ```
 
+Compare a candidate file against a reference:
+
+```bash
+ai-humanizer compare before.wav after.wav --target streaming --report compare.json --markdown compare.md
+ai-humanizer compare before.wav after.wav --target club --fail-on-regression
+```
+
+Compare is useful after metadata cleaning, future humanizing, mastering, or format conversion. It checks whether the candidate introduces technical regressions and can return a non-zero exit code with `--fail-on-regression`.
+
 Each command runs locally and writes a JSON report when `--report` is provided. Analyze and release-check can also write Markdown reports with `--markdown`.
 
 ## Roadmap
@@ -66,7 +79,7 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 - v0.1 metadata cleaner
 - v0.2 analyze
 - v0.3 release-check
-- v0.4 compare
+- v0.4 compare implemented
 - v0.5 conservative humanize
 - later authorized rebuild for owned/licensed tracks only
 

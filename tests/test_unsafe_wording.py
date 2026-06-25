@@ -26,7 +26,7 @@ def test_safety_document_exists():
 def test_cli_help_excludes_unsafe_flags():
     parser = _build_parser()
     help_parts = [parser.format_help()]
-    for command in ["analyze", "release-check", "inspect-metadata", "clean-metadata"]:
+    for command in ["analyze", "release-check", "compare", "inspect-metadata", "clean-metadata"]:
         stdout = io.StringIO()
         with pytest.raises(SystemExit), contextlib.redirect_stdout(stdout):
             parser.parse_args([command, "--help"])
