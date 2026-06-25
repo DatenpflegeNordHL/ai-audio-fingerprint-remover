@@ -28,6 +28,12 @@ jobs:
       - name: Run tests
         run: pytest
 
+      - name: Run root cleanliness check
+        run: python tools/root_cleanliness_check.py
+
+      - name: Run Project Reborn check
+        run: python tools/project_reborn_check.py
+
       - name: Run safety scan
         run: python tools/safety_scan.py
 

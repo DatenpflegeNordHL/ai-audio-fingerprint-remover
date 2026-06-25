@@ -22,6 +22,8 @@ PUBLIC_FILES = (
     "audio_quality_humanizer/cli.py",
     "audio_quality_humanizer/safety.py",
     "audio_quality_humanizer/reports/markdown_report.py",
+    "project_reborn/README.md",
+    "project_reborn/catalog/PROJECT_REBORN_CATALOG.md",
 )
 
 CLI_COMMANDS = (

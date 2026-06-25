@@ -186,6 +186,12 @@ ai-humanizer validation-status --root /Users/s4zander/Documents/ai-audio-fingerp
 
 If `cat validation.md` says the file was not found, you are probably in the wrong folder or validation has not been run yet. On macOS, use `python3` or `.venv/bin/python`; `python` is not always installed as a command. Local validation files are ignored by Git by design, so use `validation-status --find` to locate generated reports before opening them.
 
+## Project Reborn
+
+Project Reborn is a non-installed reference drawer for historical experimental scripts. Old filenames are historical labels only and must not be used to infer behavior. Nothing in Project Reborn is imported, packaged, or exposed through the CLI. Useful ideas must be manually reviewed and safely rewritten into `audio_quality_humanizer/`.
+
+See `project_reborn/catalog/PROJECT_REBORN_CATALOG.md`.
+
 Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, preset-eval, and validate-samples can also write Markdown reports with `--markdown`.
 
 ## Roadmap

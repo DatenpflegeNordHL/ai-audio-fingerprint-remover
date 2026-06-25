@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import venv
+import zipfile
 from pathlib import Path
 
 
@@ -24,6 +25,9 @@ def main() -> int:
     wheel = _latest_wheel(ROOT / "dist")
     if wheel is None:
         print("No wheel found in dist/.")
+        return 1
+    if _wheel_contains_project_reborn(wheel):
+        print(f"Project Reborn files must not be included in the wheel: {wheel}")
         return 1
 
     with tempfile.TemporaryDirectory() as temp_dir_name:
@@ -60,6 +64,11 @@ def _latest_wheel(dist_dir: Path) -> Path | None:
     if not wheels:
         return None
     return wheels[-1]
+
+
+def _wheel_contains_project_reborn(wheel: Path) -> bool:
+    with zipfile.ZipFile(wheel) as archive:
+        return any(name.startswith("project_reborn/") for name in archive.namelist())
 
 
 def _venv_python(venv_dir: Path) -> Path:

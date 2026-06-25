@@ -92,6 +92,16 @@ Release artifacts must preserve the same safety boundary as the source tree.
 
 Packaging must not weaken the safety scan or unsafe wording tests.
 
+Project Reborn is not part of the active package boundary.
+
+Project Reborn files are reference-only.
+
+Old filenames are not behavior claims.
+
+Future extraction from Project Reborn must inspect behavior, not names.
+
+Future extraction from Project Reborn must pass tests, the root cleanliness check, the Project Reborn catalog check, the safety scan, CLI smoke, and the build check.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

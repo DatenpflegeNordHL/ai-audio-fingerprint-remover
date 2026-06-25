@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.9.2
+
+- Added Project Reborn as a non-installed reference drawer.
+- Moved and neutrally renamed historical experimental scripts.
+- Added Project Reborn catalog.
+- Added root cleanliness and Project Reborn checks.
+
 ## v0.9.1
 
 - Added version flag.
