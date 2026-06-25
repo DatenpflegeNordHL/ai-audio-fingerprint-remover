@@ -156,6 +156,17 @@ Compare is useful after metadata cleaning, future humanizing, mastering, or form
 
 Compare reports include neutral `comparison_metrics` such as RMSE, mean absolute error, correlation, approximate signal-to-difference, peak/RMS deltas, dynamic-range deltas, spectral centroid deltas, spectral rolloff deltas, and optional stereo/side-energy deltas. Unavailable values are reported as `null`.
 
+Example compare metrics report:
+
+```bash
+ai-humanizer compare before.wav after.wav \
+  --target club \
+  --report compare.json \
+  --markdown compare.md
+```
+
+`comparison_metrics` are read-only before/after quality deltas. JSON outputs are safe to serialize and unavailable values are reported as `null`. These metrics do not certify distributor or platform acceptance, and they do not evaluate attribution, recognition, provenance, watermark, fingerprint, detector behavior, bypass, evasion, or source attribution.
+
 Apply conservative audio-quality processing:
 
 ```bash
@@ -235,6 +246,7 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 ## Release notes
 
 - `v0.10.0`: `docs/releases/V0_10_0_RELEASE_NOTES.md`
+- `v0.11.0`: `docs/releases/V0_11_0_RELEASE_NOTES.md`
 
 ## Roadmap
 

@@ -38,6 +38,16 @@ Compare metrics must use neutral audio-quality names only.
 
 Compare metrics must not use unsafe score names tied to watermark, fingerprint, detector, recognition, provenance, origin, source attribution, bypass, evasion, or detectability concepts.
 
+v0.11 compare metrics are read-only.
+
+v0.11 compare metrics do not modify audio.
+
+Generated v0.11 local validation outputs remain ignored and uncommitted.
+
+Real local audio is never committed.
+
+Project Reborn remains inert after v0.11 compare metrics.
+
 Humanize may alter audible audio quality.
 
 Humanize must remain conservative and measurable.

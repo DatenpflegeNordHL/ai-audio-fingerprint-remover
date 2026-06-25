@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.11.1
+
+- Added v0.11.0 release notes.
+- Improved README documentation for read-only compare metrics.
+- Hardened report-shape and wording tests for `comparison_metrics`.
+- Reconfirmed generated v0.11 validation outputs stay ignored.
+
 ## v0.11.0
 
 - Added neutral read-only compare metrics under `comparison_metrics`.

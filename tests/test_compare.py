@@ -185,6 +185,44 @@ def test_compare_report_is_json_safe_and_uses_safe_metric_names(tmp_path):
         assert forbidden_name not in encoded
 
 
+def test_compare_report_contains_required_metric_keys(tmp_path):
+    reference_path = tmp_path / "reference.wav"
+    candidate_path = tmp_path / "candidate.wav"
+    _write_sine(reference_path)
+    _write_sine(candidate_path, amplitude=0.12)
+
+    metrics = compare_audio(reference_path, candidate_path)["comparison_metrics"]
+
+    for key in (
+        "rmse",
+        "mean_absolute_error",
+        "correlation",
+        "snr_db_approx",
+        "peak_before",
+        "peak_after",
+        "peak_delta",
+        "rms_before",
+        "rms_after",
+        "rms_delta",
+        "dynamic_range_before_db",
+        "dynamic_range_after_db",
+        "dynamic_range_delta_db",
+        "spectral_centroid_before_hz",
+        "spectral_centroid_after_hz",
+        "spectral_centroid_delta_hz",
+        "spectral_rolloff_before_hz",
+        "spectral_rolloff_after_hz",
+        "spectral_rolloff_delta_hz",
+        "stereo_correlation_before",
+        "stereo_correlation_after",
+        "stereo_correlation_delta",
+        "side_energy_ratio_before",
+        "side_energy_ratio_after",
+        "side_energy_ratio_delta",
+    ):
+        assert key in metrics
+
+
 def test_compare_markdown_includes_metrics_without_unsafe_claims(tmp_path):
     reference_path = tmp_path / "reference.wav"
     candidate_path = tmp_path / "candidate.wav"
@@ -197,6 +235,10 @@ def test_compare_markdown_includes_metrics_without_unsafe_claims(tmp_path):
 
     assert "Comparison Metrics" in text
     assert "`rmse`" in text
+    assert "Watermark" not in text
+    assert "Fingerprint" not in text
+    assert "Detector" not in text
+    assert "Provenance" not in text
     assert assert_no_unsafe_public_claims(text) == []
     for forbidden_name in FORBIDDEN_METRIC_NAMES:
         assert forbidden_name not in text

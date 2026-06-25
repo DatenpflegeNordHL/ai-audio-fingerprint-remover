@@ -26,6 +26,7 @@ REBORN_025_REVIEW_JSON = ROOT / "docs" / "design" / "reborn_025_deep_review.json
 REBORN_025_REVIEW_MARKDOWN = ROOT / "docs" / "design" / "REBORN_025_DEEP_REVIEW.md"
 V0_11_COMPARE_JSON = ROOT / "docs" / "design" / "v0_11_0_compare_metrics.json"
 V0_11_COMPARE_MARKDOWN = ROOT / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
+V0_11_RELEASE_NOTES = ROOT / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md"
 README = PROJECT_REBORN_DIR / "README.md"
 REQUIRED_ENTRY_FIELDS = {
     "reborn_id",
@@ -171,6 +172,7 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
         reborn_025_review_markdown,
         v0_11_compare_json,
         v0_11_compare_markdown,
+        root / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md",
         source_drawer,
     ):
         if not path.exists():
@@ -221,6 +223,10 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
 
     if v0_11_compare_json.exists() and v0_11_compare_markdown.exists():
         _validate_v0_11_compare_metrics(v0_11_compare_json, v0_11_compare_markdown, errors)
+
+    v0_11_release_notes = root / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md"
+    if v0_11_release_notes.exists():
+        _validate_v0_11_release_notes(v0_11_release_notes, errors)
 
     for path in project_dir.rglob("__init__.py"):
         errors.append(f"Project Reborn must not contain __init__.py: {path.relative_to(root)}")
@@ -704,6 +710,20 @@ def _validate_v0_11_compare_metrics(
     ):
         if required_text not in markdown:
             errors.append(f"v0.11 compare metrics markdown missing required text: {required_text}")
+
+
+def _validate_v0_11_release_notes(path: Path, errors: list[str]) -> None:
+    text = path.read_text(encoding="utf-8")
+    for required_text in (
+        "Version: `0.11.0`",
+        "Release type: safe read-only compare metrics",
+        "comparison_metrics",
+        "Project Reborn source was not copied, imported, executed, packaged, or exposed.",
+    ):
+        if required_text not in text:
+            errors.append(f"v0.11 release notes missing required text: {required_text}")
+    if "/Users/" in text:
+        errors.append("v0.11 release notes must not include local absolute paths.")
 
 
 def _validate_required_true(

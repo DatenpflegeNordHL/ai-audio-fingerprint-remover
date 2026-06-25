@@ -77,6 +77,9 @@ def test_readme_and_safety_reference_candidate_reality_gate_requirements():
     assert "Real local audio validation is required" in safety
     assert "implementation must stop" in safety
     assert "Synthetic tests alone are not enough" in safety
+    assert "v0.11 compare metrics are read-only." in safety
+    assert "Generated v0.11 local validation outputs remain ignored and uncommitted." in safety
+    assert "Real local audio is never committed." in safety
 
 
 def test_gitignore_ignores_local_validation_outputs():

@@ -29,6 +29,7 @@ PUBLIC_FILES = (
     "docs/design/V0_11_0_COMPARE_METRICS.md",
     "docs/design/v0_11_0_compare_metrics.json",
     "docs/releases/V0_10_0_RELEASE_NOTES.md",
+    "docs/releases/V0_11_0_RELEASE_NOTES.md",
     "project_reborn/README.md",
     "project_reborn/catalog/PROJECT_REBORN_CATALOG.md",
     "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md",
