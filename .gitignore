@@ -177,6 +177,7 @@ cython_debug/
 # Local real-world audio validation samples and generated reports
 validation_samples/
 validation_outputs/
+final_exports/
 /validation_manifest.json
 /validation.json
 /validation.md
