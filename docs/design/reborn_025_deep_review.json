@@ -1,0 +1,74 @@
+{
+  "reborn_id": "reborn_025",
+  "status": "deep_review_design_only",
+  "implementation_status": "deferred",
+  "deep_search_decision": "not_needed_internal_repo_only",
+  "deep_search_reason": "The review only inspects local repository planning material and one local Project Reborn reference file as text.",
+  "source_inspection": {
+    "path": "project_reborn/source_drawer/reborn_025_reference.py",
+    "method": "manual_text_only",
+    "executed": false,
+    "imported": false,
+    "copied": false,
+    "packaged": false,
+    "exposed": false
+  },
+  "safe_ideas": [
+    "SNR-style comparison",
+    "RMSE-style comparison",
+    "correlation-style comparison",
+    "dynamic range delta",
+    "spectral centroid delta",
+    "spectral rolloff delta",
+    "spectral bandwidth delta",
+    "RMS or approximate loudness delta",
+    "frequency-band summary deltas",
+    "structured before/after quality report sections"
+  ],
+  "rejected_ideas": [
+    "detector dependencies",
+    "watermark categories",
+    "attribution interpretation",
+    "recognition interpretation",
+    "provenance interpretation",
+    "claims about detector success or failure",
+    "scores implying bypass, evasion, concealment, removal, or reduced detectability"
+  ],
+  "future_scope": {
+    "active_boundary": "existing read-only compare workflow",
+    "new_cli_command": false,
+    "dsp_change": false,
+    "scoring_change": false,
+    "humanize_change": false,
+    "requires_candidate_reality_gate": true,
+    "requires_real_local_audio_validation": true,
+    "requires_no_op_check": true
+  },
+  "synthetic_test_plan": [
+    "identical input no-op comparison",
+    "gain-only change comparison",
+    "clipped input comparison",
+    "silence comparison",
+    "mono and stereo shape handling",
+    "sample-rate mismatch reporting"
+  ],
+  "real_local_audio_validation_plan": [
+    "use user-supplied local WAV or FLAC samples",
+    "run compare reports before release",
+    "keep generated reports and audio ignored by Git",
+    "do not commit real audio or generated validation outputs"
+  ],
+  "no_op_check_plan": [
+    "compare a local sample to an identical copy",
+    "confirm unchanged technical metrics stay unchanged within tolerance",
+    "confirm only expected path or runtime metadata differs"
+  ],
+  "project_reborn_boundary": {
+    "reference_only": true,
+    "execute_source": false,
+    "import_source": false,
+    "copy_source": false,
+    "package_source": false,
+    "expose_source": false
+  }
+}

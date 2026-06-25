@@ -4,7 +4,9 @@
   "active_package": "audio-quality-humanizer",
   "source_documents": [
     "project_reborn/planning/PROJECT_REBORN_TOP5_PLAN.md",
-    "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
+    "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md",
+    "docs/design/CANDIDATE_REALITY_GATE.md",
+    "docs/design/REBORN_025_DEEP_REVIEW.md"
   ],
   "safety_boundary": [
     "The v0.10.0 safe core was rewritten from first principles inside audio_quality_humanizer/.",
@@ -12,8 +14,17 @@
     "Project Reborn remains a non-installed internal reference drawer.",
     "Signal guardrails are quality and workflow-safety checks, not attribution, recognition, provenance, detector, bypass, or evasion tools.",
     "Performance metadata is operational metadata only.",
-    "Regression scaffolding uses synthetic audio only."
+    "Regression scaffolding uses synthetic audio only.",
+    "Future feature candidates must pass the Candidate Reality Gate before active package work begins."
   ],
+  "candidate_reality_gate": {
+    "status": "required_for_future_candidates",
+    "document": "docs/design/CANDIDATE_REALITY_GATE.md",
+    "deep_search_decision_required": true,
+    "synthetic_tests_required": true,
+    "real_local_audio_validation_required_for_user_facing_audio_behavior": true,
+    "no_op_check_required_for_user_facing_audio_behavior": true
+  },
   "non_goals": [
     "Do not add watermark removal.",
     "Do not add fingerprint removal.",
@@ -54,6 +65,9 @@
       "reborn_id": "reborn_025",
       "candidate": "comparison_report_metrics_review",
       "status": "deferred_deeper_manual_review",
+      "deep_review_status": "deep_review_design_only",
+      "implementation_status": "deferred",
+      "deep_review_document": "docs/design/REBORN_025_DEEP_REVIEW.md",
       "reason": "Read-only comparison metric expansion needs deeper review to avoid legacy comparison framing and unsafe interpretations."
     },
     {
@@ -70,6 +84,9 @@
     "Candidate 3 is implemented as regression scaffolding.",
     "Candidate 4 is deferred.",
     "Candidate 5 is deferred.",
+    "Candidate Reality Gate is required for future feature candidates.",
+    "reborn_025 remains deep-review design-only and deferred.",
+    "Future user-facing audio behavior requires real local audio validation and no-op checks.",
     "No Project Reborn source file is copied, imported, executed, packaged, or exposed.",
     "Project Reborn remains excluded from package discovery.",
     "Project Reborn has no __init__.py.",
@@ -83,6 +100,7 @@
     "Unit-test sanitization to confirm NaN and infinite values are replaced without normalization.",
     "Unit-test performance helpers for elapsed seconds and platform metadata.",
     "Unit-test design JSON for implemented and deferred candidate status.",
+    "Unit-test Candidate Reality Gate and reborn_025 deep-review planning documents.",
     "Run pytest.",
     "Run root cleanliness, Project Reborn, safety scan, CLI smoke, and build checks.",
     "Confirm built wheels still exclude project_reborn/."

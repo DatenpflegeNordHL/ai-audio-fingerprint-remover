@@ -31,6 +31,13 @@ Old filenames are historical labels only. Future work must inspect behavior, des
 - Candidate 5, `reborn_005`, is deferred for deeper manual review.
 - Project Reborn remains reference-only, non-installed, unpackaged, and hidden from the CLI.
 
+## v0.10.2 Planning Gate
+
+- Candidate Reality Gate is required before future feature candidates move into active package work.
+- `reborn_025` has a deep-review design-only document and remains deferred.
+- Future implementation must include real local audio validation and a no-op check before user-facing audio behavior ships.
+- Generated local validation outputs must stay ignored and uncommitted.
+
 ## Manual Review Notes
 
 ### 1. `reborn_008`

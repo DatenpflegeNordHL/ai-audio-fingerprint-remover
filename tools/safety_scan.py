@@ -24,6 +24,8 @@ PUBLIC_FILES = (
     "audio_quality_humanizer/reports/markdown_report.py",
     "docs/design/V0_10_0_DESIGN_SPEC.md",
     "docs/design/v0_10_0_design_spec.json",
+    "docs/design/CANDIDATE_REALITY_GATE.md",
+    "docs/design/REBORN_025_DEEP_REVIEW.md",
     "docs/releases/V0_10_0_RELEASE_NOTES.md",
     "project_reborn/README.md",
     "project_reborn/catalog/PROJECT_REBORN_CATALOG.md",

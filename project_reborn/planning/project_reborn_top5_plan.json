@@ -28,6 +28,22 @@
     "reborn_005": "deferred_for_deeper_manual_review",
     "project_reborn_boundary": "reference_only_non_installed_unpacked_hidden_from_cli"
   },
+  "candidate_reality_gate": {
+    "status": "required_for_future_candidates",
+    "document": "docs/design/CANDIDATE_REALITY_GATE.md",
+    "deep_search_decision_required": true,
+    "synthetic_tests_required": true,
+    "real_local_audio_validation_required_for_user_facing_audio_behavior": true,
+    "no_op_check_required_for_user_facing_audio_behavior": true
+  },
+  "reborn_025_deep_review": {
+    "status": "deep_review_design_only",
+    "implementation_status": "deferred",
+    "document": "docs/design/REBORN_025_DEEP_REVIEW.md",
+    "deep_search_decision": "not_needed_internal_repo_only",
+    "future_implementation_requires_real_local_audio_validation": true,
+    "future_implementation_requires_no_op_check": true
+  },
   "top5": [
     {
       "rank": 1,

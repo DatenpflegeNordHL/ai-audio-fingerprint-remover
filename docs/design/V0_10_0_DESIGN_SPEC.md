@@ -23,6 +23,8 @@ Performance metadata is operational metadata only.
 
 Regression scaffolding uses synthetic audio only.
 
+Future feature candidates must pass the Candidate Reality Gate before active package work begins.
+
 ## Non-Goals
 
 - Do not add watermark removal.
@@ -53,6 +55,8 @@ Candidate 3, `reborn_022`, is implemented as synthetic regression scaffolding in
 
 Candidate 4, `reborn_025`, is deferred. Future read-only comparison metric expansion may review SNR, correlation, RMSE, dynamic-range delta, spectral summary deltas, and structured before/after quality reporting. It needs deeper review to avoid legacy comparison framing and unsafe interpretations.
 
+Candidate 4, `reborn_025`, now has a deep-review design-only document. Implementation remains deferred. Any future implementation must pass the Candidate Reality Gate, include real local audio validation, and include a no-op check.
+
 Candidate 5, `reborn_005`, is deferred. Future metadata/privacy and analysis-stat expansion may review metadata inspection/reporting, changed-tag reporting, processing stats, spectral entropy, spectral flatness, and neutral complexity metrics. It needs deeper review because the source file has the highest legacy-framing risk.
 
 ## Report Field Changes
@@ -80,6 +84,7 @@ Project Reborn is not exposed through CLI help.
 - Unit-test sanitization to confirm NaN and infinite values are replaced without normalization.
 - Unit-test performance helpers for elapsed seconds and platform metadata.
 - Unit-test design JSON for implemented and deferred candidate status.
+- Unit-test Candidate Reality Gate and `reborn_025` deep-review planning documents.
 - Run the full test suite.
 - Run root cleanliness, Project Reborn, safety scan, CLI smoke, and build checks.
 - Confirm built wheels still exclude `project_reborn/`.
@@ -92,6 +97,9 @@ Project Reborn is not exposed through CLI help.
 - Candidate 3 is implemented as regression scaffolding.
 - Candidate 4 is deferred.
 - Candidate 5 is deferred.
+- Candidate Reality Gate is required for future feature candidates.
+- `reborn_025` remains deep-review design-only and deferred.
+- Future user-facing audio behavior requires real local audio validation and no-op checks.
 - No Project Reborn source file is copied, imported, executed, packaged, or exposed.
 - Project Reborn remains excluded from package discovery.
 - Project Reborn has no `__init__.py`.

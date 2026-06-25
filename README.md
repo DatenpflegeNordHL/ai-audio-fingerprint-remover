@@ -214,6 +214,12 @@ Project Reborn now includes a static audit map at `project_reborn/audit/PROJECT_
 
 The v0.10.0 design spec is available at `docs/design/V0_10_0_DESIGN_SPEC.md`.
 
+## Candidate Reality Gate
+
+Future feature candidates must pass the Candidate Reality Gate before active package work begins. The gate requires a documented Deep Search decision, synthetic tests, real local audio validation for user-facing audio behavior, no-op checks for user-facing audio behavior, and ignored/uncommitted generated validation outputs.
+
+The gate is documented at `docs/design/CANDIDATE_REALITY_GATE.md`. The deferred `reborn_025` deep review is documented at `docs/design/REBORN_025_DEEP_REVIEW.md`.
+
 See `project_reborn/catalog/PROJECT_REBORN_CATALOG.md`.
 
 Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, preset-eval, and validate-samples can also write Markdown reports with `--markdown`.

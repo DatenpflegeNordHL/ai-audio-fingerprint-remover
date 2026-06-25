@@ -41,9 +41,18 @@ def test_v0_10_design_json_records_implemented_and_deferred_candidates():
     assert set(design["source_documents"]) == {
         "project_reborn/planning/PROJECT_REBORN_TOP5_PLAN.md",
         "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md",
+        "docs/design/CANDIDATE_REALITY_GATE.md",
+        "docs/design/REBORN_025_DEEP_REVIEW.md",
     }
     assert {item["reborn_id"] for item in design["implemented_candidates"]} == IMPLEMENTED
     assert {item["reborn_id"] for item in design["deferred_candidates"]} == DEFERRED
+    assert design["candidate_reality_gate"]["deep_search_decision_required"] is True
+    assert (
+        design["candidate_reality_gate"][
+            "real_local_audio_validation_required_for_user_facing_audio_behavior"
+        ]
+        is True
+    )
 
 
 def test_v0_10_design_markdown_records_safe_boundaries():
@@ -52,6 +61,9 @@ def test_v0_10_design_markdown_records_safe_boundaries():
     assert "Status: implemented safe core" in text
     assert "Candidate 1, `reborn_008`, is implemented" in text
     assert "Candidate 4, `reborn_025`, is deferred" in text
+    assert "Candidate Reality Gate" in text
+    assert "real local audio validation" in text
+    assert "no-op checks" in text
     assert "No Project Reborn source code was copied, imported, executed, packaged, or exposed" in text
 
 

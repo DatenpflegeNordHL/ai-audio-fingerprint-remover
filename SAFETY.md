@@ -130,6 +130,14 @@ Performance metadata is operational metadata only.
 
 v0.10.0 regression tests use synthetic audio only.
 
+Every future feature candidate must document a Deep Search decision before active package work begins.
+
+Real local audio validation is required for future user-facing audio behavior.
+
+Synthetic tests alone are not enough for future user-facing audio behavior.
+
+No-op checks are required for future user-facing audio behavior.
+
 Local validation outputs are intentionally ignored.
 
 Generated reports and generated audio are not part of the repository.

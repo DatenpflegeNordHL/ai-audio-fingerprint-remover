@@ -1,0 +1,48 @@
+{
+  "status": "required_for_future_candidates",
+  "deep_search_decision_required": true,
+  "synthetic_tests_required": true,
+  "real_local_audio_validation_required_for_user_facing_audio_behavior": true,
+  "no_op_check_required_for_user_facing_audio_behavior": true,
+  "generated_local_validation_outputs_must_stay_ignored": true,
+  "allowed_deep_search_decisions": [
+    "required_external_current_facts",
+    "not_needed_internal_repo_only",
+    "not_needed_no_external_claims"
+  ],
+  "required_decision_record_fields": [
+    "candidate_id",
+    "source_planning_document",
+    "deep_search_decision",
+    "deep_search_reason",
+    "safety_boundary",
+    "non_goals",
+    "synthetic_test_plan",
+    "real_local_audio_validation_plan",
+    "no_op_check_plan",
+    "generated_artifacts_policy"
+  ],
+  "forbidden_claims": [
+    "watermark removal",
+    "fingerprint removal",
+    "detector bypass",
+    "recognition failure",
+    "provenance suppression",
+    "origin marker removal",
+    "C2PA marker removal",
+    "source-attribution removal",
+    "reduced detectability",
+    "legal clearance",
+    "distributor acceptance",
+    "platform certification"
+  ],
+  "project_reborn_boundary": {
+    "text_inspection_allowed": true,
+    "execute_source": false,
+    "import_source": false,
+    "copy_source": false,
+    "package_source": false,
+    "expose_source": false,
+    "rewrite_from_first_principles_required": true
+  }
+}

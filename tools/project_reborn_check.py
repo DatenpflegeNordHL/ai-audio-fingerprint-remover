@@ -20,6 +20,10 @@ PLAN_JSON = PROJECT_REBORN_DIR / "planning" / "project_reborn_top5_plan.json"
 PLAN_MARKDOWN = PROJECT_REBORN_DIR / "planning" / "PROJECT_REBORN_TOP5_PLAN.md"
 DESIGN_JSON = ROOT / "docs" / "design" / "v0_10_0_design_spec.json"
 DESIGN_MARKDOWN = ROOT / "docs" / "design" / "V0_10_0_DESIGN_SPEC.md"
+CANDIDATE_GATE_JSON = ROOT / "docs" / "design" / "candidate_reality_gate.json"
+CANDIDATE_GATE_MARKDOWN = ROOT / "docs" / "design" / "CANDIDATE_REALITY_GATE.md"
+REBORN_025_REVIEW_JSON = ROOT / "docs" / "design" / "reborn_025_deep_review.json"
+REBORN_025_REVIEW_MARKDOWN = ROOT / "docs" / "design" / "REBORN_025_DEEP_REVIEW.md"
 README = PROJECT_REBORN_DIR / "README.md"
 REQUIRED_ENTRY_FIELDS = {
     "reborn_id",
@@ -108,6 +112,10 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
     plan_markdown = project_dir / "planning" / "PROJECT_REBORN_TOP5_PLAN.md"
     design_json = root / "docs" / "design" / "v0_10_0_design_spec.json"
     design_markdown = root / "docs" / "design" / "V0_10_0_DESIGN_SPEC.md"
+    candidate_gate_json = root / "docs" / "design" / "candidate_reality_gate.json"
+    candidate_gate_markdown = root / "docs" / "design" / "CANDIDATE_REALITY_GATE.md"
+    reborn_025_review_json = root / "docs" / "design" / "reborn_025_deep_review.json"
+    reborn_025_review_markdown = root / "docs" / "design" / "REBORN_025_DEEP_REVIEW.md"
     readme = project_dir / "README.md"
 
     for path in (
@@ -120,6 +128,10 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
         plan_markdown,
         design_json,
         design_markdown,
+        candidate_gate_json,
+        candidate_gate_markdown,
+        reborn_025_review_json,
+        reborn_025_review_markdown,
         source_drawer,
     ):
         if not path.exists():
@@ -161,6 +173,12 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
 
     if design_json.exists() and design_markdown.exists():
         _validate_design_spec(root, design_json, design_markdown, errors)
+
+    if candidate_gate_json.exists() and candidate_gate_markdown.exists():
+        _validate_candidate_reality_gate(candidate_gate_json, candidate_gate_markdown, errors)
+
+    if reborn_025_review_json.exists() and reborn_025_review_markdown.exists():
+        _validate_reborn_025_deep_review(reborn_025_review_json, reborn_025_review_markdown, errors)
 
     for path in project_dir.rglob("__init__.py"):
         errors.append(f"Project Reborn must not contain __init__.py: {path.relative_to(root)}")
@@ -288,6 +306,31 @@ def _validate_plan(root: Path, plan_json: Path, plan_markdown: Path, errors: lis
         errors,
     )
 
+    gate = plan.get("candidate_reality_gate", {})
+    if not isinstance(gate, dict):
+        errors.append("Top-5 plan candidate_reality_gate must be an object.")
+    else:
+        _validate_required_true(
+            gate,
+            (
+                "deep_search_decision_required",
+                "synthetic_tests_required",
+                "real_local_audio_validation_required_for_user_facing_audio_behavior",
+                "no_op_check_required_for_user_facing_audio_behavior",
+            ),
+            "Top-5 plan candidate_reality_gate",
+            errors,
+        )
+
+    review = plan.get("reborn_025_deep_review", {})
+    if not isinstance(review, dict):
+        errors.append("Top-5 plan reborn_025_deep_review must be an object.")
+    else:
+        if review.get("status") != "deep_review_design_only":
+            errors.append("Top-5 plan reborn_025_deep_review status must be deep_review_design_only.")
+        if review.get("implementation_status") != "deferred":
+            errors.append("Top-5 plan reborn_025_deep_review implementation_status must be deferred.")
+
 
 def _validate_plan_entry(
     root: Path,
@@ -387,10 +430,145 @@ def _validate_design_spec(root: Path, design_json: Path, design_markdown: Path, 
         "Candidate 3",
         "Candidate 4",
         "Candidate 5",
+        "Candidate Reality Gate",
+        "real local audio validation",
+        "no-op check",
         "No Project Reborn source code was copied, imported, executed, packaged, or exposed",
     ):
         if required_text not in markdown_text:
             errors.append(f"v0.10 design markdown missing required text: {required_text}")
+
+    gate = design.get("candidate_reality_gate", {})
+    if not isinstance(gate, dict):
+        errors.append("v0.10 design spec candidate_reality_gate must be an object.")
+    else:
+        _validate_required_true(
+            gate,
+            (
+                "deep_search_decision_required",
+                "synthetic_tests_required",
+                "real_local_audio_validation_required_for_user_facing_audio_behavior",
+                "no_op_check_required_for_user_facing_audio_behavior",
+            ),
+            "v0.10 design spec candidate_reality_gate",
+            errors,
+        )
+
+    for item in design.get("deferred_candidates", []):
+        if isinstance(item, dict) and item.get("reborn_id") == "reborn_025":
+            if item.get("deep_review_status") != "deep_review_design_only":
+                errors.append("v0.10 design spec reborn_025 deep_review_status must be deep_review_design_only.")
+            if item.get("implementation_status") != "deferred":
+                errors.append("v0.10 design spec reborn_025 implementation_status must be deferred.")
+
+
+def _validate_candidate_reality_gate(
+    gate_json: Path,
+    gate_markdown: Path,
+    errors: list[str],
+) -> None:
+    gate = _load_catalog(gate_json, errors)
+    if gate is None:
+        return
+    if gate.get("status") != "required_for_future_candidates":
+        errors.append("Candidate Reality Gate status must be required_for_future_candidates.")
+    _validate_required_true(
+        gate,
+        (
+            "deep_search_decision_required",
+            "synthetic_tests_required",
+            "real_local_audio_validation_required_for_user_facing_audio_behavior",
+            "no_op_check_required_for_user_facing_audio_behavior",
+            "generated_local_validation_outputs_must_stay_ignored",
+        ),
+        "Candidate Reality Gate",
+        errors,
+    )
+    forbidden_claims = gate.get("forbidden_claims", [])
+    if not isinstance(forbidden_claims, list) or not forbidden_claims:
+        errors.append("Candidate Reality Gate forbidden_claims must be a non-empty list.")
+    boundary = gate.get("project_reborn_boundary", {})
+    if not isinstance(boundary, dict):
+        errors.append("Candidate Reality Gate project_reborn_boundary must be an object.")
+    else:
+        for key in ("execute_source", "import_source", "copy_source", "package_source", "expose_source"):
+            if boundary.get(key) is not False:
+                errors.append(f"Candidate Reality Gate project_reborn_boundary.{key} must be false.")
+
+    markdown = gate_markdown.read_text(encoding="utf-8")
+    for required_text in (
+        "Deep Search decision",
+        "Synthetic tests alone are not enough",
+        "Real local audio validation is required",
+        "No-op checks are required",
+        "Generated local validation outputs must stay ignored and uncommitted",
+    ):
+        if required_text not in markdown:
+            errors.append(f"Candidate Reality Gate markdown missing required text: {required_text}")
+
+
+def _validate_reborn_025_deep_review(
+    review_json: Path,
+    review_markdown: Path,
+    errors: list[str],
+) -> None:
+    review = _load_catalog(review_json, errors)
+    if review is None:
+        return
+    if review.get("reborn_id") != "reborn_025":
+        errors.append("reborn_025 deep review reborn_id must be reborn_025.")
+    if review.get("status") != "deep_review_design_only":
+        errors.append("reborn_025 deep review status must be deep_review_design_only.")
+    if review.get("implementation_status") != "deferred":
+        errors.append("reborn_025 deep review implementation_status must be deferred.")
+    if review.get("deep_search_decision") != "not_needed_internal_repo_only":
+        errors.append("reborn_025 deep review deep_search_decision must be not_needed_internal_repo_only.")
+    scope = review.get("future_scope", {})
+    if not isinstance(scope, dict):
+        errors.append("reborn_025 deep review future_scope must be an object.")
+    else:
+        for key in ("new_cli_command", "dsp_change", "scoring_change", "humanize_change"):
+            if scope.get(key) is not False:
+                errors.append(f"reborn_025 deep review future_scope.{key} must be false.")
+        for key in (
+            "requires_candidate_reality_gate",
+            "requires_real_local_audio_validation",
+            "requires_no_op_check",
+        ):
+            if scope.get(key) is not True:
+                errors.append(f"reborn_025 deep review future_scope.{key} must be true.")
+    boundary = review.get("project_reborn_boundary", {})
+    if not isinstance(boundary, dict):
+        errors.append("reborn_025 deep review project_reborn_boundary must be an object.")
+    else:
+        for key in ("execute_source", "import_source", "copy_source", "package_source", "expose_source"):
+            if boundary.get(key) is not False:
+                errors.append(f"reborn_025 deep review project_reborn_boundary.{key} must be false.")
+
+    review_text = json.dumps(review, sort_keys=True).casefold()
+    if "ready_to_import" in review_text or "active_feature" in review_text:
+        errors.append("reborn_025 deep review must not mark Project Reborn as active or import-ready.")
+
+    markdown = review_markdown.read_text(encoding="utf-8")
+    for required_text in (
+        "Status: deep review design-only",
+        "Implementation status: deferred",
+        "Deep Search decision: `not_needed_internal_repo_only`",
+        "No Project Reborn source was executed, imported, copied, packaged, or exposed",
+    ):
+        if required_text not in markdown:
+            errors.append(f"reborn_025 deep review markdown missing required text: {required_text}")
+
+
+def _validate_required_true(
+    data: dict[str, Any],
+    keys: tuple[str, ...],
+    label: str,
+    errors: list[str],
+) -> None:
+    for key in keys:
+        if data.get(key) is not True:
+            errors.append(f"{label}.{key} must be true.")
 
 
 def _candidate_ids(value: Any, label: str, errors: list[str]) -> set[str]:
