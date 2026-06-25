@@ -39,6 +39,13 @@ Old filenames are historical labels only. Future work must inspect behavior, des
 - Future implementation must include real local audio validation and a no-op check before user-facing audio behavior ships.
 - Generated local validation outputs must stay ignored and uncommitted.
 
+## v0.11.0 Status
+
+- `reborn_025` safe read-only compare metric ideas were rewritten from first principles inside the active package.
+- The v0.11.0 implementation extends the existing `compare` workflow only.
+- No Project Reborn source code was copied, imported, executed, packaged, or exposed.
+- `reborn_005` remains deferred pending separate deep manual review.
+
 ## Manual Review Notes
 
 ### 1. `reborn_008`
@@ -176,4 +183,4 @@ The strongest future direction is a v0.10 design pass around three safe areas:
 - Read-only comparison and quality-report metrics.
 - Validation and performance scaffolding for existing workflows.
 
-`reborn_025` and `reborn_005` need deeper review before design work because they contain the most legacy unsafe framing. All five entries remain reference-only until a new implementation is designed, tested, and safety-reviewed.
+`reborn_005` needs deeper review before design work because it contains high legacy unsafe framing. All Project Reborn source files remain reference-only unless a new implementation is designed, tested, safety-reviewed, and rewritten from first principles in the active package.

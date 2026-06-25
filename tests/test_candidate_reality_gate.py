@@ -87,6 +87,7 @@ def test_gitignore_ignores_local_validation_outputs():
         "validation_outputs/",
         "final_exports/",
         "v010_validation_outputs/",
+        "v011_validation_outputs/",
         "dist/",
         "build/",
         "*.egg-info/",

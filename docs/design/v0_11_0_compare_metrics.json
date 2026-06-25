@@ -1,0 +1,100 @@
+{
+  "version_target": "0.11.0",
+  "status": "implemented_safe_read_only_compare_metrics",
+  "deep_search_decision": "not_needed_internal_repo_only",
+  "deep_search_stop_rule_active": true,
+  "source_design_documents": [
+    "docs/design/CANDIDATE_REALITY_GATE.md",
+    "docs/design/REBORN_025_DEEP_REVIEW.md",
+    "project_reborn/planning/PROJECT_REBORN_TOP5_PLAN.md"
+  ],
+  "safety_boundary": {
+    "read_only_compare": true,
+    "new_cli_command": false,
+    "audio_modification": false,
+    "release_check_scoring_change": false,
+    "humanize_processing_change": false,
+    "project_reborn_source_copied": false,
+    "project_reborn_source_imported": false,
+    "project_reborn_source_executed": false,
+    "project_reborn_source_packaged": false,
+    "project_reborn_source_exposed": false
+  },
+  "implemented_metrics": [
+    "rmse",
+    "mean_absolute_error",
+    "correlation",
+    "snr_db_approx",
+    "peak_before",
+    "peak_after",
+    "peak_delta",
+    "rms_before",
+    "rms_after",
+    "rms_delta",
+    "dynamic_range_before_db",
+    "dynamic_range_after_db",
+    "dynamic_range_delta_db",
+    "spectral_centroid_before_hz",
+    "spectral_centroid_after_hz",
+    "spectral_centroid_delta_hz",
+    "spectral_rolloff_before_hz",
+    "spectral_rolloff_after_hz",
+    "spectral_rolloff_delta_hz",
+    "stereo_correlation_before",
+    "stereo_correlation_after",
+    "stereo_correlation_delta",
+    "side_energy_ratio_before",
+    "side_energy_ratio_after",
+    "side_energy_ratio_delta"
+  ],
+  "rejected_metric_names": [
+    "watermark_score",
+    "fingerprint_score",
+    "detector_score",
+    "evasion_score",
+    "bypass_score",
+    "recognition_score",
+    "provenance_score",
+    "detectability_score",
+    "origin_score",
+    "source_attribution_score"
+  ],
+  "synthetic_test_plan": [
+    "identical input",
+    "gain-changed input",
+    "clipped input",
+    "silent input",
+    "mono/stereo shape handling",
+    "spectral change with different synthetic tones",
+    "JSON safety",
+    "forbidden wording and forbidden metric-name scan"
+  ],
+  "real_local_validation_plan": {
+    "required": true,
+    "input_paths": [
+      "validation_samples/Dirty.wav",
+      "final_exports/Dirty_D_Noir_balanced_release_check.wav"
+    ],
+    "output_dir": "v011_validation_outputs",
+    "commit_outputs": false
+  },
+  "no_op_check_plan": {
+    "required": true,
+    "command_boundary": "ai-humanizer compare",
+    "input_pair": [
+      "validation_samples/Dirty.wav",
+      "validation_samples/Dirty.wav"
+    ],
+    "expected": [
+      "near-zero difference metrics",
+      "no invented changes",
+      "no forbidden language",
+      "no NaN or Infinity"
+    ]
+  },
+  "generated_artifact_policy": [
+    "Generated validation reports stay ignored and uncommitted.",
+    "Generated audio stays ignored and uncommitted.",
+    "Real audio files are not committed."
+  ]
+}

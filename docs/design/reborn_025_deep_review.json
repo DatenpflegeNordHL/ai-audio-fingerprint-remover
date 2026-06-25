@@ -3,7 +3,7 @@
   "status": "deep_review_design_only",
   "deep_search_decision": "not_needed_internal_repo_only",
   "deep_search_stop_required": true,
-  "implementation_status": "deferred",
+  "implementation_status": "safe_rewrite_implemented_v0_11_0",
   "deep_search_reason": "This review only inspects local Project Reborn reference material and current active compare boundaries.",
   "source_inspection": {
     "path": "project_reborn/source_drawer/reborn_025_reference.py",
@@ -71,6 +71,14 @@
     "requires_candidate_reality_gate": true,
     "requires_real_local_audio_validation": true,
     "requires_no_op_check": true
+  },
+  "v0_11_implementation": {
+    "status": "safe_read_only_compare_metrics_rewritten_from_first_principles",
+    "source_code_copied": false,
+    "source_code_imported": false,
+    "source_code_executed": false,
+    "source_code_packaged": false,
+    "source_code_exposed": false
   },
   "project_reborn_boundary": {
     "reference_only": true,

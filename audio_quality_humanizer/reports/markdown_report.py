@@ -166,6 +166,7 @@ def _render_compare_markdown(report: dict) -> str:
     ]
 
     _add_table_section(lines, "Compatibility", report.get("compatibility", {}))
+    _add_table_section(lines, "Comparison Metrics", report.get("comparison_metrics", {}))
     _add_table_section(lines, "Key Metric Deltas", report.get("metric_deltas", {}))
     _add_table_section(lines, "Waveform Similarity", report.get("waveform_similarity", {}))
     _add_regression_section(lines, report.get("regressions", []))

@@ -79,6 +79,11 @@ def compare_audio(reference_path: Path, candidate_path: Path, target: str = "str
     compatibility["compared_duration_seconds"] = waveform_similarity["compared_duration_seconds"]
     compatibility["comparison_method"] = waveform_similarity["comparison_method"]
 
+    comparison_metrics = _comparison_metrics(
+        reference_analysis,
+        candidate_analysis,
+        waveform_similarity,
+    )
     metric_deltas = _metric_deltas(reference_analysis, candidate_analysis)
     regressions = _detect_regressions(
         reference_analysis,
@@ -93,12 +98,13 @@ def compare_audio(reference_path: Path, candidate_path: Path, target: str = "str
     warnings = _dedupe(compatibility_warnings + [item["message"] for item in regressions if item["severity"] == "warning"])
     recommendations = _recommendations(regressions, compatibility, target)
 
-    return {
+    report = {
         "action": "compare",
         "target": target,
         "reference": _summary(reference_analysis),
         "candidate": _summary(candidate_analysis),
         "compatibility": compatibility,
+        "comparison_metrics": comparison_metrics,
         "metric_deltas": metric_deltas,
         "waveform_similarity": waveform_similarity,
         "regressions": regressions,
@@ -113,6 +119,7 @@ def compare_audio(reference_path: Path, candidate_path: Path, target: str = "str
             "loudness_lufs_approx is RMS-based and not EBU/ITU compliant.",
         ],
     }
+    return _json_safe_value(report)
 
 
 def _summary(analysis: dict) -> dict[str, Any]:
@@ -171,6 +178,57 @@ def _metric_deltas(reference: dict, candidate: dict) -> dict[str, float | int | 
             else:
                 deltas[delta_key] = float(delta)
     return deltas
+
+
+def _comparison_metrics(
+    reference: dict,
+    candidate: dict,
+    waveform_similarity: dict,
+) -> dict[str, float | None]:
+    """Return neutral read-only before/after comparison metrics."""
+
+    return {
+        "rmse": _safe_number(waveform_similarity.get("rms_difference")),
+        "mean_absolute_error": _safe_number(waveform_similarity.get("mean_abs_difference")),
+        "correlation": _safe_number(waveform_similarity.get("mono_correlation")),
+        "snr_db_approx": _safe_number(waveform_similarity.get("signal_to_difference_db")),
+        "peak_before": _safe_number(reference.get("peak_linear")),
+        "peak_after": _safe_number(candidate.get("peak_linear")),
+        "peak_delta": _safe_delta(candidate.get("peak_linear"), reference.get("peak_linear")),
+        "rms_before": _safe_number(reference.get("rms_linear")),
+        "rms_after": _safe_number(candidate.get("rms_linear")),
+        "rms_delta": _safe_delta(candidate.get("rms_linear"), reference.get("rms_linear")),
+        "dynamic_range_before_db": _safe_number(reference.get("dynamic_range_estimate_db")),
+        "dynamic_range_after_db": _safe_number(candidate.get("dynamic_range_estimate_db")),
+        "dynamic_range_delta_db": _safe_delta(
+            candidate.get("dynamic_range_estimate_db"),
+            reference.get("dynamic_range_estimate_db"),
+        ),
+        "spectral_centroid_before_hz": _safe_number(reference.get("spectral_centroid_hz")),
+        "spectral_centroid_after_hz": _safe_number(candidate.get("spectral_centroid_hz")),
+        "spectral_centroid_delta_hz": _safe_delta(
+            candidate.get("spectral_centroid_hz"),
+            reference.get("spectral_centroid_hz"),
+        ),
+        "spectral_rolloff_before_hz": _safe_number(reference.get("spectral_rolloff_95_hz")),
+        "spectral_rolloff_after_hz": _safe_number(candidate.get("spectral_rolloff_95_hz")),
+        "spectral_rolloff_delta_hz": _safe_delta(
+            candidate.get("spectral_rolloff_95_hz"),
+            reference.get("spectral_rolloff_95_hz"),
+        ),
+        "stereo_correlation_before": _safe_number(reference.get("stereo_correlation")),
+        "stereo_correlation_after": _safe_number(candidate.get("stereo_correlation")),
+        "stereo_correlation_delta": _safe_delta(
+            candidate.get("stereo_correlation"),
+            reference.get("stereo_correlation"),
+        ),
+        "side_energy_ratio_before": _safe_number(reference.get("side_energy_ratio")),
+        "side_energy_ratio_after": _safe_number(candidate.get("side_energy_ratio")),
+        "side_energy_ratio_delta": _safe_delta(
+            candidate.get("side_energy_ratio"),
+            reference.get("side_energy_ratio"),
+        ),
+    }
 
 
 def _waveform_similarity(
@@ -332,6 +390,45 @@ def _correlation(reference: np.ndarray, candidate: np.ndarray) -> float | None:
     if reference_std <= EPSILON or candidate_std <= EPSILON:
         return 1.0 if np.allclose(reference, candidate, atol=1e-12) else None
     return float(np.corrcoef(reference, candidate)[0, 1])
+
+
+def _safe_delta(after: Any, before: Any) -> float | None:
+    safe_after = _safe_number(after)
+    safe_before = _safe_number(before)
+    if safe_after is None or safe_before is None:
+        return None
+    return _safe_number(safe_after - safe_before)
+
+
+def _safe_number(value: Any) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, np.generic):
+        value = value.item()
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        number = float(value)
+        return number if np.isfinite(number) else None
+    return None
+
+
+def _json_safe_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _json_safe_value(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_json_safe_value(item) for item in value]
+    if isinstance(value, tuple):
+        return [_json_safe_value(item) for item in value]
+    if isinstance(value, np.generic):
+        value = value.item()
+    if isinstance(value, bool) or value is None or isinstance(value, str):
+        return value
+    if isinstance(value, int):
+        return int(value)
+    if isinstance(value, float):
+        return float(value) if np.isfinite(value) else None
+    return value
 
 
 def _dedupe(values: list[str]) -> list[str]:

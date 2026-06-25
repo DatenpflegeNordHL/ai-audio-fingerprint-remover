@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.11.0
+
+- Added neutral read-only compare metrics under `comparison_metrics`.
+- Added Markdown rendering for compare metric expansion.
+- Added v0.11.0 compare metrics design documentation and validation policy.
+- Validated compare metrics with synthetic tests and local real-audio no-op/comparison checks.
+
 ## v0.10.3
 
 - Added Candidate Reality Gate for future feature candidates.

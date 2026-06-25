@@ -39,7 +39,7 @@ def test_reborn_025_deep_review_statuses_and_decision():
 
     assert review["reborn_id"] == "reborn_025"
     assert review["status"] == "deep_review_design_only"
-    assert review["implementation_status"] == "deferred"
+    assert review["implementation_status"] == "safe_rewrite_implemented_v0_11_0"
     assert review["deep_search_decision"] == "not_needed_internal_repo_only"
     assert review["deep_search_stop_required"] is True
 
@@ -87,4 +87,9 @@ def test_reborn_025_deep_review_does_not_activate_project_reborn():
     all_strings = [item.casefold() for item in _flatten_strings(review)]
     assert review["implementation_status"] != "implemented"
     assert review["status"] != "implemented"
+    assert review["v0_11_implementation"]["source_code_copied"] is False
+    assert review["v0_11_implementation"]["source_code_imported"] is False
+    assert review["v0_11_implementation"]["source_code_executed"] is False
+    assert review["v0_11_implementation"]["source_code_packaged"] is False
+    assert review["v0_11_implementation"]["source_code_exposed"] is False
     assert not any("project reborn is safe to import" in item for item in all_strings)

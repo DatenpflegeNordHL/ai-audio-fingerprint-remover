@@ -24,6 +24,8 @@ CANDIDATE_GATE_JSON = ROOT / "docs" / "design" / "candidate_reality_gate.json"
 CANDIDATE_GATE_MARKDOWN = ROOT / "docs" / "design" / "CANDIDATE_REALITY_GATE.md"
 REBORN_025_REVIEW_JSON = ROOT / "docs" / "design" / "reborn_025_deep_review.json"
 REBORN_025_REVIEW_MARKDOWN = ROOT / "docs" / "design" / "REBORN_025_DEEP_REVIEW.md"
+V0_11_COMPARE_JSON = ROOT / "docs" / "design" / "v0_11_0_compare_metrics.json"
+V0_11_COMPARE_MARKDOWN = ROOT / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
 README = PROJECT_REBORN_DIR / "README.md"
 REQUIRED_ENTRY_FIELDS = {
     "reborn_id",
@@ -93,6 +95,39 @@ FORBIDDEN_PLAN_CLAIMS = {
 }
 IMPLEMENTED_V0_10_CANDIDATES = {"reborn_008", "reborn_015", "reborn_022"}
 DEFERRED_V0_10_CANDIDATES = {"reborn_025", "reborn_005"}
+REQUIRED_V0_11_COMPARE_METRICS = {
+    "rmse",
+    "mean_absolute_error",
+    "correlation",
+    "snr_db_approx",
+    "peak_before",
+    "peak_after",
+    "peak_delta",
+    "rms_before",
+    "rms_after",
+    "rms_delta",
+    "dynamic_range_before_db",
+    "dynamic_range_after_db",
+    "dynamic_range_delta_db",
+    "spectral_centroid_before_hz",
+    "spectral_centroid_after_hz",
+    "spectral_centroid_delta_hz",
+    "spectral_rolloff_before_hz",
+    "spectral_rolloff_after_hz",
+    "spectral_rolloff_delta_hz",
+}
+FORBIDDEN_V0_11_METRIC_NAMES = {
+    "watermark_score",
+    "fingerprint_score",
+    "detector_score",
+    "evasion_score",
+    "bypass_score",
+    "recognition_score",
+    "provenance_score",
+    "detectability_score",
+    "origin_score",
+    "source_attribution_score",
+}
 
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -116,6 +151,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
     candidate_gate_markdown = root / "docs" / "design" / "CANDIDATE_REALITY_GATE.md"
     reborn_025_review_json = root / "docs" / "design" / "reborn_025_deep_review.json"
     reborn_025_review_markdown = root / "docs" / "design" / "REBORN_025_DEEP_REVIEW.md"
+    v0_11_compare_json = root / "docs" / "design" / "v0_11_0_compare_metrics.json"
+    v0_11_compare_markdown = root / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
     readme = project_dir / "README.md"
 
     for path in (
@@ -132,6 +169,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
         candidate_gate_markdown,
         reborn_025_review_json,
         reborn_025_review_markdown,
+        v0_11_compare_json,
+        v0_11_compare_markdown,
         source_drawer,
     ):
         if not path.exists():
@@ -179,6 +218,9 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
 
     if reborn_025_review_json.exists() and reborn_025_review_markdown.exists():
         _validate_reborn_025_deep_review(reborn_025_review_json, reborn_025_review_markdown, errors)
+
+    if v0_11_compare_json.exists() and v0_11_compare_markdown.exists():
+        _validate_v0_11_compare_metrics(v0_11_compare_json, v0_11_compare_markdown, errors)
 
     for path in project_dir.rglob("__init__.py"):
         errors.append(f"Project Reborn must not contain __init__.py: {path.relative_to(root)}")
@@ -330,10 +372,21 @@ def _validate_plan(root: Path, plan_json: Path, plan_markdown: Path, errors: lis
     else:
         if review.get("status") != "deep_review_design_only":
             errors.append("Top-5 plan reborn_025_deep_review status must be deep_review_design_only.")
-        if review.get("implementation_status") != "deferred":
-            errors.append("Top-5 plan reborn_025_deep_review implementation_status must be deferred.")
+        if review.get("implementation_status") != "safe_rewrite_implemented_v0_11_0":
+            errors.append(
+                "Top-5 plan reborn_025_deep_review implementation_status must be safe_rewrite_implemented_v0_11_0."
+            )
         if review.get("deep_search_stop_required") is not True:
             errors.append("Top-5 plan reborn_025_deep_review deep_search_stop_required must be true.")
+
+    v0_11_status = plan.get("v0_11_status", {})
+    if not isinstance(v0_11_status, dict):
+        errors.append("Top-5 plan v0_11_status must be an object.")
+    else:
+        if v0_11_status.get("reborn_025") != "safe_read_only_compare_metrics_rewritten_from_first_principles":
+            errors.append("Top-5 plan v0_11_status must record reborn_025 safe read-only rewrite.")
+        if v0_11_status.get("reborn_005") != "still_deferred_pending_deep_manual_review":
+            errors.append("Top-5 plan v0_11_status must keep reborn_005 deferred.")
 
 
 def _validate_plan_entry(
@@ -536,8 +589,8 @@ def _validate_reborn_025_deep_review(
         errors.append("reborn_025 deep review reborn_id must be reborn_025.")
     if review.get("status") != "deep_review_design_only":
         errors.append("reborn_025 deep review status must be deep_review_design_only.")
-    if review.get("implementation_status") != "deferred":
-        errors.append("reborn_025 deep review implementation_status must be deferred.")
+    if review.get("implementation_status") != "safe_rewrite_implemented_v0_11_0":
+        errors.append("reborn_025 deep review implementation_status must be safe_rewrite_implemented_v0_11_0.")
     if review.get("deep_search_decision") != "not_needed_internal_repo_only":
         errors.append("reborn_025 deep review deep_search_decision must be not_needed_internal_repo_only.")
     if review.get("deep_search_stop_required") is not True:
@@ -575,13 +628,82 @@ def _validate_reborn_025_deep_review(
     markdown = review_markdown.read_text(encoding="utf-8")
     for required_text in (
         "Manual text-only review. Design only. No implementation.",
-        "Implementation status: deferred",
+        "Safe read-only implementation completed in v0.11.0",
         "`not_needed_internal_repo_only`",
         "If future implementation needs current external standards",
         "No Project Reborn source was executed, imported, copied, packaged, or exposed",
     ):
         if required_text not in markdown:
             errors.append(f"reborn_025 deep review markdown missing required text: {required_text}")
+
+
+def _validate_v0_11_compare_metrics(
+    design_json: Path,
+    design_markdown: Path,
+    errors: list[str],
+) -> None:
+    design = _load_catalog(design_json, errors)
+    if design is None:
+        return
+    if design.get("version_target") != "0.11.0":
+        errors.append("v0.11 compare metrics version_target must be 0.11.0.")
+    if design.get("status") != "implemented_safe_read_only_compare_metrics":
+        errors.append("v0.11 compare metrics status must be implemented_safe_read_only_compare_metrics.")
+    if design.get("deep_search_decision") != "not_needed_internal_repo_only":
+        errors.append("v0.11 compare metrics deep_search_decision must be not_needed_internal_repo_only.")
+    if design.get("deep_search_stop_rule_active") is not True:
+        errors.append("v0.11 compare metrics deep_search_stop_rule_active must be true.")
+
+    boundary = design.get("safety_boundary", {})
+    if not isinstance(boundary, dict):
+        errors.append("v0.11 compare metrics safety_boundary must be an object.")
+    else:
+        for key in (
+            "new_cli_command",
+            "audio_modification",
+            "release_check_scoring_change",
+            "humanize_processing_change",
+            "project_reborn_source_copied",
+            "project_reborn_source_imported",
+            "project_reborn_source_executed",
+            "project_reborn_source_packaged",
+            "project_reborn_source_exposed",
+        ):
+            if boundary.get(key) is not False:
+                errors.append(f"v0.11 compare metrics safety_boundary.{key} must be false.")
+
+    implemented_metrics = set(design.get("implemented_metrics", []))
+    if not REQUIRED_V0_11_COMPARE_METRICS <= implemented_metrics:
+        missing = sorted(REQUIRED_V0_11_COMPARE_METRICS - implemented_metrics)
+        errors.append(f"v0.11 compare metrics missing required metrics: {missing}")
+
+    rejected_names = set(design.get("rejected_metric_names", []))
+    if not FORBIDDEN_V0_11_METRIC_NAMES <= rejected_names:
+        missing = sorted(FORBIDDEN_V0_11_METRIC_NAMES - rejected_names)
+        errors.append(f"v0.11 compare metrics missing rejected metric names: {missing}")
+
+    validation = design.get("real_local_validation_plan", {})
+    if not isinstance(validation, dict):
+        errors.append("v0.11 compare metrics real_local_validation_plan must be an object.")
+    else:
+        if validation.get("required") is not True:
+            errors.append("v0.11 compare metrics real local validation must be required.")
+        if validation.get("commit_outputs") is not False:
+            errors.append("v0.11 compare metrics validation outputs must not be committed.")
+
+    no_op = design.get("no_op_check_plan", {})
+    if not isinstance(no_op, dict) or no_op.get("required") is not True:
+        errors.append("v0.11 compare metrics no-op check must be required.")
+
+    markdown = design_markdown.read_text(encoding="utf-8")
+    for required_text in (
+        "Implemented safe read-only compare metric expansion.",
+        "`not_needed_internal_repo_only`",
+        "No Project Reborn source code was copied, imported, executed, packaged, or exposed",
+        "Generated validation reports and generated audio must stay ignored and uncommitted.",
+    ):
+        if required_text not in markdown:
+            errors.append(f"v0.11 compare metrics markdown missing required text: {required_text}")
 
 
 def _validate_required_true(

@@ -18,6 +18,8 @@ The v0.8 `preset-eval` command runs existing conservative presets on processed c
 
 The v0.9 `validate-samples` command runs local real-world validation over user-supplied audio samples without committing those audio files to Git.
 
+The v0.11 compare workflow adds neutral read-only `comparison_metrics` for before/after quality deltas. These metrics are additive report fields and do not modify audio, change release-check scoring, or add a new CLI command.
+
 ## v0.10.0 safe core
 
 v0.10.0 adds signal guardrails, optional performance metadata, and synthetic regression scaffolding. These features were designed from Project Reborn planning notes but rewritten from first principles inside the active package. Project Reborn remains non-installed and inert.
@@ -152,6 +154,8 @@ ai-humanizer compare before.wav after.wav --target club --fail-on-regression
 
 Compare is useful after metadata cleaning, future humanizing, mastering, or format conversion. It checks whether the candidate introduces technical regressions and can return a non-zero exit code with `--fail-on-regression`.
 
+Compare reports include neutral `comparison_metrics` such as RMSE, mean absolute error, correlation, approximate signal-to-difference, peak/RMS deltas, dynamic-range deltas, spectral centroid deltas, spectral rolloff deltas, and optional stereo/side-energy deltas. Unavailable values are reported as `null`.
+
 Apply conservative audio-quality processing:
 
 ```bash
@@ -214,6 +218,8 @@ Project Reborn now includes a static audit map at `project_reborn/audit/PROJECT_
 
 The v0.10.0 design spec is available at `docs/design/V0_10_0_DESIGN_SPEC.md`.
 
+The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_METRICS.md`.
+
 ## Candidate Reality Gate
 
 Future audio features must pass the Candidate Reality Gate: synthetic tests, real local audio validation, no-op check, safe wording check, and a documented Deep Search decision.
@@ -242,6 +248,7 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 - v0.8 preset evaluation and report polish implemented
 - v0.9 real-world validation harness implemented
 - v0.10 safe core guardrails and performance metadata implemented
+- v0.11 read-only compare metrics implemented
 - future: release packaging
 - future: optional standards-compliant LUFS, optional true-peak approximation
 - future: optional real-world benchmark docs

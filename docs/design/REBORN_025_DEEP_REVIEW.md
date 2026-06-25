@@ -99,6 +99,8 @@ Design only:
 
 ## Deferred
 
-Implementation deferred to a later milestone.
+Safe read-only implementation completed in v0.11.0 as a newly written active-package compare metric expansion.
 
 No code, DSP, scoring, CLI, packaging, or report behavior changes are approved by this review.
+
+The v0.11.0 implementation did not copy, import, execute, package, or expose Project Reborn source code.

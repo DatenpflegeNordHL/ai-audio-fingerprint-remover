@@ -34,6 +34,10 @@ Compare must never optimize toward reduced recognizability or reduced detectabil
 
 Compare is only for audio quality and release-readiness regression checks.
 
+Compare metrics must use neutral audio-quality names only.
+
+Compare metrics must not use unsafe score names tied to watermark, fingerprint, detector, recognition, provenance, origin, source attribution, bypass, evasion, or detectability concepts.
+
 Humanize may alter audible audio quality.
 
 Humanize must remain conservative and measurable.

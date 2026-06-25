@@ -210,3 +210,6 @@ tmp_*
 
 # Local v0.10 validation outputs
 v010_validation_outputs/
+
+# Local v0.11 validation outputs
+v011_validation_outputs/
