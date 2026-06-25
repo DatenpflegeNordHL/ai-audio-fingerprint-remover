@@ -58,6 +58,25 @@ def test_validate_audio_array_detects_empty_nan_inf_and_non_numeric_values():
     assert non_numeric_report["numeric"] is False
 
 
+def test_validate_audio_array_warns_when_peak_reaches_full_scale():
+    report = validate_audio_array(np.array([0.0, 1.0], dtype=np.float64))
+
+    assert report["valid"] is True
+    assert report["peak"] == 1.0
+    assert report["peak_at_or_above_full_scale"] is True
+    assert report["peak_above_full_scale"] is False
+    assert "Peak level reaches full scale." in report["warnings"]
+
+
+def test_signal_guardrail_report_warns_when_input_peak_reaches_full_scale():
+    report = calculate_signal_guardrail_report(np.array([0.0, -1.0], dtype=np.float64), samplerate=48000)
+    guardrails = report["guardrails"]
+
+    assert guardrails["input_valid"] is True
+    assert guardrails["peak_before"] == 1.0
+    assert "Peak level reaches full scale." in guardrails["warnings"]
+
+
 def test_sanitize_audio_array_replaces_only_nonfinite_values_without_normalizing():
     audio = np.array([0.5, np.nan, np.inf, -np.inf], dtype=np.float64)
 

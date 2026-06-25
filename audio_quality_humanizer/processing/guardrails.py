@@ -43,8 +43,12 @@ def validate_audio_array(audio: Any, *, allow_empty: bool = False) -> dict:
         warnings.append("Infinite values were detected.")
     if silent:
         warnings.append("Audio array is silent.")
-    if peak > 1.0:
+    peak_at_or_above_full_scale = bool(peak >= 1.0)
+    peak_above_full_scale = bool(peak > 1.0)
+    if peak_above_full_scale:
         warnings.append("Peak level is above full scale.")
+    elif peak_at_or_above_full_scale:
+        warnings.append("Peak level reaches full scale.")
     if array.ndim > 2:
         warnings.append("Audio array has more than two dimensions.")
 
@@ -71,7 +75,8 @@ def validate_audio_array(audio: Any, *, allow_empty: bool = False) -> dict:
         "inf_count": inf_count,
         "silent": silent,
         "peak": peak,
-        "peak_above_full_scale": bool(peak > 1.0),
+        "peak_at_or_above_full_scale": peak_at_or_above_full_scale,
+        "peak_above_full_scale": peak_above_full_scale,
         "warnings": warnings,
         "actions": [],
     }
