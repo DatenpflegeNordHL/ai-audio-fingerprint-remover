@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -24,7 +25,10 @@ def main() -> int:
         sample_path = temp_dir / "sample.wav"
         humanized_path = temp_dir / "humanized.wav"
         eval_dir = temp_dir / "eval"
+        validation_manifest = temp_dir / "validation_manifest.json"
+        validation_dir = temp_dir / "validation_outputs"
         _write_sine(sample_path)
+        _write_validation_manifest(validation_manifest, sample_path)
         original_hash = _sha256(sample_path)
 
         commands = [
@@ -94,6 +98,18 @@ def main() -> int:
                 "--markdown",
                 str(temp_dir / "preset_eval.md"),
             ],
+            [
+                "validate-samples",
+                str(validation_manifest),
+                "--output-dir",
+                str(validation_dir),
+                "--default-target",
+                "streaming",
+                "--report",
+                str(temp_dir / "validation.json"),
+                "--markdown",
+                str(temp_dir / "validation.md"),
+            ],
         ]
         for args in commands:
             _run([str(cli), *args])
@@ -118,6 +134,10 @@ def main() -> int:
             eval_dir / "sample.balanced.eval.json",
             temp_dir / "preset_eval.json",
             temp_dir / "preset_eval.md",
+            validation_dir,
+            validation_dir / "sample_01.validation.json",
+            temp_dir / "validation.json",
+            temp_dir / "validation.md",
         ]
         missing = [path for path in expected if not path.exists()]
         if missing:
@@ -151,6 +171,23 @@ def _write_sine(path: Path) -> None:
     t = np.linspace(0.0, 1.0, samplerate, endpoint=False)
     audio = 0.2 * np.sin(2.0 * np.pi * 440.0 * t)
     sf.write(path, audio, samplerate)
+
+
+def _write_validation_manifest(path: Path, sample_path: Path) -> None:
+    manifest = {
+        "project": "CLI smoke validation",
+        "target": "streaming",
+        "samples": [
+            {
+                "id": "sample_01",
+                "path": str(sample_path),
+                "target": "streaming",
+                "presets": ["subtle", "balanced"],
+                "notes": "Temporary smoke sample",
+            }
+        ],
+    }
+    path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
 
 def _sha256(path: Path) -> str:

@@ -1,0 +1,20 @@
+{
+  "project": "Dirty D. Noir local validation set",
+  "target": "club",
+  "samples": [
+    {
+      "id": "afro_club_01",
+      "path": "../validation_samples/afro_club_01.wav",
+      "target": "club",
+      "presets": ["subtle", "club", "afro-club"],
+      "notes": "Afro House export with possible shaker harshness"
+    },
+    {
+      "id": "vocal_chop_01",
+      "path": "../validation_samples/vocal_chop_01.wav",
+      "target": "streaming",
+      "presets": ["subtle", "balanced", "vocal"],
+      "notes": "Vocal chop focused export"
+    }
+  ]
+}

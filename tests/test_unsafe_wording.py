@@ -34,6 +34,7 @@ def test_cli_help_excludes_unsafe_flags():
         "doctor",
         "batch",
         "preset-eval",
+        "validate-samples",
         "inspect-metadata",
         "clean-metadata",
     ]:

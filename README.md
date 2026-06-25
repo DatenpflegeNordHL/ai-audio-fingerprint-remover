@@ -16,6 +16,8 @@ The v0.7 milestone adds CI hardening and safety automation across tests, help ou
 
 The v0.8 `preset-eval` command runs existing conservative presets on processed copies, compares the results, writes per-preset reports, and recommends an eligible preset based on quality preflight metrics.
 
+The v0.9 `validate-samples` command runs local real-world validation over user-supplied audio samples without committing those audio files to Git.
+
 ## Safety Boundary
 
 This tool does not remove audio watermarks.
@@ -37,6 +39,8 @@ Humanize may alter audible audio quality, but it does not target watermark, fing
 Doctor and batch workflow reports do not evaluate or alter watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior.
 
 Preset evaluation creates processed copies only and never modifies the original input. It does not evaluate or alter watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior. Recommendations are based only on quality, compare, and release-readiness metrics; they are not legal clearance or platform certification.
+
+Real-world validation uses local user-supplied audio only. Validation samples are ignored by Git by default, and validation never modifies original files. It does not evaluate or alter watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior. Validation results are technical reports, not legal clearance or platform certification.
 
 ## Installation
 
@@ -119,7 +123,18 @@ ai-humanizer preset-eval input.wav --target club --presets subtle,balanced,afro-
 
 Preset evaluation runs `doctor` once, then evaluates each selected preset independently. A failed preset does not stop the full evaluation. The recommendation only considers eligible outputs that passed humanize, compare, release checks, and original-file integrity checks.
 
-Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, and preset-eval can also write Markdown reports with `--markdown`.
+Run real-world validation on local user-supplied audio:
+
+```bash
+cp examples/validation_manifest.example.json validation_manifest.json
+mkdir -p validation_samples validation_outputs
+# Put your own WAV/FLAC files into validation_samples. Do not commit them.
+ai-humanizer validate-samples validation_manifest.json --output-dir validation_outputs --default-target club --report validation.json --markdown validation.md
+```
+
+Validation runs doctor and preset-eval for each manifest sample, then recommends presets per real track when an eligible result exists. Real audio samples stay local, are ignored by Git by default, and originals are never modified. Validation does not evaluate or alter watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior, and validation reports are not legal clearance or platform certification.
+
+Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, preset-eval, and validate-samples can also write Markdown reports with `--markdown`.
 
 ## Roadmap
 
@@ -131,7 +146,10 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 - v0.6 doctor/batch workflow implemented
 - v0.7 CI hardening and safety automation implemented
 - v0.8 preset evaluation and report polish implemented
+- v0.9 real-world validation harness implemented
+- future: release packaging
 - future: optional standards-compliant LUFS, optional true-peak approximation
+- future: optional real-world benchmark docs
 - later authorized rebuild for owned/licensed tracks only
 
 ## Development

@@ -174,14 +174,21 @@ cython_debug/
 .pypirc
 
 # Audio files and artifacts
+# Local real-world audio validation samples and generated reports
+validation_samples/
+validation_outputs/
+/validation_manifest.json
+/validation.json
+/validation.md
 *.wav
-*.mp3
 *.flac
-*.aac
+*.aiff
+*.aif
 *.ogg
+*.mp3
+*.aac
 *.m4a
 *.wma
-*.aiff
 *.au
 *.raw
 

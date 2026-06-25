@@ -18,6 +18,7 @@ from audio_quality_humanizer.processing.humanize import humanize_audio
 from audio_quality_humanizer.processing.presets import SUPPORTED_PRESETS
 from audio_quality_humanizer.reports.json_report import write_json_report
 from audio_quality_humanizer.reports.markdown_report import write_markdown_report
+from audio_quality_humanizer.validation.runner import run_validation
 from audio_quality_humanizer.workflows.batch import SUPPORTED_BATCH_MODES, batch_run
 from audio_quality_humanizer.workflows.doctor import doctor_file
 from audio_quality_humanizer.workflows.preset_eval import preset_eval
@@ -36,7 +37,9 @@ def main(argv: list[str] | None = None) -> int:
         print(_status_message(report, args.report))
         if getattr(args, "fail_on_issue", False) and not report.get("passed", True):
             return 2
-        if getattr(args, "fail_on_error", False) and report.get("failed_files", 0) > 0:
+        if getattr(args, "fail_on_error", False) and (
+            report.get("failed_files", 0) > 0 or report.get("failed_samples", 0) > 0
+        ):
             return 2
         if getattr(args, "fail_on_safety", False) and not report.get("passed", True):
             return 2
@@ -223,6 +226,27 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     preset_eval_parser.set_defaults(handler=_handle_preset_eval)
 
+    validate_parser = subparsers.add_parser(
+        "validate-samples",
+        help="Run local validation over user-supplied audio samples.",
+    )
+    validate_parser.add_argument("manifest", type=Path)
+    validate_parser.add_argument("--output-dir", type=Path, required=True)
+    validate_parser.add_argument(
+        "--default-target",
+        choices=SUPPORTED_TARGETS,
+        default="streaming",
+    )
+    validate_parser.add_argument("--report", type=Path)
+    validate_parser.add_argument("--markdown", type=Path)
+    validate_parser.add_argument("--fail-fast", action="store_true")
+    validate_parser.add_argument(
+        "--fail-on-error",
+        action="store_true",
+        help="Return exit code 2 when one or more validation samples fail.",
+    )
+    validate_parser.set_defaults(handler=_handle_validate_samples)
+
     return parser
 
 
@@ -286,6 +310,16 @@ def _handle_preset_eval(args: argparse.Namespace) -> dict:
     return preset_eval(args.input, args.output_dir, target=args.target, presets=presets)
 
 
+def _handle_validate_samples(args: argparse.Namespace) -> dict:
+    _require_input(args.manifest)
+    return run_validation(
+        args.manifest,
+        args.output_dir,
+        default_target=args.default_target,
+        fail_fast=args.fail_fast,
+    )
+
+
 def _parse_presets(value: str | None) -> list[str] | None:
     if value is None:
         return None
@@ -317,6 +351,12 @@ def _status_message(report: dict, report_path: Path | None) -> str:
         return (
             f"preset eval complete; target {report.get('target')}; "
             f"recommended {report.get('recommended_preset')}; eligible {eligible_count}{suffix}"
+        )
+    if action == "validate_samples":
+        return (
+            f"validation complete; processed {report.get('processed_samples')}/"
+            f"{report.get('total_samples')}; failed {report.get('failed_samples')}; "
+            f"passed {report.get('passed_samples')}{suffix}"
         )
     if action == "batch":
         return (

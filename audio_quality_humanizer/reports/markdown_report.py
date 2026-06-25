@@ -30,6 +30,12 @@ PRESET_EVAL_SAFETY_NOTE = (
     "markers, origin markers, C2PA markers, or attribution systems."
 )
 
+VALIDATION_SAFETY_NOTE = (
+    "This validation workflow only evaluates local user-supplied audio-quality and release-readiness outcomes. "
+    "It does not evaluate or alter watermarks, fingerprints, detector signals, provenance markers, "
+    "origin markers, C2PA markers, or attribution systems."
+)
+
 
 def write_markdown_report(report: dict, path: Path) -> None:
     """Write a compact Markdown report."""
@@ -39,6 +45,8 @@ def write_markdown_report(report: dict, path: Path) -> None:
 
 
 def _render_markdown(report: dict) -> str:
+    if report.get("action") == "validate_samples":
+        return _render_validate_samples_markdown(report)
     if report.get("action") == "preset_eval":
         return _render_preset_eval_markdown(report)
     if report.get("action") == "batch":
@@ -89,6 +97,8 @@ def _title_for_report(report: dict) -> str:
         return "Batch Workflow Report"
     if action == "preset_eval":
         return "Preset Evaluation Report"
+    if action == "validate_samples":
+        return "Real-World Sample Validation Report"
     if action == "release_check":
         return "Release-Readiness Preflight"
     if action == "analyze":
@@ -377,6 +387,52 @@ def _render_preset_eval_markdown(report: dict) -> str:
             warnings.append(f"{result.get('preset')}: {warning}")
     _add_list_section(lines, "Warnings", warnings)
     lines.extend(["", "## Safety Note", "", PRESET_EVAL_SAFETY_NOTE, ""])
+    return "\n".join(lines)
+
+
+def _render_validate_samples_markdown(report: dict) -> str:
+    summary = report.get("summary", {})
+    lines = [
+        "# Real-World Sample Validation Report",
+        "",
+        f"- Project: `{report.get('project')}`",
+        f"- Manifest: `{report.get('manifest', '')}`",
+        f"- Output Directory: `{report.get('output_dir', '')}`",
+        f"- Total Samples: `{report.get('total_samples')}`",
+        f"- Processed Samples: `{report.get('processed_samples')}`",
+        f"- Failed Samples: `{report.get('failed_samples')}`",
+        f"- Passed Samples: `{report.get('passed_samples')}`",
+        f"- Average Doctor Score: `{_format_value(summary.get('average_doctor_score'))}`",
+    ]
+
+    _add_table_section(lines, "Recommended Preset Counts", summary.get("recommended_preset_counts", {}))
+
+    lines.extend(
+        [
+            "",
+            "## Results",
+            "",
+            "| ID | Target | Doctor Score | Doctor Passed | Recommended Preset | Original Unchanged | Error |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for result in report.get("results", []):
+        lines.append(
+            "| "
+            f"`{result.get('id')}` | "
+            f"`{result.get('target')}` | "
+            f"`{_format_value(result.get('doctor_score'))}` | "
+            f"`{result.get('doctor_passed')}` | "
+            f"`{result.get('recommended_preset')}` | "
+            f"`{result.get('original_unchanged')}` | "
+            f"`{_format_value(result.get('error'))}` |"
+        )
+    if not report.get("results"):
+        lines.append("| None |  |  |  |  |  |  |")
+
+    _add_list_section(lines, "Warnings", report.get("warnings", []))
+    _add_list_section(lines, "Notes", report.get("notes", []))
+    lines.extend(["", "## Safety Note", "", VALIDATION_SAFETY_NOTE, ""])
     return "\n".join(lines)
 
 

@@ -44,6 +44,7 @@ jobs:
           ai-humanizer doctor --help
           ai-humanizer batch --help
           ai-humanizer preset-eval --help
+          ai-humanizer validate-samples --help
 
       - name: Run CLI workflow smoke test
         run: python tools/cli_smoke.py

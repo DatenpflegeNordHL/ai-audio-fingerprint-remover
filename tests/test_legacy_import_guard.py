@@ -9,6 +9,7 @@ SOURCE_DIRS = [
     ROOT / "audio_quality_humanizer" / "processing",
     ROOT / "audio_quality_humanizer" / "workflows",
     ROOT / "audio_quality_humanizer" / "reports",
+    ROOT / "audio_quality_humanizer" / "validation",
 ]
 FORBIDDEN_REFERENCES = [
     "ai_audio_fingerprint_remover",

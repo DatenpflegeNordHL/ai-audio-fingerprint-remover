@@ -35,6 +35,7 @@ CLI_COMMANDS = (
     "doctor",
     "batch",
     "preset-eval",
+    "validate-samples",
 )
 
 

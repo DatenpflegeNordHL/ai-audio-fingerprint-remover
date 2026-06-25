@@ -70,6 +70,14 @@ Preset eval recommendations must be based only on quality, compare, and release 
 
 Preset eval recommendations are not legal clearance or platform certification.
 
+Real-world validation uses user-supplied local audio only.
+
+Real-world validation outputs must stay out of git by default.
+
+Validation must never be used to optimize toward reduced recognizability, attribution, provenance, or detectability.
+
+Validation results are not legal clearance or platform certification.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

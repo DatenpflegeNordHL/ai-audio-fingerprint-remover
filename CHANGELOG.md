@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.8 planned
+## v0.9
+
+- Added real-world validation harness for local user-supplied audio samples.
+
+## v0.8
 
 - Preset evaluation and report polish.
 
