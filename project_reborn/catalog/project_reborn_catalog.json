@@ -11,11 +11,20 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_002",
@@ -24,11 +33,21 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "release_readiness",
+        "reporting"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_003",
@@ -37,11 +56,22 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "performance_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_004",
@@ -50,11 +80,22 @@
       "file_type": "backup",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "performance_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_005",
@@ -63,11 +104,25 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "metadata_privacy_cleanup",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "reporting",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "metadata_privacy_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_006",
@@ -76,11 +131,25 @@
       "file_type": "backup",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "metadata_privacy_cleanup",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "reporting",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "metadata_privacy_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_007",
@@ -89,11 +158,23 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "reporting",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_008",
@@ -102,11 +183,23 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_009",
@@ -115,11 +208,22 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_010",
@@ -128,11 +232,17 @@
       "file_type": "html",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "documentation_notes"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "documentation_reference",
+      "audit_priority": "low",
+      "review_status": "static_audit_only",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_011",
@@ -141,11 +251,23 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "reporting"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_012",
@@ -154,11 +276,23 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_013",
@@ -167,11 +301,22 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_014",
@@ -180,11 +325,19 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "mix_diagnostics",
+        "performance"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "performance_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_015",
@@ -193,11 +346,21 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_016",
@@ -206,11 +369,20 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "reporting"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_017",
@@ -219,11 +391,19 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "audio_quality_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_018",
@@ -232,11 +412,21 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "release_readiness",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "audio_quality_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_019",
@@ -245,11 +435,21 @@
       "file_type": "backup",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "release_readiness",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "audio_quality_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_020",
@@ -258,11 +458,20 @@
       "file_type": "text",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "documentation_notes",
+        "mix_diagnostics",
+        "reporting"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "report_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_021",
@@ -271,11 +480,17 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "test_ideas"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "test_reference",
+      "audit_priority": "low",
+      "review_status": "static_audit_only",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_022",
@@ -284,11 +499,23 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "reporting",
+        "test_ideas"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_023",
@@ -297,11 +524,22 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "reporting",
+        "sound_relief",
+        "test_ideas"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_024",
@@ -310,11 +548,20 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "test_ideas"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_025",
@@ -323,11 +570,20 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "reporting"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_026",
@@ -336,11 +592,23 @@
       "file_type": "python",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "reporting",
+        "sound_relief",
+        "test_ideas"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     },
     {
       "reborn_id": "reborn_027",
@@ -349,11 +617,25 @@
       "file_type": "markdown",
       "status": "reference_only_not_installed",
       "safe_review_category": "unknown_reference",
-      "safe_future_use_candidates": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "documentation_notes",
+        "metadata_privacy_cleanup",
+        "mix_diagnostics",
+        "performance",
+        "reporting",
+        "sound_relief"
+      ],
       "review_notes": "Not reviewed. Do not infer behavior from historical filename.",
       "imported_by_package": false,
       "exposed_by_cli": false,
-      "included_in_wheel": false
+      "included_in_wheel": false,
+      "audit_category": "metadata_privacy_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "audit_report_path": "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md"
     }
   ]
 }

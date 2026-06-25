@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.9.3
+
+- Added static Project Reborn audit map.
+- Added audit generation tool.
+- Extended Project Reborn checks to cover audit completeness.
+
 ## v0.9.2
 
 - Added Project Reborn as a non-installed reference drawer.

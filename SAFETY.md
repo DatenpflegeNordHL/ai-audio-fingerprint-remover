@@ -102,6 +102,14 @@ Future extraction from Project Reborn must inspect behavior, not names.
 
 Future extraction from Project Reborn must pass tests, the root cleanliness check, the Project Reborn catalog check, the safety scan, CLI smoke, and the build check.
 
+Project Reborn audit is static-only.
+
+Project Reborn audit terms are review flags, not product claims.
+
+No audit result makes a file safe to import.
+
+Future extraction from Project Reborn requires safe rewrite into `audio_quality_humanizer/`.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

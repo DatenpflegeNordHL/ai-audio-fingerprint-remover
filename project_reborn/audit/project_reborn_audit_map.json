@@ -1,0 +1,1911 @@
+{
+  "project": "Project Reborn",
+  "audit_type": "static_text_audit_only",
+  "active_package": "audio-quality-humanizer",
+  "principle": "Old filenames are historical labels only and must not be used to infer behavior.",
+  "safety_boundary": [
+    "Project Reborn is not imported.",
+    "Project Reborn is not packaged.",
+    "Project Reborn is not exposed through CLI.",
+    "No Project Reborn code was executed during this audit."
+  ],
+  "summary": {
+    "total_files": 27,
+    "parsed_ast": 21,
+    "text_only": 6,
+    "parse_errors": 0,
+    "binary_or_unreadable": 0,
+    "priority_counts": {
+      "high": 25,
+      "low": 2
+    },
+    "category_counts": {
+      "audio_quality_reference": 3,
+      "comparison_reference": 11,
+      "documentation_reference": 1,
+      "metadata_privacy_reference": 3,
+      "performance_reference": 3,
+      "report_reference": 1,
+      "test_reference": 5
+    },
+    "candidate_counts": {
+      "audio_quality_cleanup": 25,
+      "comparison": 16,
+      "conservative_repair": 16,
+      "documentation_notes": 3,
+      "metadata_privacy_cleanup": 3,
+      "mix_diagnostics": 25,
+      "performance": 14,
+      "release_readiness": 13,
+      "reporting": 12,
+      "sound_relief": 15,
+      "test_ideas": 5
+    }
+  },
+  "entries": [
+    {
+      "reborn_id": "reborn_001",
+      "current_path": "project_reborn/source_drawer/reborn_001_reference.py",
+      "historical_filename": "advanced_steganography_detector.py",
+      "file_type": "python",
+      "sha256": "07781315bb13c7dd951de07796ed4d5c98d86141df905b1e0826f0796596c30f",
+      "size_bytes": 22336,
+      "line_count": 506,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "dataclasses",
+        "librosa",
+        "logging",
+        "numpy",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_count_runs",
+        "_detect_amplitude_modulation",
+        "_detect_cepstral_hiding",
+        "_detect_echo_hiding",
+        "_detect_frequency_hopping",
+        "_detect_lsb_steganography",
+        "_detect_phase_coding",
+        "_detect_spread_spectrum",
+        "detect_all_steganography",
+        "main"
+      ],
+      "class_names": [
+        "AdvancedSteganographyDetector",
+        "SteganographyDetection"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "librosa",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "diff",
+        "normalize",
+        "phase",
+        "smooth",
+        "spectral"
+      ],
+      "notable_risk_terms": [
+        "detector"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "sound_relief"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_002",
+      "current_path": "project_reborn/source_drawer/reborn_002_reference.py",
+      "historical_filename": "advanced_watermark_analysis.py",
+      "file_type": "python",
+      "sha256": "2f4558543e68d66101f474d30d285928790c13675b1735b8f3ba423030d24723",
+      "size_bytes": 17043,
+      "line_count": 415,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "argparse",
+        "librosa",
+        "logging",
+        "matplotlib",
+        "numpy",
+        "os",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_analyze_frequency_bands",
+        "_analyze_spectral_entropy",
+        "_detect_high_freq_carriers",
+        "_detect_temporal_patterns",
+        "analyze_phase_patterns",
+        "analyze_spectral_anomalies",
+        "generate_report",
+        "main"
+      ],
+      "class_names": [
+        "AdvancedWatermarkAnalyzer"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "librosa",
+        "matplotlib",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "diff",
+        "normalize",
+        "phase",
+        "report",
+        "spectral",
+        "stereo",
+        "threshold"
+      ],
+      "notable_risk_terms": [
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "release_readiness",
+        "reporting"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_003",
+      "current_path": "project_reborn/source_drawer/reborn_003_reference.py",
+      "historical_filename": "aggressive_watermark_remover.py",
+      "file_type": "python",
+      "sha256": "816efe82f4b2ff9fb67bb5af4722a2b43c2a4c51547a541afb915451ae3d215b",
+      "size_bytes": 21581,
+      "line_count": 501,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "audio_processing_fixes",
+        "librosa",
+        "logging",
+        "numpy",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_adaptive_filtering",
+        "_add_harmonic_variations",
+        "_add_micro_timing_variations",
+        "_add_naturalistic_noise",
+        "_aggressive_frequency_removal",
+        "_phase_manipulation",
+        "_safe_nan_cleanup",
+        "_spectral_subtraction",
+        "_temporal_pattern_disruption",
+        "add_ai_detection_evasion",
+        "main",
+        "remove_watermarks_aggressive"
+      ],
+      "class_names": [
+        "AggressiveWatermarkRemover"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "audio_processing_fixes",
+        "librosa",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "cleanup",
+        "clip",
+        "filter",
+        "normalize",
+        "phase",
+        "rms",
+        "smooth",
+        "spectral",
+        "threshold",
+        "timing",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "evasion",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
+      "audit_category": "performance_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible performance ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_004",
+      "current_path": "project_reborn/source_drawer/reborn_004_backup_reference",
+      "historical_filename": "aggressive_watermark_remover.py.backup_20250706_105051",
+      "file_type": "backup",
+      "sha256": "0baa955861973ca57013b33b82549093f46951d9955fbdccde0fa6a7c2f79392",
+      "size_bytes": 24380,
+      "line_count": 551,
+      "static_parse_status": "text_only",
+      "top_level_imports": [],
+      "function_names": [],
+      "class_names": [],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [],
+      "notable_safe_terms": [
+        "cleanup",
+        "clip",
+        "filter",
+        "normalize",
+        "phase",
+        "rms",
+        "smooth",
+        "spectral",
+        "threshold",
+        "timing",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "evasion",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
+      "audit_category": "performance_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible performance ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_005",
+      "current_path": "project_reborn/source_drawer/reborn_005_reference.py",
+      "historical_filename": "ai_audio_fingerprint_remover.py",
+      "file_type": "python",
+      "sha256": "c15e5fadbb260e0bd7d01473adee19a1be205f48037cfe998205c3e5ae651faa",
+      "size_bytes": 88042,
+      "line_count": 2082,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "argparse",
+        "array",
+        "audio_processing_fixes",
+        "dataclasses",
+        "hashlib",
+        "json",
+        "logging",
+        "os",
+        "pathlib",
+        "random",
+        "re",
+        "shutil",
+        "struct",
+        "sys",
+        "tempfile",
+        "time",
+        "typing",
+        "uuid",
+        "warnings",
+        "wave"
+      ],
+      "function_names": [
+        "__init__",
+        "__post_init__",
+        "_reconstruct_from_chunks",
+        "adaptive_filter_design",
+        "add_timing",
+        "add_timing_variations",
+        "analyze_frequency_distribution",
+        "apply_pattern_normalization",
+        "apply_watermark_removal",
+        "calculate_complexity_measures",
+        "calculate_spectral_entropy",
+        "clean_metadata_comprehensive",
+        "detect_periodic_patterns",
+        "detect_spectral_watermarks",
+        "detect_statistical_patterns",
+        "detect_timing_anomalies",
+        "display_metadata",
+        "get_ai_metadata_signatures",
+        "get_file_hash",
+        "get_hann_window",
+        "get_profile",
+        "main",
+        "normalize_ai_patterns",
+        "perceptual_masking_filter",
+        "process_audio",
+        "process_directory",
+        "process_large_audio_chunked",
+        "remove_spectral_watermarks",
+        "sample_entropy",
+        "soft_clip",
+        "validate_audio_content"
+      ],
+      "class_names": [
+        "AdvancedAudioAnalysis",
+        "AudioFingerprint",
+        "AudioProcessor",
+        "ProcessingConfig",
+        "ProcessingStats"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "array",
+        "audio_processing_fixes",
+        "struct",
+        "warnings"
+      ],
+      "notable_safe_terms": [
+        "after",
+        "analysis",
+        "before",
+        "cache",
+        "cleanup",
+        "clip",
+        "clipping",
+        "diff",
+        "distortion",
+        "dynamic range",
+        "filter",
+        "json",
+        "metadata",
+        "normalize",
+        "peak",
+        "performance",
+        "phase",
+        "profile",
+        "report",
+        "rms",
+        "safety",
+        "smooth",
+        "spectral",
+        "stereo",
+        "tag",
+        "threshold",
+        "timing",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "fingerprint",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "metadata_privacy_cleanup",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "reporting",
+        "sound_relief"
+      ],
+      "audit_category": "metadata_privacy_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible metadata/privacy cleanup ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_006",
+      "current_path": "project_reborn/source_drawer/reborn_006_backup_reference",
+      "historical_filename": "ai_audio_fingerprint_remover.py.backup_20250706_105051",
+      "file_type": "backup",
+      "sha256": "68fb211a51c3c4e36b2c69146f7f238822e1fa10e4fdf52bb8b6f6f5aac2481b",
+      "size_bytes": 93739,
+      "line_count": 2232,
+      "static_parse_status": "text_only",
+      "top_level_imports": [],
+      "function_names": [],
+      "class_names": [],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [],
+      "notable_safe_terms": [
+        "after",
+        "analysis",
+        "before",
+        "cache",
+        "cleanup",
+        "clip",
+        "clipping",
+        "comparison",
+        "diff",
+        "distortion",
+        "dynamic range",
+        "filter",
+        "json",
+        "metadata",
+        "normalize",
+        "optimize",
+        "peak",
+        "performance",
+        "phase",
+        "profile",
+        "report",
+        "rms",
+        "safety",
+        "smooth",
+        "spectral",
+        "stereo",
+        "tag",
+        "threshold",
+        "timing",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "fingerprint",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "metadata_privacy_cleanup",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "reporting",
+        "sound_relief"
+      ],
+      "audit_category": "metadata_privacy_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible metadata/privacy cleanup ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_007",
+      "current_path": "project_reborn/source_drawer/reborn_007_reference.py",
+      "historical_filename": "apply_comprehensive_fixes.py",
+      "file_type": "python",
+      "sha256": "489bb10f923c34a0060afdac1999770bb321e1e87377f3242a8e54e6b511f75c",
+      "size_bytes": 21275,
+      "line_count": 565,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "datetime",
+        "os",
+        "shutil",
+        "sys"
+      ],
+      "function_names": [
+        "apply_aggressive_fixes",
+        "apply_main_fixes",
+        "apply_sota_fixes",
+        "create_backup",
+        "create_test_script",
+        "main"
+      ],
+      "class_names": [],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [],
+      "notable_safe_terms": [
+        "after",
+        "cleanup",
+        "clip",
+        "clipping",
+        "distortion",
+        "fix",
+        "normalize",
+        "phase",
+        "rms",
+        "safety",
+        "spectral",
+        "stereo",
+        "summary",
+        "timing",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "fingerprint",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "reporting",
+        "sound_relief"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_008",
+      "current_path": "project_reborn/source_drawer/reborn_008_reference.py",
+      "historical_filename": "audio_processing_fixes.py",
+      "file_type": "python",
+      "sha256": "67d6ac89df707ba5dac037bf2a28d355ae62f5781a4fb2177391cb6cdf138558",
+      "size_bytes": 28506,
+      "line_count": 759,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "librosa",
+        "logging",
+        "numpy",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "adaptive_processing_strength",
+        "add_natural_variations",
+        "conservative_frequency_removal",
+        "detect_suspicious_tones",
+        "harmonic_enhancement",
+        "process_stft",
+        "psychoacoustic_watermark_removal",
+        "safe_filter_apply",
+        "safe_filter_design",
+        "safe_nan_cleanup",
+        "safe_stft_processing",
+        "safe_time_stretch",
+        "soft_saturate",
+        "suppress_repeating_watermark_peaks",
+        "validate_audio_content"
+      ],
+      "class_names": [
+        "AudioProcessingFixes",
+        "AudioQualityEnhancer",
+        "WatermarkRemovalFixes"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "librosa",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "after",
+        "analysis",
+        "cleanup",
+        "clip",
+        "clipping",
+        "dynamic range",
+        "filter",
+        "normalize",
+        "peak",
+        "phase",
+        "rms",
+        "safety",
+        "smooth",
+        "spectral",
+        "threshold",
+        "timing",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "fingerprint",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_009",
+      "current_path": "project_reborn/source_drawer/reborn_009_reference.py",
+      "historical_filename": "enhanced_suno_detector.py",
+      "file_type": "python",
+      "sha256": "e43fee28270e062fc13bcd05f182b78cdde7f3bae9c3b3468e21a91ea5fa3709",
+      "size_bytes": 22167,
+      "line_count": 519,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "hashlib",
+        "librosa",
+        "logging",
+        "numpy",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_detect_frequency_watermarks",
+        "_detect_neural_patterns",
+        "_detect_phase_watermarks",
+        "_detect_statistical_anomalies",
+        "_detect_temporal_patterns",
+        "_maxdist",
+        "_remove_frequency_watermark",
+        "_remove_phase_watermark",
+        "_remove_temporal_watermark",
+        "detect_suno_watermarks",
+        "remove_suno_watermarks",
+        "sample_entropy"
+      ],
+      "class_names": [
+        "SunoWatermarkDetector"
+      ],
+      "obvious_entrypoint_present": false,
+      "external_dependency_names": [
+        "librosa",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "cache",
+        "clip",
+        "compare",
+        "comparison",
+        "diff",
+        "filter",
+        "phase",
+        "rms",
+        "spectral",
+        "stereo",
+        "threshold",
+        "timing"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_010",
+      "current_path": "project_reborn/source_drawer/reborn_010_sample_reference.html",
+      "historical_filename": "file_example_WAV_1MG.html",
+      "file_type": "html",
+      "sha256": "618f5aa99e527c5db09ee5d98f408eafa634195514db8a8a3fbc0fd236ad48fb",
+      "size_bytes": 2211,
+      "line_count": 2,
+      "static_parse_status": "text_only",
+      "top_level_imports": [],
+      "function_names": [],
+      "class_names": [],
+      "obvious_entrypoint_present": false,
+      "external_dependency_names": [],
+      "notable_safe_terms": [],
+      "notable_risk_terms": [],
+      "safe_future_use_candidates": [
+        "documentation_notes"
+      ],
+      "audit_category": "documentation_reference",
+      "audit_priority": "low",
+      "review_status": "static_audit_only",
+      "recommendation": "Keep as notes only unless manual review identifies safe documentation value.",
+      "notes": [
+        "Static text observations only; file was not imported or executed."
+      ]
+    },
+    {
+      "reborn_id": "reborn_011",
+      "current_path": "project_reborn/source_drawer/reborn_011_reference.py",
+      "historical_filename": "integrated_system.py",
+      "file_type": "python",
+      "sha256": "f7bd6f3ea49c905feabcda012b4f9e3ab41a71612d56c02489269172dde17dfb",
+      "size_bytes": 22749,
+      "line_count": 541,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "dataclasses",
+        "logging",
+        "numpy",
+        "os",
+        "pathlib",
+        "soundfile",
+        "time",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_assess_artifacts",
+        "_assess_quality_preservation",
+        "_final_validation",
+        "_generate_processing_report",
+        "_restore_audio_quality",
+        "_run_advanced_detection",
+        "_run_basic_detection",
+        "_run_basic_removal",
+        "_run_optimized_removal",
+        "_validate_and_optimize_quality",
+        "combined_removal_func",
+        "main",
+        "process_file"
+      ],
+      "class_names": [
+        "IntegratedWatermarkRemover",
+        "ProcessingStats"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "numpy",
+        "soundfile"
+      ],
+      "notable_safe_terms": [
+        "after",
+        "analysis",
+        "clipping",
+        "diff",
+        "optimize",
+        "peak",
+        "performance",
+        "phase",
+        "report",
+        "restore",
+        "rms",
+        "safety",
+        "spectral",
+        "threshold",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "fingerprint",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "reporting"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_012",
+      "current_path": "project_reborn/source_drawer/reborn_012_reference.py",
+      "historical_filename": "next_gen_remover.py",
+      "file_type": "python",
+      "sha256": "3204eec5a38380e4d946b702efc1b61c52a8f3b9c512c3c073a6491475218890",
+      "size_bytes": 29938,
+      "line_count": 684,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "advanced_steganography_detector",
+        "concurrent",
+        "dataclasses",
+        "librosa",
+        "logging",
+        "neural_watermark_detector",
+        "numpy",
+        "scipy",
+        "threading",
+        "time",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_add_adversarial_perturbations",
+        "_add_micro_timing_jitter",
+        "_adjust_harmonic_content",
+        "_apply_codec_artifact_removal",
+        "_apply_perceptual_masking",
+        "_apply_semantic_smoothing",
+        "_apply_speech_naturalization",
+        "_assess_artifacts",
+        "_assess_quality_preservation",
+        "_disrupt_ai_patterns",
+        "_enforce_cross_modal_consistency",
+        "_inject_natural_variations",
+        "_inpaint_frequency_range",
+        "_preserve_audio_quality",
+        "_preserve_semantic_content",
+        "_remove_amplitude_modulation",
+        "_remove_audiocraft_compression",
+        "_remove_cepstral_hiding",
+        "_remove_echo_hiding",
+        "_remove_elevenlabs_artifacts",
+        "_remove_frequency_hopping",
+        "_remove_jukebox_patterns",
+        "_remove_lsb_steganography",
+        "_remove_musiclm_tokens",
+        "_remove_neural_watermarks",
+        "_remove_phase_coding",
+        "_remove_platform_watermark",
+        "_remove_spread_spectrum",
+        "_remove_steganographic_watermarks",
+        "_remove_suno_advanced",
+        "_validate_and_fix_output",
+        "main",
+        "remove_advanced_watermarks"
+      ],
+      "class_names": [
+        "NextGenWatermarkRemover",
+        "RemovalResult"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "advanced_steganography_detector",
+        "concurrent",
+        "librosa",
+        "neural_watermark_detector",
+        "numpy",
+        "scipy",
+        "threading"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "clipping",
+        "diff",
+        "filter",
+        "fix",
+        "performance",
+        "phase",
+        "rms",
+        "smooth",
+        "spectral",
+        "threshold",
+        "timing",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_013",
+      "current_path": "project_reborn/source_drawer/reborn_013_reference.py",
+      "historical_filename": "neural_watermark_detector.py",
+      "file_type": "python",
+      "sha256": "486a179cddb66f90fe7662d6f3ca178bfe68d83b62c7b2124c49036abc20c896",
+      "size_bytes": 25978,
+      "line_count": 612,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "dataclasses",
+        "joblib",
+        "librosa",
+        "logging",
+        "numpy",
+        "scipy",
+        "sklearn",
+        "typing",
+        "warnings"
+      ],
+      "function_names": [
+        "__init__",
+        "_analyze_amplitude_distribution",
+        "_analyze_harmonic_progressions",
+        "_analyze_harmonic_ratios",
+        "_analyze_phase_signatures",
+        "_analyze_repetition_patterns",
+        "_analyze_rhythmic_patterns",
+        "_analyze_spectral_evolution",
+        "_analyze_spectral_peaks",
+        "_analyze_spectral_statistics",
+        "_analyze_temporal_patterns",
+        "_calculate_phase_coherence",
+        "_calculate_phase_entropy",
+        "_detect_anomalies",
+        "_detect_platform_specific",
+        "_detect_semantic_patterns",
+        "_extract_comprehensive_features",
+        "_prepare_feature_vector",
+        "detect_neural_watermarks",
+        "main"
+      ],
+      "class_names": [
+        "NeuralDetection",
+        "NeuralWatermarkDetector"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "joblib",
+        "librosa",
+        "numpy",
+        "scipy",
+        "sklearn",
+        "warnings"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "diff",
+        "normalize",
+        "peak",
+        "phase",
+        "similarity",
+        "smooth",
+        "spectral",
+        "threshold",
+        "timing"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness",
+        "sound_relief"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_014",
+      "current_path": "project_reborn/source_drawer/reborn_014_reference.py",
+      "historical_filename": "optimized_suno_detector.py",
+      "file_type": "python",
+      "sha256": "2b6efa62da1f6cf86b463ab98d7690bf9f742c09ccef4502a9293bc012c150b8",
+      "size_bytes": 7124,
+      "line_count": 179,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "hashlib",
+        "librosa",
+        "logging",
+        "numpy",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_fast_frequency_analysis",
+        "detect_suno_watermarks",
+        "remove_suno_watermarks"
+      ],
+      "class_names": [
+        "OptimizedSunoWatermarkDetector"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "librosa",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "cache",
+        "filter",
+        "performance",
+        "rms",
+        "speed",
+        "stereo"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "mix_diagnostics",
+        "performance"
+      ],
+      "audit_category": "performance_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible performance ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_015",
+      "current_path": "project_reborn/source_drawer/reborn_015_reference.py",
+      "historical_filename": "performance_optimizer.py",
+      "file_type": "python",
+      "sha256": "539b54be44ab4df66a025ee91048c944953e5fb7618948641a32f17e4d27db3b",
+      "size_bytes": 20364,
+      "line_count": 519,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "concurrent",
+        "dataclasses",
+        "functools",
+        "librosa",
+        "logging",
+        "multiprocessing",
+        "numpy",
+        "psutil",
+        "queue",
+        "threading",
+        "time",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_chunk_worker",
+        "_jit_apply_filter",
+        "_jit_spectral_subtraction",
+        "_process_chunks_multiprocessing",
+        "_process_chunks_sequential",
+        "_processing_loop",
+        "_reconstruct_from_chunks",
+        "_split_into_chunks",
+        "batch_process_features",
+        "benchmark_performance",
+        "dummy_processing",
+        "get_memory_percent",
+        "get_memory_usage",
+        "gpu_accelerate_fft",
+        "gpu_accelerate_stft",
+        "main",
+        "optimize_memory_usage",
+        "process_audio_parallel",
+        "process_chunk",
+        "should_gc",
+        "simple_processing",
+        "start",
+        "stop",
+        "wrapper"
+      ],
+      "class_names": [
+        "MemoryMonitor",
+        "PerformanceConfig",
+        "PerformanceOptimizer",
+        "StreamingProcessor"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "concurrent",
+        "librosa",
+        "multiprocessing",
+        "numpy",
+        "psutil",
+        "queue",
+        "threading"
+      ],
+      "notable_safe_terms": [
+        "before",
+        "benchmark",
+        "cache",
+        "filter",
+        "optimize",
+        "performance",
+        "phase",
+        "profile",
+        "spectral",
+        "stereo",
+        "streaming"
+      ],
+      "notable_risk_terms": [],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "performance",
+        "release_readiness"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed."
+      ]
+    },
+    {
+      "reborn_id": "reborn_016",
+      "current_path": "project_reborn/source_drawer/reborn_016_reference.py",
+      "historical_filename": "quick_comparison.py",
+      "file_type": "python",
+      "sha256": "c23015604dd2b1eb4d80fd5c164753922e9feb1af2c1c4078c502e7adce78438",
+      "size_bytes": 4712,
+      "line_count": 128,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "argparse",
+        "librosa",
+        "logging",
+        "numpy",
+        "os",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "main",
+        "quick_compare"
+      ],
+      "class_names": [],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "librosa",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "compare",
+        "comparison",
+        "report",
+        "spectral"
+      ],
+      "notable_risk_terms": [
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "reporting"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_017",
+      "current_path": "project_reborn/source_drawer/reborn_017_reference.py",
+      "historical_filename": "quick_test_fixes.py",
+      "file_type": "python",
+      "sha256": "670d624f1c361897eb9fac4c8a290bf42e01da8b70918fc3b76474d6886bbfc0",
+      "size_bytes": 2709,
+      "line_count": 79,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "ai_audio_fingerprint_remover",
+        "librosa",
+        "numpy",
+        "os",
+        "sys"
+      ],
+      "function_names": [],
+      "class_names": [],
+      "obvious_entrypoint_present": false,
+      "external_dependency_names": [
+        "ai_audio_fingerprint_remover",
+        "librosa",
+        "numpy"
+      ],
+      "notable_safe_terms": [
+        "rms",
+        "stereo",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "fingerprint"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics"
+      ],
+      "audit_category": "audio_quality_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible safe rewrite into audio_quality_humanizer.analysis.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_018",
+      "current_path": "project_reborn/source_drawer/reborn_018_reference.py",
+      "historical_filename": "sota_watermark_remover.py",
+      "file_type": "python",
+      "sha256": "daf7b1596a2a4e115653fe40c618bb89482955ce3298baaeb511a52a132488b7",
+      "size_bytes": 23646,
+      "line_count": 564,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "audio_processing_fixes",
+        "librosa",
+        "logging",
+        "numpy",
+        "scipy",
+        "typing",
+        "warnings"
+      ],
+      "function_names": [
+        "__init__",
+        "_apply_adaptive_noise_attack",
+        "_apply_compression_attack",
+        "_apply_high_pass_attack",
+        "_apply_low_pass_attack",
+        "_apply_pitch_shift_attack",
+        "_apply_quality_restoration",
+        "_apply_resampling_attack",
+        "_apply_sample_suppression_attack",
+        "_apply_spectral_inversion_attack",
+        "_apply_targeted_ai_removal",
+        "_apply_time_stretch_attack",
+        "_compute_psychoacoustic_masking",
+        "_compute_spectral_envelope",
+        "_quality_check",
+        "_validate_and_normalize_audio",
+        "main",
+        "remove_watermarks_sota"
+      ],
+      "class_names": [
+        "StateOfTheArtWatermarkRemover"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "audio_processing_fixes",
+        "librosa",
+        "numpy",
+        "scipy",
+        "warnings"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "cleanup",
+        "clip",
+        "clipping",
+        "dynamic range",
+        "filter",
+        "normalize",
+        "peak",
+        "phase",
+        "restore",
+        "safety",
+        "spectral",
+        "stereo",
+        "threshold",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "release_readiness",
+        "sound_relief"
+      ],
+      "audit_category": "audio_quality_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible safe rewrite into audio_quality_humanizer.analysis.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_019",
+      "current_path": "project_reborn/source_drawer/reborn_019_backup_reference",
+      "historical_filename": "sota_watermark_remover.py.backup_20250706_105051",
+      "file_type": "backup",
+      "sha256": "e3be672aa79ec47376ab6bbc853d1f0f0a828c92a2b5e4c112ba18101f78e478",
+      "size_bytes": 25028,
+      "line_count": 582,
+      "static_parse_status": "text_only",
+      "top_level_imports": [],
+      "function_names": [],
+      "class_names": [],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [],
+      "notable_safe_terms": [
+        "analysis",
+        "clip",
+        "clipping",
+        "dynamic range",
+        "filter",
+        "fix",
+        "normalize",
+        "peak",
+        "phase",
+        "restore",
+        "spectral",
+        "stereo",
+        "threshold",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "release_readiness",
+        "sound_relief"
+      ],
+      "audit_category": "audio_quality_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible safe rewrite into audio_quality_humanizer.analysis.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_020",
+      "current_path": "project_reborn/source_drawer/reborn_020_notes.txt",
+      "historical_filename": "suno_analysis.txt",
+      "file_type": "text",
+      "sha256": "6937b5bf7c036ba997430f954793a37b497761c37a6baeddef1adef88d37b9ac",
+      "size_bytes": 1453,
+      "line_count": 59,
+      "static_parse_status": "text_only",
+      "top_level_imports": [],
+      "function_names": [],
+      "class_names": [],
+      "obvious_entrypoint_present": false,
+      "external_dependency_names": [],
+      "notable_safe_terms": [
+        "analysis",
+        "phase",
+        "report"
+      ],
+      "notable_risk_terms": [
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "documentation_notes",
+        "mix_diagnostics",
+        "reporting"
+      ],
+      "audit_category": "report_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Needs manual review; do not infer behavior from historical filename.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_021",
+      "current_path": "project_reborn/source_drawer/reborn_021_reference.py",
+      "historical_filename": "test_all_methods.py",
+      "file_type": "python",
+      "sha256": "005d2c9bf3ff9895f4a4607762dbd6f4f16d384a72f23b525a06c2dc3bb65d76",
+      "size_bytes": 1742,
+      "line_count": 59,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "numpy",
+        "pathlib",
+        "soundfile",
+        "subprocess"
+      ],
+      "function_names": [
+        "check_file_exists",
+        "run_command",
+        "test_file_exists",
+        "test_run_command_success"
+      ],
+      "class_names": [],
+      "obvious_entrypoint_present": false,
+      "external_dependency_names": [
+        "numpy",
+        "soundfile"
+      ],
+      "notable_safe_terms": [],
+      "notable_risk_terms": [
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "test_ideas"
+      ],
+      "audit_category": "test_reference",
+      "audit_priority": "low",
+      "review_status": "static_audit_only",
+      "recommendation": "Review manually for test ideas only.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_022",
+      "current_path": "project_reborn/source_drawer/reborn_022_reference.py",
+      "historical_filename": "test_audio_fixes.py",
+      "file_type": "python",
+      "sha256": "2d22482c0d80db485021d730d00dcf2b3c35e180ea5240490975377ea28b82e8",
+      "size_bytes": 12217,
+      "line_count": 349,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "aggressive_watermark_remover",
+        "ai_audio_fingerprint_remover",
+        "audio_processing_fixes",
+        "logging",
+        "numpy",
+        "os",
+        "pathlib",
+        "sota_watermark_remover",
+        "soundfile",
+        "sys",
+        "tempfile"
+      ],
+      "function_names": [
+        "calculate_snr",
+        "compute_audio_metrics",
+        "create_test_audio",
+        "main",
+        "test_edge_cases",
+        "test_peak_suppression_keeps_broadband_intact",
+        "test_processing_levels",
+        "test_repeating_peak_suppression_reduces_tonal_energy",
+        "test_short_audio",
+        "test_suspicious_tone_detection_identifies_carrier",
+        "test_validate_audio_content"
+      ],
+      "class_names": [],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "aggressive_watermark_remover",
+        "ai_audio_fingerprint_remover",
+        "audio_processing_fixes",
+        "numpy",
+        "sota_watermark_remover",
+        "soundfile"
+      ],
+      "notable_safe_terms": [
+        "after",
+        "before",
+        "cleanup",
+        "mix",
+        "normalize",
+        "peak",
+        "profile",
+        "rms",
+        "stereo",
+        "summary",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "fingerprint",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "performance",
+        "reporting",
+        "test_ideas"
+      ],
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for test ideas only.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_023",
+      "current_path": "project_reborn/source_drawer/reborn_023_reference.py",
+      "historical_filename": "test_comprehensive_fixes.py",
+      "file_type": "python",
+      "sha256": "2b2fbbace65f82cd3b8a3c2aae10a7ff994bae8868c4ecf78b561e6e920b0a80",
+      "size_bytes": 7358,
+      "line_count": 211,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "ai_audio_fingerprint_remover",
+        "audio_processing_fixes",
+        "numpy",
+        "os",
+        "soundfile",
+        "sys"
+      ],
+      "function_names": [
+        "create_test_audio",
+        "test_edge_cases",
+        "test_processing_levels",
+        "test_real_audio"
+      ],
+      "class_names": [],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "ai_audio_fingerprint_remover",
+        "audio_processing_fixes",
+        "numpy",
+        "soundfile"
+      ],
+      "notable_safe_terms": [
+        "cleanup",
+        "clip",
+        "rms",
+        "summary",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "fingerprint",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "reporting",
+        "sound_relief",
+        "test_ideas"
+      ],
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for test ideas only.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_024",
+      "current_path": "project_reborn/source_drawer/reborn_024_reference.py",
+      "historical_filename": "test_fixes.py",
+      "file_type": "python",
+      "sha256": "1a391518c24369b528eab2229ccfed9af765faf3a0aaa2b5b8113ea4cda60d4d",
+      "size_bytes": 2245,
+      "line_count": 70,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "aggressive_watermark_remover",
+        "logging",
+        "numpy",
+        "soundfile"
+      ],
+      "function_names": [
+        "test_audio_processing"
+      ],
+      "class_names": [],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "aggressive_watermark_remover",
+        "numpy",
+        "soundfile"
+      ],
+      "notable_safe_terms": [
+        "rms",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "conservative_repair",
+        "mix_diagnostics",
+        "test_ideas"
+      ],
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for test ideas only.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_025",
+      "current_path": "project_reborn/source_drawer/reborn_025_reference.py",
+      "historical_filename": "watermark_comparison.py",
+      "file_type": "python",
+      "sha256": "0bf2035b1e7ab19e8d708c2265b8070269e9b8670afaf438a05947486a1d1512",
+      "size_bytes": 14639,
+      "line_count": 361,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "argparse",
+        "enhanced_suno_detector",
+        "librosa",
+        "logging",
+        "matplotlib",
+        "numpy",
+        "os",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_calculate_basic_metrics",
+        "_calculate_quality_metrics",
+        "_compare_spectral_content",
+        "_compare_watermark_detection",
+        "categorize_watermarks",
+        "compare_files",
+        "generate_report",
+        "main"
+      ],
+      "class_names": [
+        "WatermarkComparisonAnalyzer"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "enhanced_suno_detector",
+        "librosa",
+        "matplotlib",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "after",
+        "analysis",
+        "before",
+        "compare",
+        "comparison",
+        "diff",
+        "dynamic range",
+        "report",
+        "rms",
+        "spectral"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "mix_diagnostics",
+        "reporting"
+      ],
+      "audit_category": "comparison_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible comparison or report ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_026",
+      "current_path": "project_reborn/source_drawer/reborn_026_reference.py",
+      "historical_filename": "watermark_effectiveness_tester.py",
+      "file_type": "python",
+      "sha256": "f3d95da11b95fb2e616762f1714c3df547c91e517c1ad05174f5b6af88cb475c",
+      "size_bytes": 19841,
+      "line_count": 468,
+      "static_parse_status": "parsed_ast",
+      "top_level_imports": [
+        "advanced_watermark_analysis",
+        "argparse",
+        "enhanced_suno_detector",
+        "json",
+        "librosa",
+        "logging",
+        "matplotlib",
+        "numpy",
+        "os",
+        "pathlib",
+        "scipy",
+        "typing"
+      ],
+      "function_names": [
+        "__init__",
+        "_analyze_perceptual_changes",
+        "_calculate_effectiveness_score",
+        "_calculate_quality_metrics",
+        "_compare_spectral_characteristics",
+        "_compare_watermark_detection",
+        "calculate_thd",
+        "categorize_watermarks",
+        "generate_report",
+        "main",
+        "test_file_pair"
+      ],
+      "class_names": [
+        "WatermarkEffectivenessTester"
+      ],
+      "obvious_entrypoint_present": true,
+      "external_dependency_names": [
+        "advanced_watermark_analysis",
+        "enhanced_suno_detector",
+        "librosa",
+        "matplotlib",
+        "numpy",
+        "scipy"
+      ],
+      "notable_safe_terms": [
+        "analysis",
+        "compare",
+        "comparison",
+        "distortion",
+        "dynamic range",
+        "json",
+        "phase",
+        "report",
+        "rms",
+        "spectral",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "mix_diagnostics",
+        "reporting",
+        "sound_relief",
+        "test_ideas"
+      ],
+      "audit_category": "test_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for test ideas only.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    },
+    {
+      "reborn_id": "reborn_027",
+      "current_path": "project_reborn/source_drawer/reborn_027_notes.md",
+      "historical_filename": "ENHANCEMENT_SUMMARY.md",
+      "file_type": "markdown",
+      "sha256": "a4c437e8abd2e4903fa814327f5804773cab4693610d022af5e626f307b52f35",
+      "size_bytes": 7406,
+      "line_count": 205,
+      "static_parse_status": "text_only",
+      "top_level_imports": [],
+      "function_names": [],
+      "class_names": [],
+      "obvious_entrypoint_present": false,
+      "external_dependency_names": [],
+      "notable_safe_terms": [
+        "after",
+        "analysis",
+        "before",
+        "distortion",
+        "dynamic range",
+        "performance",
+        "phase",
+        "privacy",
+        "report",
+        "spectral",
+        "summary",
+        "validate"
+      ],
+      "notable_risk_terms": [
+        "detector",
+        "fingerprint",
+        "recognition",
+        "watermark"
+      ],
+      "safe_future_use_candidates": [
+        "audio_quality_cleanup",
+        "comparison",
+        "conservative_repair",
+        "documentation_notes",
+        "metadata_privacy_cleanup",
+        "mix_diagnostics",
+        "performance",
+        "reporting",
+        "sound_relief"
+      ],
+      "audit_category": "metadata_privacy_reference",
+      "audit_priority": "high",
+      "review_status": "candidate_for_safe_rewrite",
+      "recommendation": "Review manually for possible metadata/privacy cleanup ideas.",
+      "notes": [
+        "Static text observations only; file was not imported or executed.",
+        "Risk terms are text-observation flags for manual review, not behavior claims."
+      ]
+    }
+  ]
+}

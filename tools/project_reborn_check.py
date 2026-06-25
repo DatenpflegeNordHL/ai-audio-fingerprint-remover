@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+import zipfile
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +14,8 @@ PROJECT_REBORN_DIR = ROOT / "project_reborn"
 SOURCE_DRAWER_DIR = PROJECT_REBORN_DIR / "source_drawer"
 CATALOG_JSON = PROJECT_REBORN_DIR / "catalog" / "project_reborn_catalog.json"
 CATALOG_MARKDOWN = PROJECT_REBORN_DIR / "catalog" / "PROJECT_REBORN_CATALOG.md"
+AUDIT_JSON = PROJECT_REBORN_DIR / "audit" / "project_reborn_audit_map.json"
+AUDIT_MARKDOWN = PROJECT_REBORN_DIR / "audit" / "PROJECT_REBORN_AUDIT_MAP.md"
 README = PROJECT_REBORN_DIR / "README.md"
 REQUIRED_ENTRY_FIELDS = {
     "reborn_id",
@@ -20,6 +23,24 @@ REQUIRED_ENTRY_FIELDS = {
     "historical_filename",
     "status",
     "safe_review_category",
+    "audit_category",
+    "audit_priority",
+    "review_status",
+    "audit_report_path",
+}
+REQUIRED_AUDIT_ENTRY_FIELDS = {
+    "audit_category",
+    "audit_priority",
+    "current_path",
+    "historical_filename",
+    "reborn_id",
+    "recommendation",
+    "review_status",
+}
+FORBIDDEN_REVIEW_STATUSES = {
+    "ready_to_use",
+    "safe_to_import",
+    "active_feature",
 }
 
 if str(ROOT) not in sys.path:
@@ -34,9 +55,11 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
     source_drawer = project_dir / "source_drawer"
     catalog_json = project_dir / "catalog" / "project_reborn_catalog.json"
     catalog_markdown = project_dir / "catalog" / "PROJECT_REBORN_CATALOG.md"
+    audit_json = project_dir / "audit" / "project_reborn_audit_map.json"
+    audit_markdown = project_dir / "audit" / "PROJECT_REBORN_AUDIT_MAP.md"
     readme = project_dir / "README.md"
 
-    for path in (readme, catalog_json, catalog_markdown, source_drawer):
+    for path in (readme, catalog_json, catalog_markdown, audit_json, audit_markdown, source_drawer):
         if not path.exists():
             errors.append(f"Missing required Project Reborn path: {path.relative_to(root)}")
 
@@ -68,11 +91,15 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
             if relative_path not in entry_by_path:
                 errors.append(f"Missing catalog entry for {relative_path}")
 
+    if audit_json.exists():
+        _validate_audit(root, audit_json, source_drawer, errors)
+
     for path in project_dir.rglob("__init__.py"):
         errors.append(f"Project Reborn must not contain __init__.py: {path.relative_to(root)}")
 
     _validate_not_imported_by_package(root, errors)
     _validate_not_in_cli_help(errors)
+    _validate_not_packaged(root, errors)
     return errors
 
 
@@ -105,6 +132,42 @@ def _validate_entry(root: Path, entry: dict[str, Any], errors: list[str]) -> Non
             errors.append(f"Catalog entry {entry.get('reborn_id')} must set {key} to false.")
 
 
+def _validate_audit(root: Path, audit_json: Path, source_drawer: Path, errors: list[str]) -> None:
+    audit = _load_catalog(audit_json, errors)
+    if audit is None:
+        return
+    entries = audit.get("entries", [])
+    if not isinstance(entries, list):
+        errors.append("Audit entries must be a list.")
+        entries = []
+
+    entry_by_path: dict[str, dict[str, Any]] = {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            errors.append("Audit entry must be an object.")
+            continue
+        missing = sorted(field for field in REQUIRED_AUDIT_ENTRY_FIELDS if not entry.get(field))
+        if missing:
+            errors.append(f"Audit entry missing required fields {missing}: {entry}")
+        current_path = entry.get("current_path")
+        if isinstance(current_path, str):
+            entry_by_path[current_path] = entry
+            if not (root / current_path).exists():
+                errors.append(f"Audit current_path does not exist: {current_path}")
+        else:
+            errors.append(f"Audit entry current_path must be a string: {entry}")
+        if entry.get("review_status") in FORBIDDEN_REVIEW_STATUSES:
+            errors.append(
+                f"Audit entry {entry.get('reborn_id')} uses forbidden review_status: {entry.get('review_status')}"
+            )
+
+    if source_drawer.exists():
+        for path in sorted(item for item in source_drawer.iterdir() if item.is_file()):
+            relative_path = path.relative_to(root).as_posix()
+            if relative_path not in entry_by_path:
+                errors.append(f"Missing audit entry for {relative_path}")
+
+
 def _validate_not_imported_by_package(root: Path, errors: list[str]) -> None:
     package_dir = root / "audio_quality_humanizer"
     for path in sorted(package_dir.rglob("*.py")):
@@ -125,6 +188,30 @@ def _validate_not_in_cli_help(errors: list[str]) -> None:
     combined = "\n".join(help_texts).casefold()
     if "project reborn" in combined or "project_reborn" in combined:
         errors.append("CLI help must not expose Project Reborn as a feature command.")
+
+
+def _validate_not_packaged(root: Path, errors: list[str]) -> None:
+    pyproject_text = (root / "pyproject.toml").read_text(encoding="utf-8")
+    if "project_reborn*" in pyproject_text or 'project_reborn' in _package_include_block(pyproject_text):
+        errors.append("pyproject package discovery must not include Project Reborn.")
+
+    dist_dir = root / "dist"
+    if dist_dir.exists():
+        for wheel in dist_dir.glob("*.whl"):
+            with zipfile.ZipFile(wheel) as archive:
+                if any(name.startswith("project_reborn/") for name in archive.namelist()):
+                    errors.append(f"Project Reborn files found in wheel: {wheel.relative_to(root)}")
+
+
+def _package_include_block(pyproject_text: str) -> str:
+    marker = "[tool.setuptools.packages.find]"
+    if marker not in pyproject_text:
+        return ""
+    block = pyproject_text.split(marker, 1)[1]
+    next_section = block.find("\n[")
+    if next_section != -1:
+        block = block[:next_section]
+    return block
 
 
 def main() -> int:

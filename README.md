@@ -190,6 +190,8 @@ If `cat validation.md` says the file was not found, you are probably in the wron
 
 Project Reborn is a non-installed reference drawer for historical experimental scripts. Old filenames are historical labels only and must not be used to infer behavior. Nothing in Project Reborn is imported, packaged, or exposed through the CLI. Useful ideas must be manually reviewed and safely rewritten into `audio_quality_humanizer/`.
 
+Project Reborn now includes a static audit map at `project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md`. The audit is static only. It does not execute or import Project Reborn files.
+
 See `project_reborn/catalog/PROJECT_REBORN_CATALOG.md`.
 
 Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, preset-eval, and validate-samples can also write Markdown reports with `--markdown`.
