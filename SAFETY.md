@@ -130,6 +130,12 @@ Performance metadata is operational metadata only.
 
 v0.10.0 regression tests use synthetic audio only.
 
+Local validation outputs are intentionally ignored.
+
+Generated reports and generated audio are not part of the repository.
+
+Release notes may summarize validation outcomes without bundling user audio.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

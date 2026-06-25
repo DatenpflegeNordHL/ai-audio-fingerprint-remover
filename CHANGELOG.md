@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.10.1
+
+- Ignored local v0.10 validation outputs.
+- Added v0.10.0 release notes.
+- Added README usage notes for signal guardrail reports.
+
 ## v0.10.0
 
 - Added signal guardrails and signal-hygiene reporting.

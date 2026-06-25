@@ -22,6 +22,22 @@ The v0.9 `validate-samples` command runs local real-world validation over user-s
 
 v0.10.0 adds signal guardrails, optional performance metadata, and synthetic regression scaffolding. These features were designed from Project Reborn planning notes but rewritten from first principles inside the active package. Project Reborn remains non-installed and inert.
 
+## v0.10.0 guardrail reports
+
+v0.10.0 adds signal guardrail reporting to analysis and release-readiness workflows.
+
+Example:
+
+```bash
+ai-humanizer analyze path/to/audio.wav \
+  --report analysis.json \
+  --markdown analysis.md
+```
+
+Reports may include a `Signal Guardrails` section showing whether the input had NaN values, infinite values, full-scale peaks, shape changes, length changes, or sample-rate issues.
+
+These guardrails are audio-quality and workflow-safety checks. They are not attribution, recognition, watermark, fingerprint, provenance, detector, bypass, or evasion tools.
+
 ## Safety Boundary
 
 This tool does not remove audio watermarks.
@@ -201,6 +217,10 @@ The v0.10.0 design spec is available at `docs/design/V0_10_0_DESIGN_SPEC.md`.
 See `project_reborn/catalog/PROJECT_REBORN_CATALOG.md`.
 
 Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, preset-eval, and validate-samples can also write Markdown reports with `--markdown`.
+
+## Release notes
+
+- `v0.10.0`: `docs/releases/V0_10_0_RELEASE_NOTES.md`
 
 ## Roadmap
 
