@@ -10,6 +10,8 @@ The v0.4 compare command checks whether a candidate file introduces technical qu
 
 The v0.5 humanize command adds conservative audio-quality processing presets guarded by before/after analysis, compare, and safety gates.
 
+The v0.6 workflow commands add `doctor` for one-file release preflights and `batch` for running existing commands across folders.
+
 ## Safety Boundary
 
 This tool does not remove audio watermarks.
@@ -27,6 +29,8 @@ Analyze and release-check do not alter audio. They do not evaluate or alter wate
 Compare is also read-only. It checks technical regressions only and does not check watermark, fingerprint, provenance, origin-marker, or detector behavior.
 
 Humanize may alter audible audio quality, but it does not target watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior. It does not use time-stretch, pitch-shift, neural resynthesis, stem separation, phase randomization, or legacy remover modules.
+
+Doctor and batch workflow reports do not evaluate or alter watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior.
 
 ## Installation
 
@@ -85,7 +89,22 @@ ai-humanizer humanize input.wav output.wav --preset afro-club --target club --fa
 
 Humanize keeps the original input untouched. Safety gates analyze before/after metrics and compare the result; if safety gates fail, the output is reverted or not left as a misleading processed result.
 
-Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, and humanize can also write Markdown reports with `--markdown`.
+Run a one-file workflow preflight:
+
+```bash
+ai-humanizer doctor input.wav --target streaming --report doctor.json --markdown doctor.md
+```
+
+Run workflows across folders:
+
+```bash
+ai-humanizer batch ./tracks --mode doctor --target streaming --pattern "*.wav" --report batch.json --markdown batch.md
+ai-humanizer batch ./tracks --mode humanize --preset afro-club --target club --output-dir ./processed --recursive --report batch.json --markdown batch.md
+```
+
+Doctor combines metadata, provenance-risk inspection, analyze, and release-check for one file. Doctor is read-only. Batch applies existing commands across folders; read-only modes stay read-only, and batch humanize writes only to `output_dir` and never modifies originals. Batch does not use parallelism yet.
+
+Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, and batch can also write Markdown reports with `--markdown`.
 
 ## Roadmap
 
@@ -94,6 +113,8 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 - v0.3 release-check
 - v0.4 compare implemented
 - v0.5 conservative humanize implemented
+- v0.6 doctor/batch workflow implemented
+- future: CI hardening, optional standards-compliant LUFS, optional true-peak approximation
 - later authorized rebuild for owned/licensed tracks only
 
 ## License

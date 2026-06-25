@@ -26,7 +26,16 @@ def test_safety_document_exists():
 def test_cli_help_excludes_unsafe_flags():
     parser = _build_parser()
     help_parts = [parser.format_help()]
-    for command in ["analyze", "release-check", "compare", "humanize", "inspect-metadata", "clean-metadata"]:
+    for command in [
+        "analyze",
+        "release-check",
+        "compare",
+        "humanize",
+        "doctor",
+        "batch",
+        "inspect-metadata",
+        "clean-metadata",
+    ]:
         stdout = io.StringIO()
         with pytest.raises(SystemExit), contextlib.redirect_stdout(stdout):
             parser.parse_args([command, "--help"])
@@ -100,3 +109,20 @@ def test_processing_package_does_not_reference_legacy_modules():
 
     for module in forbidden_modules:
         assert module not in processing_source
+
+
+def test_workflows_package_does_not_reference_legacy_modules():
+    workflows_source = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT / "audio_quality_humanizer" / "workflows").glob("*.py")
+    )
+    forbidden_modules = [
+        "ai_audio_fingerprint_remover",
+        "aggressive_watermark_remover",
+        "sota_watermark_remover",
+        "enhanced_suno_detector",
+        "optimized_suno_detector",
+    ]
+
+    for module in forbidden_modules:
+        assert module not in workflows_source

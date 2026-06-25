@@ -18,6 +18,12 @@ HUMANIZE_SAFETY_NOTE = (
     "origin markers, detector signals, C2PA markers, or attribution systems."
 )
 
+WORKFLOW_SAFETY_NOTE = (
+    "These workflow reports are technical audio-quality and metadata preflights. "
+    "They do not evaluate or alter watermarks, fingerprints, detector signals, "
+    "provenance markers, origin markers, C2PA markers, or attribution systems."
+)
+
 
 def write_markdown_report(report: dict, path: Path) -> None:
     """Write a compact Markdown report."""
@@ -27,6 +33,10 @@ def write_markdown_report(report: dict, path: Path) -> None:
 
 
 def _render_markdown(report: dict) -> str:
+    if report.get("action") == "batch":
+        return _render_batch_markdown(report)
+    if report.get("action") == "doctor":
+        return _render_doctor_markdown(report)
     if report.get("action") == "humanize":
         return _render_humanize_markdown(report)
     if report.get("action") == "compare":
@@ -65,6 +75,10 @@ def _title_for_report(report: dict) -> str:
         return "Audio Compare Preflight"
     if action == "humanize":
         return "Conservative Humanize Report"
+    if action == "doctor":
+        return "Doctor Preflight"
+    if action == "batch":
+        return "Batch Workflow Report"
     if action == "release_check":
         return "Release-Readiness Preflight"
     if action == "analyze":
@@ -197,3 +211,86 @@ def _add_before_after_metrics_table(lines: list[str], before: dict, after: dict)
     for key in _key_metric_names():
         if key in before or key in after:
             lines.append(f"| `{key}` | `{_format_value(before.get(key))}` | `{_format_value(after.get(key))}` |")
+
+
+def _render_doctor_markdown(report: dict) -> str:
+    analysis = report.get("analysis", {})
+    release = report.get("release_check", {})
+    metadata = report.get("metadata", {}).get("metadata", {})
+    provenance = report.get("provenance", {})
+    lines = [
+        "# Doctor Preflight",
+        "",
+        f"- Target: `{report.get('target', '')}`",
+        f"- Input: `{report.get('input', '')}`",
+        f"- Passed: `{report.get('passed')}`",
+        f"- Score: `{report.get('score')}`",
+    ]
+
+    lines.extend(["", "## Key Audio Metrics", "", "| Metric | Value |", "| --- | --- |"])
+    for key in _key_metric_names():
+        if key in analysis:
+            lines.append(f"| `{key}` | `{_format_value(analysis[key])}` |")
+
+    _add_list_section(lines, "Release Blocking Issues", release.get("blocking_issues", []))
+    _add_list_section(lines, "Warnings", report.get("warnings", []))
+    _add_list_section(lines, "Recommendations", report.get("recommendations", []))
+
+    lines.extend(
+        [
+            "",
+            "## Metadata / Provenance Summary",
+            "",
+            "| Field | Value |",
+            "| --- | --- |",
+            f"| `detected_metadata_keys` | `{len(metadata.get('detected_metadata_keys', []))}` |",
+            f"| `ordinary_metadata_keys` | `{len(metadata.get('ordinary_metadata_keys', []))}` |",
+            f"| `possible_provenance_keys` | `{len(provenance.get('possible_provenance_keys', []))}` |",
+            f"| `metadata_read_error` | `{_format_value(metadata.get('metadata_read_error'))}` |",
+        ]
+    )
+
+    lines.extend(["", "## Safety Note", "", WORKFLOW_SAFETY_NOTE, ""])
+    return "\n".join(lines)
+
+
+def _render_batch_markdown(report: dict) -> str:
+    lines = [
+        "# Batch Workflow Report",
+        "",
+        f"- Mode: `{report.get('mode', '')}`",
+        f"- Target: `{report.get('target', '')}`",
+        f"- Preset: `{report.get('preset', '')}`",
+        f"- Input Directory: `{report.get('input_dir', '')}`",
+        f"- Output Directory: `{report.get('output_dir')}`",
+        f"- Total Files: `{report.get('total_files')}`",
+        f"- Processed Files: `{report.get('processed_files')}`",
+        f"- Failed Files: `{report.get('failed_files')}`",
+        f"- Passed Files: `{report.get('passed_files')}`",
+    ]
+
+    lines.extend(
+        [
+            "",
+            "## Results",
+            "",
+            "| Input | Output | Report | Passed | Error | Score |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for result in report.get("results", []):
+        lines.append(
+            "| "
+            f"`{result.get('input')}` | "
+            f"`{result.get('output')}` | "
+            f"`{result.get('report')}` | "
+            f"`{result.get('passed')}` | "
+            f"`{_format_value(result.get('error'))}` | "
+            f"`{_format_value(result.get('score'))}` |"
+        )
+    if not report.get("results"):
+        lines.append("| None |  |  |  |  |  |")
+
+    _add_list_section(lines, "Warnings", report.get("warnings", []))
+    lines.extend(["", "## Safety Note", "", WORKFLOW_SAFETY_NOTE, ""])
+    return "\n".join(lines)

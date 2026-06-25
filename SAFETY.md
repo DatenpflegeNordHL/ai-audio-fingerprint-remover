@@ -47,3 +47,15 @@ Humanize must keep original files untouched.
 Safety gates must block output that clips, becomes silent, changes duration unexpectedly, changes sample rate/channel count, or introduces severe stereo/phase risk.
 
 Humanize must not use old legacy remover/detector modules.
+
+Doctor is read-only.
+
+Batch read-only modes are read-only.
+
+Batch humanize writes only to output_dir.
+
+Originals must never be modified.
+
+Batch must not be used to process toward reduced recognizability, attribution, provenance, or detectability.
+
+Batch results are not proof of platform acceptance or legal clearance.

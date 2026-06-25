@@ -18,6 +18,8 @@ from audio_quality_humanizer.processing.humanize import humanize_audio
 from audio_quality_humanizer.processing.presets import SUPPORTED_PRESETS
 from audio_quality_humanizer.reports.json_report import write_json_report
 from audio_quality_humanizer.reports.markdown_report import write_markdown_report
+from audio_quality_humanizer.workflows.batch import SUPPORTED_BATCH_MODES, batch_run
+from audio_quality_humanizer.workflows.doctor import doctor_file
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -31,6 +33,10 @@ def main(argv: list[str] | None = None) -> int:
         if getattr(args, "markdown", None):
             write_markdown_report(report, Path(args.markdown))
         print(_status_message(report, args.report))
+        if getattr(args, "fail_on_issue", False) and not report.get("passed", True):
+            return 2
+        if getattr(args, "fail_on_error", False) and report.get("failed_files", 0) > 0:
+            return 2
         if getattr(args, "fail_on_safety", False) and not report.get("passed", True):
             return 2
         if getattr(args, "fail_on_regression", False) and not report.get("passed", True):
@@ -141,6 +147,58 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     humanize_parser.set_defaults(handler=_handle_humanize)
 
+    doctor_parser = subparsers.add_parser(
+        "doctor",
+        help="Run a read-only one-file metadata and release preflight.",
+    )
+    doctor_parser.add_argument("input", type=Path)
+    doctor_parser.add_argument(
+        "--target",
+        choices=SUPPORTED_TARGETS,
+        default="streaming",
+    )
+    doctor_parser.add_argument("--report", type=Path)
+    doctor_parser.add_argument("--markdown", type=Path)
+    doctor_parser.add_argument(
+        "--fail-on-issue",
+        action="store_true",
+        help="Return exit code 2 when the doctor preflight does not pass.",
+    )
+    doctor_parser.set_defaults(handler=_handle_doctor)
+
+    batch_parser = subparsers.add_parser(
+        "batch",
+        help="Run existing workflows over a folder of supported audio files.",
+    )
+    batch_parser.add_argument("input_dir", type=Path)
+    batch_parser.add_argument(
+        "--mode",
+        choices=SUPPORTED_BATCH_MODES,
+        default="doctor",
+    )
+    batch_parser.add_argument("--output-dir", type=Path)
+    batch_parser.add_argument(
+        "--target",
+        choices=SUPPORTED_TARGETS,
+        default="streaming",
+    )
+    batch_parser.add_argument(
+        "--preset",
+        choices=SUPPORTED_PRESETS,
+        default="subtle",
+    )
+    batch_parser.add_argument("--pattern", default="*.wav")
+    batch_parser.add_argument("--recursive", action="store_true")
+    batch_parser.add_argument("--fail-fast", action="store_true")
+    batch_parser.add_argument("--report", type=Path)
+    batch_parser.add_argument("--markdown", type=Path)
+    batch_parser.add_argument(
+        "--fail-on-error",
+        action="store_true",
+        help="Return exit code 2 when one or more batch files fail.",
+    )
+    batch_parser.set_defaults(handler=_handle_batch)
+
     return parser
 
 
@@ -180,6 +238,24 @@ def _handle_humanize(args: argparse.Namespace) -> dict:
     return humanize_audio(args.input, args.output, preset=args.preset, target=args.target)
 
 
+def _handle_doctor(args: argparse.Namespace) -> dict:
+    _require_input(args.input)
+    return doctor_file(args.input, target=args.target)
+
+
+def _handle_batch(args: argparse.Namespace) -> dict:
+    return batch_run(
+        input_dir=args.input_dir,
+        output_dir=args.output_dir,
+        mode=args.mode,
+        target=args.target,
+        preset=args.preset,
+        pattern=args.pattern,
+        recursive=args.recursive,
+        fail_fast=args.fail_fast,
+    )
+
+
 def _require_input(path: Path) -> None:
     if not path.exists():
         raise FileNotFoundError(f"Input file does not exist: {path}")
@@ -190,6 +266,16 @@ def _require_input(path: Path) -> None:
 def _status_message(report: dict, report_path: Path | None) -> str:
     action = report.get("action", "completed")
     suffix = f"; report written to {report_path}" if report_path else ""
+    if action == "batch":
+        return (
+            f"batch complete; mode {report.get('mode')}; processed {report.get('processed_files')}/"
+            f"{report.get('total_files')}; failed {report.get('failed_files')}{suffix}"
+        )
+    if action == "doctor":
+        return (
+            f"doctor complete; target {report.get('target')}; score {report.get('score')}; "
+            f"passed {report.get('passed')}{suffix}"
+        )
     if action == "humanize":
         return (
             f"humanize complete; preset {report.get('preset')}; target {report.get('target')}; "
