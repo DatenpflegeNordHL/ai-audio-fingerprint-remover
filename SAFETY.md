@@ -17,3 +17,11 @@ No-match results in recognition systems do not mean that a work is rights-free, 
 High-similarity rebuild workflows, if added later, are only for user-owned or properly licensed works.
 
 A clean rebuild must not reuse original waveforms, stems, loops, phase data, spectral masks, or source-derived frequency reconstruction data.
+
+Analyze and release-check are read-only.
+
+Metrics are for audio quality and technical release readiness only.
+
+Quality artifact terms such as harshness, mud, shimmer, stereo risk, and clipping are not watermark/fingerprint detection categories.
+
+The tool must never optimize processing to reduce recognition, attribution, or detectability.

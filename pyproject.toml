@@ -9,6 +9,7 @@ description = "Local CLI for audio metadata inspection, metadata cleaning, and p
 requires-python = ">=3.10"
 dependencies = [
   "mutagen>=1.45.0",
+  "numpy>=1.26.0",
   "soundfile>=0.10.3"
 ]
 
@@ -19,6 +20,9 @@ test = [
 
 [project.scripts]
 ai-humanizer = "audio_quality_humanizer.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["audio_quality_humanizer*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

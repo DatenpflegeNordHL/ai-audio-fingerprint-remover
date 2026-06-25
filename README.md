@@ -2,7 +2,9 @@
 
 `audio-quality-humanizer` is a local CLI for metadata inspection, ordinary metadata cleaning, provenance-risk inspection, future audio quality analysis, future release-readiness checking, and future authorized rebuild workflows for owned/licensed tracks only.
 
-The v0.1 MVP is intentionally narrow. It helps you see what editable metadata is present, identify metadata keys that may be related to provenance or generation context, and create a copied audio file with ordinary user-editable tags removed where supported by local metadata libraries.
+The v0.1 MVP helps you see what editable metadata is present, identify metadata keys that may be related to provenance or generation context, and create a copied audio file with ordinary user-editable tags removed where supported by local metadata libraries.
+
+The v0.2 and v0.3 commands add read-only audio quality analysis and release-readiness preflight checks. These checks are pragmatic technical reports, not official distributor or platform certification.
 
 ## Safety Boundary
 
@@ -15,6 +17,8 @@ This tool does not bypass detectors.
 This tool does not remove provenance markers or origin markers.
 
 Metadata cleaning may remove ordinary user-editable tags such as title, artist, album, comments, or similar container metadata. Metadata keys that look potentially provenance-related are reported as a risk signal and are not silently removed by default.
+
+Analyze and release-check do not alter audio. They do not evaluate or alter watermarks, fingerprints, provenance markers, origin markers, or detector signals. LUFS is currently approximate and RMS-based, not EBU/ITU compliant integrated loudness.
 
 ## Installation
 
@@ -42,7 +46,20 @@ Copy a file and clean ordinary metadata where supported:
 ai-humanizer clean-metadata input.wav output.wav --report clean.json
 ```
 
-Each command runs locally and writes a JSON report when `--report` is provided.
+Analyze audio quality metrics:
+
+```bash
+ai-humanizer analyze input.wav --report analysis.json --markdown analysis.md
+```
+
+Run release-readiness preflight checks:
+
+```bash
+ai-humanizer release-check input.wav --target streaming --report release.json --markdown release.md
+ai-humanizer release-check input.wav --target club --report club_release.json
+```
+
+Each command runs locally and writes a JSON report when `--report` is provided. Analyze and release-check can also write Markdown reports with `--markdown`.
 
 ## Roadmap
 

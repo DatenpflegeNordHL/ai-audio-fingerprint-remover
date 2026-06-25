@@ -6,12 +6,15 @@ import argparse
 import sys
 from pathlib import Path
 
+from audio_quality_humanizer.analysis.metrics import analyze_audio
+from audio_quality_humanizer.analysis.release_check import SUPPORTED_TARGETS, release_check
 from audio_quality_humanizer.metadata.cleaner import (
     clean_metadata,
     inspect_metadata,
     inspect_provenance,
 )
 from audio_quality_humanizer.reports.json_report import write_json_report
+from audio_quality_humanizer.reports.markdown_report import write_markdown_report
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -22,6 +25,8 @@ def main(argv: list[str] | None = None) -> int:
         report = args.handler(args)
         if args.report:
             write_json_report(report, Path(args.report))
+        if getattr(args, "markdown", None):
+            write_markdown_report(report, Path(args.markdown))
         print(_status_message(report, args.report))
         return 0
     except Exception as exc:
@@ -32,7 +37,7 @@ def main(argv: list[str] | None = None) -> int:
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="ai-humanizer",
-        description="Inspect and clean ordinary audio metadata locally.",
+        description="Inspect metadata and run read-only audio quality preflights locally.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -61,6 +66,29 @@ def _build_parser() -> argparse.ArgumentParser:
     clean_metadata_parser.add_argument("--report", type=Path)
     clean_metadata_parser.set_defaults(handler=_handle_clean_metadata)
 
+    analyze_parser = subparsers.add_parser(
+        "analyze",
+        help="Measure read-only audio quality metrics.",
+    )
+    analyze_parser.add_argument("input", type=Path)
+    analyze_parser.add_argument("--report", type=Path)
+    analyze_parser.add_argument("--markdown", type=Path)
+    analyze_parser.set_defaults(handler=_handle_analyze)
+
+    release_check_parser = subparsers.add_parser(
+        "release-check",
+        help="Run a read-only technical release-readiness preflight.",
+    )
+    release_check_parser.add_argument("input", type=Path)
+    release_check_parser.add_argument(
+        "--target",
+        choices=SUPPORTED_TARGETS,
+        default="streaming",
+    )
+    release_check_parser.add_argument("--report", type=Path)
+    release_check_parser.add_argument("--markdown", type=Path)
+    release_check_parser.set_defaults(handler=_handle_release_check)
+
     return parser
 
 
@@ -79,6 +107,16 @@ def _handle_clean_metadata(args: argparse.Namespace) -> dict:
     return clean_metadata(args.input, args.output)
 
 
+def _handle_analyze(args: argparse.Namespace) -> dict:
+    _require_input(args.input)
+    return analyze_audio(args.input)
+
+
+def _handle_release_check(args: argparse.Namespace) -> dict:
+    _require_input(args.input)
+    return release_check(args.input, args.target)
+
+
 def _require_input(path: Path) -> None:
     if not path.exists():
         raise FileNotFoundError(f"Input file does not exist: {path}")
@@ -89,6 +127,14 @@ def _require_input(path: Path) -> None:
 def _status_message(report: dict, report_path: Path | None) -> str:
     action = report.get("action", "completed")
     suffix = f"; report written to {report_path}" if report_path else ""
+    if action == "release_check":
+        return (
+            f"release check complete; target {report.get('target')}; "
+            f"score {report.get('score')}; passed {report.get('passed')}{suffix}"
+        )
+    if action == "analyze":
+        warning_count = len(report.get("warnings", []))
+        return f"analysis complete; warnings {warning_count}{suffix}"
     if action == "clean_metadata":
         removed_count = len(report.get("removed_ordinary_metadata_keys", []))
         warning_count = len(report.get("warnings", []))
