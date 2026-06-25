@@ -207,3 +207,6 @@ final_exports/
 temp_*
 tmp_*
 .DS_Store
+
+# Local v0.10 validation outputs
+v010_validation_outputs/
