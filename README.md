@@ -114,8 +114,22 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 - v0.4 compare implemented
 - v0.5 conservative humanize implemented
 - v0.6 doctor/batch workflow implemented
-- future: CI hardening, optional standards-compliant LUFS, optional true-peak approximation
+- v0.7 planned: CI hardening and safety automation
+- future: optional standards-compliant LUFS, optional true-peak approximation
 - later authorized rebuild for owned/licensed tracks only
+
+## Development
+
+```bash
+python -m pip install -e ".[test]"
+pytest
+python tools/safety_scan.py
+python tools/cli_smoke.py
+```
+
+## CI / Safety Automation
+
+GitHub Actions runs the test suite on Python 3.10, 3.11, and 3.12. CI also runs CLI help smoke tests, an end-to-end CLI workflow smoke test, the public-claim safety scan, and legacy import guard tests so old remover/detector behavior is not reintroduced.
 
 ## License
 

@@ -1,0 +1,81 @@
+"""Scan public-facing surfaces for unsafe feature claims."""
+
+from __future__ import annotations
+
+import contextlib
+import io
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from audio_quality_humanizer.cli import _build_parser
+from audio_quality_humanizer.safety import assert_no_unsafe_public_claims
+
+
+PUBLIC_FILES = (
+    "README.md",
+    "SAFETY.md",
+    "pyproject.toml",
+    "audio_quality_humanizer/cli.py",
+    "audio_quality_humanizer/safety.py",
+    "audio_quality_humanizer/reports/markdown_report.py",
+)
+
+CLI_COMMANDS = (
+    "inspect-metadata",
+    "inspect-provenance",
+    "clean-metadata",
+    "analyze",
+    "release-check",
+    "compare",
+    "humanize",
+    "doctor",
+    "batch",
+)
+
+
+def scan_text(label: str, text: str) -> list[tuple[str, str]]:
+    """Return unsafe matches as ``(label, term)`` tuples."""
+
+    return [(label, term) for term in assert_no_unsafe_public_claims(text)]
+
+
+def scan_public_files() -> list[tuple[str, str]]:
+    findings: list[tuple[str, str]] = []
+    for relative_path in PUBLIC_FILES:
+        path = ROOT / relative_path
+        findings.extend(scan_text(relative_path, path.read_text(encoding="utf-8")))
+    return findings
+
+
+def scan_cli_help() -> list[tuple[str, str]]:
+    parser = _build_parser()
+    findings = scan_text("cli:root", parser.format_help())
+    for command in CLI_COMMANDS:
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            try:
+                parser.parse_args([command, "--help"])
+            except SystemExit as exc:
+                if exc.code != 0:
+                    raise
+        findings.extend(scan_text(f"cli:{command}", stdout.getvalue()))
+    return findings
+
+
+def main() -> int:
+    findings = scan_public_files() + scan_cli_help()
+    if findings:
+        print("Unsafe public feature claims found:")
+        for label, term in findings:
+            print(f"{label}: {term}")
+        return 1
+    print("Safety scan passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

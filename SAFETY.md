@@ -59,3 +59,13 @@ Originals must never be modified.
 Batch must not be used to process toward reduced recognizability, attribution, provenance, or detectability.
 
 Batch results are not proof of platform acceptance or legal clearance.
+
+CI enforces a public-claim safety scan.
+
+CI enforces legacy import guards.
+
+CI smoke-tests CLI workflows.
+
+Safety automation is not legal certification or platform approval.
+
+Contributors must not weaken safety tests to make unsafe features pass.

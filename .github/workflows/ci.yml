@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install package
+        run: python -m pip install -e ".[test]"
+
+      - name: Run tests
+        run: pytest
+
+      - name: Run safety scan
+        run: python tools/safety_scan.py
+
+      - name: Run CLI help smoke tests
+        run: |
+          ai-humanizer --help
+          ai-humanizer inspect-metadata --help
+          ai-humanizer inspect-provenance --help
+          ai-humanizer clean-metadata --help
+          ai-humanizer analyze --help
+          ai-humanizer release-check --help
+          ai-humanizer compare --help
+          ai-humanizer humanize --help
+          ai-humanizer doctor --help
+          ai-humanizer batch --help
+
+      - name: Run CLI workflow smoke test
+        run: python tools/cli_smoke.py

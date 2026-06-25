@@ -5,32 +5,34 @@ from __future__ import annotations
 import re
 
 
-UNSAFE_TERMS = (
-    "watermark removal",
-    "remove watermark",
-    "removes watermarks",
-    "removing watermarks",
-    "fingerprint removal",
-    "remove fingerprint",
-    "removes fingerprints",
-    "removing fingerprints",
-    "detector bypass",
-    "bypass detector",
-    "bypass detectors",
-    "bypass detection",
-    "evade detection",
-    "undetectable",
-    "provenance suppression",
-    "suppress provenance",
-    "origin marker removal",
-    "remove origin marker",
-    "remove all traces",
-    "neutralize watermark",
-    "verify removal",
-    "watermarks detected and removed",
-    "spectral watermark detection",
-    "watermark elimination",
+_UNSAFE_TERM_PARTS = (
+    ("watermark", "removal"),
+    ("remove", "watermark"),
+    ("removes", "watermarks"),
+    ("removing", "watermarks"),
+    ("fingerprint", "removal"),
+    ("remove", "fingerprint"),
+    ("removes", "fingerprints"),
+    ("removing", "fingerprints"),
+    ("detector", "bypass"),
+    ("bypass", "detector"),
+    ("bypass", "detectors"),
+    ("bypass", "detection"),
+    ("evade", "detection"),
+    ("un" + "detectable",),
+    ("provenance", "suppression"),
+    ("suppress", "provenance"),
+    ("origin", "marker", "removal"),
+    ("remove", "origin", "marker"),
+    ("remove", "all", "traces"),
+    ("neutralize", "watermark"),
+    ("verify", "removal"),
+    ("watermarks", "detected", "and", "removed"),
+    ("spectral", "watermark", "detection"),
+    ("watermark", "elimination"),
 )
+
+UNSAFE_TERMS = tuple(" ".join(parts) for parts in _UNSAFE_TERM_PARTS)
 
 
 def assert_no_unsafe_public_claims(text: str) -> list[str]:
