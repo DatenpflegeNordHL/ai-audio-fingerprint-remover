@@ -33,6 +33,7 @@ def test_cli_help_excludes_unsafe_flags():
         "humanize",
         "doctor",
         "batch",
+        "preset-eval",
         "inspect-metadata",
         "clean-metadata",
     ]:

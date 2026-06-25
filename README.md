@@ -1,6 +1,6 @@
 # audio-quality-humanizer
 
-`audio-quality-humanizer` is a local CLI for metadata inspection, ordinary metadata cleaning, provenance-risk inspection, future audio quality analysis, future release-readiness checking, and future authorized rebuild workflows for owned/licensed tracks only.
+`audio-quality-humanizer` is a local CLI for metadata inspection, ordinary metadata cleaning, provenance-risk inspection, audio quality analysis, release-readiness checking, conservative audio-quality processing, and workflow reporting for owned/licensed tracks only.
 
 The v0.1 MVP helps you see what editable metadata is present, identify metadata keys that may be related to provenance or generation context, and create a copied audio file with ordinary user-editable tags removed where supported by local metadata libraries.
 
@@ -11,6 +11,10 @@ The v0.4 compare command checks whether a candidate file introduces technical qu
 The v0.5 humanize command adds conservative audio-quality processing presets guarded by before/after analysis, compare, and safety gates.
 
 The v0.6 workflow commands add `doctor` for one-file release preflights and `batch` for running existing commands across folders.
+
+The v0.7 milestone adds CI hardening and safety automation across tests, help output, public wording, smoke workflows, and legacy import guards.
+
+The v0.8 `preset-eval` command runs existing conservative presets on processed copies, compares the results, writes per-preset reports, and recommends an eligible preset based on quality preflight metrics.
 
 ## Safety Boundary
 
@@ -31,6 +35,8 @@ Compare is also read-only. It checks technical regressions only and does not che
 Humanize may alter audible audio quality, but it does not target watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior. It does not use time-stretch, pitch-shift, neural resynthesis, stem separation, phase randomization, or legacy remover modules.
 
 Doctor and batch workflow reports do not evaluate or alter watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior.
+
+Preset evaluation creates processed copies only and never modifies the original input. It does not evaluate or alter watermark, fingerprint, provenance, origin-marker, detector, C2PA, or attribution-system behavior. Recommendations are based only on quality, compare, and release-readiness metrics; they are not legal clearance or platform certification.
 
 ## Installation
 
@@ -104,17 +110,27 @@ ai-humanizer batch ./tracks --mode humanize --preset afro-club --target club --o
 
 Doctor combines metadata, provenance-risk inspection, analyze, and release-check for one file. Doctor is read-only. Batch applies existing commands across folders; read-only modes stay read-only, and batch humanize writes only to `output_dir` and never modifies originals. Batch does not use parallelism yet.
 
-Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, and batch can also write Markdown reports with `--markdown`.
+Evaluate conservative presets on output copies:
+
+```bash
+ai-humanizer preset-eval input.wav --target streaming --output-dir ./eval --report preset_eval.json --markdown preset_eval.md
+ai-humanizer preset-eval input.wav --target club --presets subtle,balanced,afro-club --output-dir ./eval --fail-if-none
+```
+
+Preset evaluation runs `doctor` once, then evaluates each selected preset independently. A failed preset does not stop the full evaluation. The recommendation only considers eligible outputs that passed humanize, compare, release checks, and original-file integrity checks.
+
+Each command runs locally and writes a JSON report when `--report` is provided. Analyze, release-check, compare, humanize, doctor, batch, and preset-eval can also write Markdown reports with `--markdown`.
 
 ## Roadmap
 
-- v0.1 metadata cleaner
-- v0.2 analyze
-- v0.3 release-check
+- v0.1 metadata cleaner implemented
+- v0.2 analyze implemented
+- v0.3 release-check implemented
 - v0.4 compare implemented
 - v0.5 conservative humanize implemented
 - v0.6 doctor/batch workflow implemented
-- v0.7 planned: CI hardening and safety automation
+- v0.7 CI hardening and safety automation implemented
+- v0.8 preset evaluation and report polish implemented
 - future: optional standards-compliant LUFS, optional true-peak approximation
 - later authorized rebuild for owned/licensed tracks only
 

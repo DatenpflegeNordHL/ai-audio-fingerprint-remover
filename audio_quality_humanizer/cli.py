@@ -20,6 +20,7 @@ from audio_quality_humanizer.reports.json_report import write_json_report
 from audio_quality_humanizer.reports.markdown_report import write_markdown_report
 from audio_quality_humanizer.workflows.batch import SUPPORTED_BATCH_MODES, batch_run
 from audio_quality_humanizer.workflows.doctor import doctor_file
+from audio_quality_humanizer.workflows.preset_eval import preset_eval
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -40,6 +41,8 @@ def main(argv: list[str] | None = None) -> int:
         if getattr(args, "fail_on_safety", False) and not report.get("passed", True):
             return 2
         if getattr(args, "fail_on_regression", False) and not report.get("passed", True):
+            return 2
+        if getattr(args, "fail_if_none", False) and report.get("recommended_preset") is None:
             return 2
         return 0
     except Exception as exc:
@@ -199,6 +202,27 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     batch_parser.set_defaults(handler=_handle_batch)
 
+    preset_eval_parser = subparsers.add_parser(
+        "preset-eval",
+        help="Evaluate conservative presets on copies and recommend an eligible result.",
+    )
+    preset_eval_parser.add_argument("input", type=Path)
+    preset_eval_parser.add_argument(
+        "--target",
+        choices=SUPPORTED_TARGETS,
+        default="streaming",
+    )
+    preset_eval_parser.add_argument("--output-dir", type=Path, required=True)
+    preset_eval_parser.add_argument("--presets")
+    preset_eval_parser.add_argument("--report", type=Path)
+    preset_eval_parser.add_argument("--markdown", type=Path)
+    preset_eval_parser.add_argument(
+        "--fail-if-none",
+        action="store_true",
+        help="Return exit code 2 when no preset is eligible.",
+    )
+    preset_eval_parser.set_defaults(handler=_handle_preset_eval)
+
     return parser
 
 
@@ -256,6 +280,21 @@ def _handle_batch(args: argparse.Namespace) -> dict:
     )
 
 
+def _handle_preset_eval(args: argparse.Namespace) -> dict:
+    _require_input(args.input)
+    presets = _parse_presets(args.presets)
+    return preset_eval(args.input, args.output_dir, target=args.target, presets=presets)
+
+
+def _parse_presets(value: str | None) -> list[str] | None:
+    if value is None:
+        return None
+    presets = [item.strip() for item in value.split(",") if item.strip()]
+    if not presets:
+        raise ValueError("--presets must include at least one preset name when provided.")
+    return presets
+
+
 def _require_input(path: Path) -> None:
     if not path.exists():
         raise FileNotFoundError(f"Input file does not exist: {path}")
@@ -266,6 +305,19 @@ def _require_input(path: Path) -> None:
 def _status_message(report: dict, report_path: Path | None) -> str:
     action = report.get("action", "completed")
     suffix = f"; report written to {report_path}" if report_path else ""
+    if action == "preset_eval":
+        eligible_count = sum(
+            1
+            for result in report.get("results", [])
+            if result.get("humanize_passed")
+            and not result.get("humanize_reverted")
+            and result.get("compare_passed")
+            and not result.get("blocking_issues")
+        )
+        return (
+            f"preset eval complete; target {report.get('target')}; "
+            f"recommended {report.get('recommended_preset')}; eligible {eligible_count}{suffix}"
+        )
     if action == "batch":
         return (
             f"batch complete; mode {report.get('mode')}; processed {report.get('processed_files')}/"

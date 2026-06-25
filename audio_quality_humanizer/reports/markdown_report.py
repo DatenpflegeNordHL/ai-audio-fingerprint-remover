@@ -24,6 +24,12 @@ WORKFLOW_SAFETY_NOTE = (
     "provenance markers, origin markers, C2PA markers, or attribution systems."
 )
 
+PRESET_EVAL_SAFETY_NOTE = (
+    "This preset evaluation only compares conservative audio-quality processing outcomes. "
+    "It does not evaluate or alter watermarks, fingerprints, detector signals, provenance "
+    "markers, origin markers, C2PA markers, or attribution systems."
+)
+
 
 def write_markdown_report(report: dict, path: Path) -> None:
     """Write a compact Markdown report."""
@@ -33,6 +39,8 @@ def write_markdown_report(report: dict, path: Path) -> None:
 
 
 def _render_markdown(report: dict) -> str:
+    if report.get("action") == "preset_eval":
+        return _render_preset_eval_markdown(report)
     if report.get("action") == "batch":
         return _render_batch_markdown(report)
     if report.get("action") == "doctor":
@@ -79,6 +87,8 @@ def _title_for_report(report: dict) -> str:
         return "Doctor Preflight"
     if action == "batch":
         return "Batch Workflow Report"
+    if action == "preset_eval":
+        return "Preset Evaluation Report"
     if action == "release_check":
         return "Release-Readiness Preflight"
     if action == "analyze":
@@ -170,9 +180,14 @@ def _add_regression_section(lines: list[str], regressions: list[dict[str, str]])
 def _render_humanize_markdown(report: dict) -> str:
     safety = report.get("safety", {})
     comparison = report.get("comparison", {})
+    status = _humanize_status(report)
+    main_issue = _first_item(safety.get("blocking_issues", []))
     lines = [
         "# Conservative Humanize Report",
         "",
+        "## Summary",
+        "",
+        f"- Status: `{status}`",
         f"- Action: `{report.get('action', 'humanize')}`",
         f"- Preset: `{report.get('preset', '')}`",
         f"- Target: `{report.get('target', '')}`",
@@ -180,7 +195,10 @@ def _render_humanize_markdown(report: dict) -> str:
         f"- Output: `{report.get('output', '')}`",
         f"- Passed: `{report.get('passed')}`",
         f"- Reverted: `{report.get('reverted')}`",
+        f"- Safety Result: `{safety.get('passed')}`",
         f"- Compare Score: `{comparison.get('score')}`",
+        f"- Main Safety Issue: `{_format_value(main_issue)}`",
+        "- Original input was not modified.",
     ]
 
     _add_processing_steps_table(lines, report.get("processing_steps", []))
@@ -218,14 +236,25 @@ def _render_doctor_markdown(report: dict) -> str:
     release = report.get("release_check", {})
     metadata = report.get("metadata", {}).get("metadata", {})
     provenance = report.get("provenance", {})
+    status = _doctor_status(report)
+    main_issue = _first_item(report.get("blocking_issues", [])) or _first_item(report.get("warnings", []))
+    suggested_action = _doctor_suggested_action(report)
     lines = [
         "# Doctor Preflight",
         "",
+        "## Summary",
+        "",
+        f"- Status: `{status}`",
         f"- Target: `{report.get('target', '')}`",
         f"- Input: `{report.get('input', '')}`",
         f"- Passed: `{report.get('passed')}`",
         f"- Score: `{report.get('score')}`",
+        f"- Main Issue: `{_format_value(main_issue)}`",
+        f"- Suggested Next Action: `{suggested_action}`",
     ]
+
+    top_recommendations = report.get("recommendations", [])[:3]
+    _add_list_section(lines, "Top Recommendations", top_recommendations)
 
     lines.extend(["", "## Key Audio Metrics", "", "| Metric | Value |", "| --- | --- |"])
     for key in _key_metric_names():
@@ -294,3 +323,98 @@ def _render_batch_markdown(report: dict) -> str:
     _add_list_section(lines, "Warnings", report.get("warnings", []))
     lines.extend(["", "## Safety Note", "", WORKFLOW_SAFETY_NOTE, ""])
     return "\n".join(lines)
+
+
+def _render_preset_eval_markdown(report: dict) -> str:
+    doctor = report.get("doctor", {})
+    lines = [
+        "# Preset Evaluation Report",
+        "",
+        f"- Input: `{report.get('input', '')}`",
+        f"- Target: `{report.get('target', '')}`",
+        f"- Output Directory: `{report.get('output_dir', '')}`",
+        f"- Recommended Preset: `{report.get('recommended_preset')}`",
+        f"- Recommendation Reason: `{report.get('recommendation_reason', '')}`",
+        f"- Doctor Score: `{doctor.get('score')}`",
+        f"- Doctor Passed: `{doctor.get('passed')}`",
+    ]
+
+    lines.extend(
+        [
+            "",
+            "## Preset Results",
+            "",
+            "| Preset | Humanize Passed | Reverted | Compare Passed | Compare Score | Release Passed | Release Score | Warning Count | Output |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for result in report.get("results", []):
+        lines.append(
+            "| "
+            f"`{result.get('preset')}` | "
+            f"`{result.get('humanize_passed')}` | "
+            f"`{result.get('humanize_reverted')}` | "
+            f"`{result.get('compare_passed')}` | "
+            f"`{_format_value(result.get('compare_score'))}` | "
+            f"`{result.get('release_passed')}` | "
+            f"`{_format_value(result.get('release_score'))}` | "
+            f"`{len(result.get('warnings', []))}` | "
+            f"`{result.get('output')}` |"
+        )
+    if not report.get("results"):
+        lines.append("| None |  |  |  |  |  |  |  |  |")
+
+    blocking_issues = []
+    for result in report.get("results", []):
+        for issue in result.get("blocking_issues", []):
+            blocking_issues.append(f"{result.get('preset')}: {issue}")
+        if result.get("error"):
+            blocking_issues.append(f"{result.get('preset')}: {result.get('error')}")
+    _add_list_section(lines, "Blocking Issues", blocking_issues)
+    warnings = list(report.get("warnings", []))
+    for result in report.get("results", []):
+        for warning in result.get("warnings", []):
+            warnings.append(f"{result.get('preset')}: {warning}")
+    _add_list_section(lines, "Warnings", warnings)
+    lines.extend(["", "## Safety Note", "", PRESET_EVAL_SAFETY_NOTE, ""])
+    return "\n".join(lines)
+
+
+def _doctor_status(report: dict) -> str:
+    if report.get("blocking_issues"):
+        return "BLOCKED"
+    if report.get("warnings"):
+        return "WARNING"
+    return "PASS"
+
+
+def _humanize_status(report: dict) -> str:
+    if report.get("reverted"):
+        return "REVERTED"
+    if not report.get("passed"):
+        return "BLOCKED"
+    return "PASS"
+
+
+def _doctor_suggested_action(report: dict) -> str:
+    release = report.get("release_check", {})
+    analysis_warnings = " ".join(report.get("analysis", {}).get("warnings", [])).casefold()
+    metadata = report.get("metadata", {}).get("metadata", {})
+    provenance = report.get("provenance", {})
+    if release.get("blocking_issues"):
+        return "Fix blocking release issues before processing."
+    if metadata.get("ordinary_metadata_keys"):
+        return "Run clean-metadata on a copy if metadata cleanup is desired."
+    if provenance.get("possible_provenance_keys"):
+        return "Review possible provenance metadata manually."
+    if "low-end stereo" in analysis_warnings:
+        return "Try preset-eval with club or afro-club for club target."
+    if "harshness" in analysis_warnings or "mud" in analysis_warnings:
+        return "Try preset-eval with balanced or afro-club depending on target."
+    if release.get("passed") and len(report.get("warnings", [])) <= 2:
+        return "No processing needed unless you hear audible issues."
+    return "Review warnings and run preset-eval if audible processing is needed."
+
+
+def _first_item(values: list[Any]) -> Any:
+    return values[0] if values else None

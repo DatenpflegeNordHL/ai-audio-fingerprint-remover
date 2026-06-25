@@ -34,6 +34,7 @@ CLI_COMMANDS = (
     "humanize",
     "doctor",
     "batch",
+    "preset-eval",
 )
 
 

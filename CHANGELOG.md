@@ -1,8 +1,12 @@
 # Changelog
 
-## v0.7 planned
+## v0.8 planned
 
-- CI hardening and safety automation.
+- Preset evaluation and report polish.
+
+## v0.7
+
+- Added CI hardening and safety automation.
 
 ## v0.6
 

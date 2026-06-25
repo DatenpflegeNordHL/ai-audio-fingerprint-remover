@@ -60,6 +60,16 @@ Batch must not be used to process toward reduced recognizability, attribution, p
 
 Batch results are not proof of platform acceptance or legal clearance.
 
+Preset eval creates processed copies only.
+
+Preset eval must never modify the original input.
+
+Preset eval must not optimize toward reduced recognizability, attribution, provenance, or detectability.
+
+Preset eval recommendations must be based only on quality, compare, and release metrics.
+
+Preset eval recommendations are not legal clearance or platform certification.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

@@ -23,6 +23,7 @@ def main() -> int:
         temp_dir = Path(temp_dir_name)
         sample_path = temp_dir / "sample.wav"
         humanized_path = temp_dir / "humanized.wav"
+        eval_dir = temp_dir / "eval"
         _write_sine(sample_path)
         original_hash = _sha256(sample_path)
 
@@ -79,6 +80,20 @@ def main() -> int:
                 "--markdown",
                 str(temp_dir / "compare.md"),
             ],
+            [
+                "preset-eval",
+                str(sample_path),
+                "--target",
+                "streaming",
+                "--presets",
+                "subtle,balanced",
+                "--output-dir",
+                str(eval_dir),
+                "--report",
+                str(temp_dir / "preset_eval.json"),
+                "--markdown",
+                str(temp_dir / "preset_eval.md"),
+            ],
         ]
         for args in commands:
             _run([str(cli), *args])
@@ -96,6 +111,13 @@ def main() -> int:
             temp_dir / "humanize.md",
             temp_dir / "compare.json",
             temp_dir / "compare.md",
+            eval_dir,
+            eval_dir / "sample.subtle.humanized.wav",
+            eval_dir / "sample.subtle.eval.json",
+            eval_dir / "sample.balanced.humanized.wav",
+            eval_dir / "sample.balanced.eval.json",
+            temp_dir / "preset_eval.json",
+            temp_dir / "preset_eval.md",
         ]
         missing = [path for path in expected if not path.exists()]
         if missing:
