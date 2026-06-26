@@ -20,7 +20,7 @@ The v0.9 `validate-samples` command runs local real-world validation over user-s
 
 The v0.11 compare workflow adds neutral read-only `comparison_metrics` for before/after quality deltas. These metrics are additive report fields and do not modify audio, change release-check scoring, or add a new CLI command.
 
-The v0.13 private web backend MVP adds an optional FastAPI backend for future private-beta upload workflows. It includes a simple local operator page and safe single-file JSON artifact generation. It has no frontend framework, deployment config, DNS config, or public launch.
+The v0.14 private web dashboard adds generated artifact previews, metric cards from real report fields, waveform and spectrogram previews from visualization JSON, and sanitized metadata display for embedded images and long fields. It has no frontend framework, deployment config, DNS config, or public launch.
 
 ## v0.10.0 safe core
 
@@ -193,7 +193,7 @@ The visualization artifact schema is intentionally stable for future UI work. Re
 
 ## Private web backend MVP
 
-v0.13.1 adds a working optional private-beta backend MVP for local upload workflows at `release.datenpflege-nord.de`.
+v0.14.0 adds a working optional private dashboard for local upload workflows at `release.datenpflege-nord.de`.
 
 Install the optional web extra before running it:
 
@@ -220,12 +220,23 @@ Implemented backend endpoints:
 
 All API endpoints except `/health` require a bearer token. The first upload flow accepts one file per request, validates an allowlisted audio extension, checks basic audio container headers where practical, stores the file under a random per-job directory, runs a safe single-file mode synchronously, writes JSON-safe artifacts, and updates `status.json`.
 
+The dashboard renders generated JSON artifacts in-browser after job completion. It shows only fields that exist in the artifacts, keeps raw JSON available, and adds no fake metrics or fake improvement percentages. No fake metrics are added.
+
 Generated artifacts:
 
 - `analyze` writes `analysis.json`
 - `release-check` writes `release_check.json`
 - `inspect-metadata` writes `metadata.json`
 - `visualize` writes `visualization.json`
+
+Dashboard previews:
+
+- metric cards from existing analyze, release-check, and visualization report fields
+- waveform preview from `visualization.json` `waveform_peaks.peaks`
+- spectrogram energy preview from `visualization.json` `spectrogram.energy_db`
+- metadata key/value panel from `metadata.json` `metadata_display`
+
+The metadata display is sanitized for embedded images and long fields. Embedded cover values such as `APIC:Cover` are summarized with `[embedded image omitted]`, optional MIME/type/size fields, and preserved metadata keys. Long text display values are truncated for dashboard use. The uploaded file is not modified.
 
 Supported single-file MVP modes are `analyze`, `release-check`, `inspect-metadata`, and `visualize`. `clean-metadata`, `visualize-compare`, `compare`, and `humanize` are deferred until a later safe flow covers file-modifying behavior, two-file uploads, or output-audio generation.
 
@@ -299,7 +310,7 @@ The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_
 
 The future web upload visualization MVP is documented as design-only at `docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md`. No web app is implemented yet. The candidate subdomain is `release.datenpflege-nord.de`; any future web version must keep the same safety boundary, and spectrum or difference views must show only measured technical changes.
 
-The v0.13 private web backend MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. It is local, private beta only, uses no frontend framework, and keeps deployment, DNS, and public launch deferred.
+The v0.14 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. It is local, private beta only, uses no external frontend libraries, and keeps deployment, DNS, public launch, file-modifying modes, and two-file modes deferred.
 
 ## Candidate Reality Gate
 

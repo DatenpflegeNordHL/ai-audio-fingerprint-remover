@@ -9,6 +9,7 @@ from typing import Any, Callable
 from audio_quality_humanizer.analysis.metrics import analyze_audio
 from audio_quality_humanizer.analysis.release_check import release_check
 from audio_quality_humanizer.metadata.cleaner import inspect_metadata
+from audio_quality_humanizer.web.metadata_display import build_metadata_display
 from audio_quality_humanizer.web.storage import artifact_path, read_status, write_status
 from audio_quality_humanizer.visualization_artifacts import build_visualization_artifacts
 
@@ -56,7 +57,7 @@ def _run_mode(input_path: Path, mode: str) -> dict[str, Any]:
     handlers: dict[str, Callable[[Path], dict[str, Any]]] = {
         "analyze": analyze_audio,
         "release-check": lambda path: release_check(path, "streaming"),
-        "inspect-metadata": inspect_metadata,
+        "inspect-metadata": _inspect_metadata_for_web,
         "visualize": build_visualization_artifacts,
     }
     if mode not in handlers:
@@ -66,3 +67,16 @@ def _run_mode(input_path: Path, mode: str) -> dict[str, Any]:
 
 def _assert_json_safe(report: dict[str, Any]) -> None:
     json.dumps(report, allow_nan=False)
+
+
+def _inspect_metadata_for_web(input_path: Path) -> dict[str, Any]:
+    report = inspect_metadata(input_path)
+    display = build_metadata_display(report)
+    metadata = report.get("metadata", {})
+    if isinstance(metadata, dict) and isinstance(metadata.get("metadata_values"), dict):
+        metadata["metadata_values"] = {
+            key: value.get("display_value", "")
+            for key, value in display.get("metadata_values", {}).items()
+        }
+    report["metadata_display"] = display
+    return report

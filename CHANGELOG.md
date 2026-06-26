@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.14.0
+
+- Added private dashboard shell for local web MVP.
+- Added artifact preview rendering for generated JSON reports.
+- Added waveform and spectrogram previews from visualization artifacts.
+- Added sanitized metadata display for embedded cover and long metadata fields.
+- Kept external frontend libraries, deployment, public launch, file-modifying modes, and two-file modes deferred.
+
 ## v0.13.1
 
 - Added execution for safe single-file private web backend modes.

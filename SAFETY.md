@@ -210,6 +210,10 @@ The private web operator page is local and uses no frontend framework or externa
 
 The private web API may execute safe single-file read-only modes and write JSON artifacts.
 
+The private web dashboard renders generated artifacts only and must not add fake metrics.
+
+The private web dashboard sanitizes embedded images and long metadata fields for display.
+
 Private web file-modifying, two-file, and output-audio modes remain deferred.
 
 Private web storage must use random job IDs and must not use user filenames as storage paths.

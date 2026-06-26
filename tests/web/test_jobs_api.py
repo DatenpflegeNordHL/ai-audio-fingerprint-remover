@@ -78,6 +78,60 @@ def test_safe_single_file_modes_generate_downloadable_artifacts(tmp_path, monkey
         assert artifact.status_code == 200
         report = json.loads(artifact.body.decode("utf-8"))
         json.dumps(report, allow_nan=False)
+        if mode == "visualize":
+            assert "waveform_peaks" in report
+            assert "peaks" in report["waveform_peaks"]
+            assert "spectrogram" in report
+            assert "energy_db" in report["spectrogram"]
+
+
+def test_inspect_metadata_artifact_includes_sanitized_display(tmp_path, monkeypatch):
+    prepare_env(monkeypatch, tmp_path)
+    huge_cover = "binary-cover-data-" * 1000
+    long_title = "long title " * 200
+
+    def fake_metadata(_path):
+        return {
+            "action": "inspect_metadata",
+            "file_info": {"path": "input.mp3", "extension": ".mp3", "size_bytes": 100, "sha256": "abc"},
+            "warnings": [],
+            "metadata": {
+                "metadata_handler": "synthetic",
+                "metadata_read_error": None,
+                "detected_metadata_keys": ["APIC:Cover", "title"],
+                "metadata_values": {
+                    "APIC:Cover": huge_cover,
+                    "title": long_title,
+                },
+                "ordinary_metadata_keys": ["APIC:Cover", "title"],
+                "possible_provenance_keys": [],
+                "warnings": [],
+            },
+        }
+
+    monkeypatch.setattr(web_processing, "inspect_metadata", fake_metadata)
+    body, content_type = multipart_body(mode="inspect-metadata")
+    upload = call_app(
+        "POST",
+        "/api/jobs",
+        headers={**auth_header(), "content-type": content_type},
+        body=body,
+    )
+
+    assert upload.status_code == 201
+    job_id = upload.json()["job_id"]
+    artifact = call_app("GET", f"/api/jobs/{job_id}/artifacts/metadata.json", headers=auth_header())
+    report = json.loads(artifact.body.decode("utf-8"))
+    display = report["metadata_display"]
+
+    assert display["detected_metadata_keys"] == ["APIC:Cover", "title"]
+    assert display["metadata_values"]["APIC:Cover"]["embedded_cover"] is True
+    assert display["metadata_values"]["APIC:Cover"]["display_value"] == "[embedded image omitted]"
+    assert huge_cover not in json.dumps(display)
+    assert huge_cover not in json.dumps(report)
+    assert report["metadata"]["metadata_values"]["APIC:Cover"] == "[embedded image omitted]"
+    assert display["metadata_values"]["title"]["truncated"] is True
+    assert len(display["metadata_values"]["title"]["display_value"]) <= 503
 
 
 def test_status_artifact_can_be_downloaded(tmp_path, monkeypatch):

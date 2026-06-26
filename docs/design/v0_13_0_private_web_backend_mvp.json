@@ -1,6 +1,6 @@
 {
-  "version_target": "0.13.1",
-  "status": "implemented_working_local_mvp",
+  "version_target": "0.14.0",
+  "status": "implemented_private_dashboard_artifact_rendering",
   "deep_search_decision": "not_needed_internal_repo_only",
   "deep_search_completed": false,
   "approved_backend_stack": [
@@ -76,7 +76,19 @@
     "inline_css": true,
     "vanilla_javascript": true,
     "external_assets": false,
-    "token_persistence": false
+    "token_persistence": false,
+    "artifact_rendering": true,
+    "metric_cards_from_artifacts": true,
+    "waveform_preview_from_visualization_json": true,
+    "spectrogram_preview_from_visualization_json": true,
+    "metadata_panel_from_metadata_display": true,
+    "fake_metrics": false
+  },
+  "metadata_display": {
+    "sanitized_embedded_images": true,
+    "preserves_detected_metadata_keys": true,
+    "max_display_chars": 500,
+    "modifies_uploaded_file": false
   },
   "security_requirements": [
     "private beta only",
@@ -95,6 +107,8 @@
     "technical job-status responses only",
     "temporary uploads only",
     "no committed uploaded audio or generated outputs",
+    "no fake dashboard metrics",
+    "no platform or distributor guarantees",
     "no watermark, fingerprint, provenance, C2PA, source-attribution, detector, evasion, detectability, platform-certification, or distributor-guarantee outcomes"
   ],
   "not_approved": [

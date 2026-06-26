@@ -1,14 +1,14 @@
-# v0.13 Private Web Backend MVP
+# v0.14 Private Dashboard and Web Backend MVP
 
 ## Status
 
-Implemented working local backend MVP.
+Implemented working local dashboard and backend MVP.
 
 ## Deep Search Summary
 
-Deep Search decision for v0.13.1: `not_needed_internal_repo_only`.
+Deep Search decision for v0.14.0: `not_needed_internal_repo_only`.
 
-The current milestone only extends the already-approved local backend skeleton. No new external frontend libraries or current external information were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per request, random job IDs from `secrets.token_urlsafe`, and temporary per-job directories under a controlled local root.
+The current milestone only extends the already-approved local backend. No new external frontend libraries or current external information were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per request, random job IDs from `secrets.token_urlsafe`, and temporary per-job directories under a controlled local root.
 
 ## Approved Dependencies
 
@@ -41,7 +41,9 @@ Token comparison uses constant-time comparison.
 - `DELETE /api/jobs/{job_id}`
 - `POST /api/maintenance/cleanup`
 
-`GET /` returns a local operator page with a token field, upload form, mode selector, job status area, artifact links, supported/deferred mode lists, and safety note. The page uses plain HTML, inline CSS, and minimal vanilla JavaScript only.
+`GET /` returns a local private dashboard with a token field, upload form, mode selector, job status area, artifact actions, metric cards, visualization preview, metadata panel, raw JSON preview, supported/deferred mode lists, and safety note. The page uses plain HTML, inline CSS, and minimal vanilla JavaScript only.
+
+The dashboard renders only generated JSON artifact data. It does not add fake metrics, fake percentages, or platform/distributor outcome language.
 
 `POST /api/jobs` validates the requested single-file mode, validates and stores the uploaded file, executes the selected safe single-file mode synchronously, writes generated JSON artifacts, updates `status.json`, and returns job metadata.
 
@@ -130,6 +132,39 @@ Generated artifacts:
 - `inspect-metadata` writes `metadata.json`
 - `visualize` writes `visualization.json`
 
+## Dashboard Rendering
+
+The dashboard can fetch and render generated JSON artifacts.
+
+Metric cards are populated only from fields present in artifacts, including peak, RMS or loudness approximation, clipping sample count, duration, sample rate, channel count, and release-check score.
+
+Raw JSON remains available in a preview panel.
+
+## Visualization Preview
+
+For `visualize` mode, the dashboard renders:
+
+- waveform preview from `waveform_peaks.peaks`
+- spectrogram energy preview from `spectrogram.energy_db`
+
+These previews are generated from artifact data and are not official mastering-standard displays.
+
+## Metadata Display Cleanup
+
+For `inspect-metadata` mode, the generated `metadata.json` includes a `metadata_display` object for dashboard use.
+
+The display helper preserves detected metadata keys while summarizing embedded cover/image fields and long text values.
+
+Embedded cover fields such as `APIC:Cover` use:
+
+- `embedded_cover: true`
+- `display_value: "[embedded image omitted]"`
+- optional `mime`
+- optional `type`
+- optional `size_bytes`
+
+Long text display values are truncated to 500 characters. The uploaded file is not modified.
+
 ## Deferred Modes
 
 Deferred until later safe flows:
@@ -173,6 +208,8 @@ Tests cover:
 - JSON-safe status files
 - endpoint response wording
 - operator page rendering and safe wording
+- dashboard artifact preview rendering
+- sanitized metadata display for embedded images and long fields
 - generated artifacts for analyze, release-check, inspect-metadata, and visualize
 - completed and failed job states
 - design and safety documentation
@@ -195,6 +232,8 @@ Do not commit uploaded audio, generated web reports, generated audio, local job 
 - no accounts, OAuth, database, Redis, Celery, billing, analytics, or multi-tenant storage
 - no audio algorithm changes
 - no file-modifying or output-audio modes
+- no fake metrics
+- no platform or distributor guarantees
 
 ## Future Relationship
 
