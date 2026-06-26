@@ -20,6 +20,8 @@ The v0.9 `validate-samples` command runs local real-world validation over user-s
 
 The v0.11 compare workflow adds neutral read-only `comparison_metrics` for before/after quality deltas. These metrics are additive report fields and do not modify audio, change release-check scoring, or add a new CLI command.
 
+The v0.13 private web backend MVP adds an optional FastAPI backend skeleton for future private-beta upload workflows. It has no frontend UI, deployment config, DNS config, or public launch.
+
 ## v0.10.0 safe core
 
 v0.10.0 adds signal guardrails, optional performance metadata, and synthetic regression scaffolding. These features were designed from Project Reborn planning notes but rewritten from first principles inside the active package. Project Reborn remains non-installed and inert.
@@ -90,6 +92,12 @@ ai-humanizer --version
 pytest
 python tools/safety_scan.py
 python tools/cli_smoke.py
+```
+
+Editable development install with the optional private web backend:
+
+```bash
+python -m pip install -e ".[web,dev,test]"
 ```
 
 Build and install a wheel locally:
@@ -183,6 +191,37 @@ Visualization artifacts include waveform peaks, downsampled spectrogram summarie
 
 The visualization artifact schema is intentionally stable for future UI work. Reports include `schema_version`, bounded waveform and spectrogram arrays, JSON-safe numeric values, and safe tooltip labels only. The artifacts are preview data for technical review; they are not mastering certification and do not predict platform or distributor acceptance.
 
+## Private web backend MVP
+
+v0.13.0 adds an optional private-beta backend skeleton for future upload workflows at `release.datenpflege-nord.de`.
+
+Install the optional web extra before running it:
+
+```bash
+python -m pip install -e ".[web,dev,test]"
+```
+
+Local run example:
+
+```bash
+AQH_WEB_TOKEN=dev-token uvicorn audio_quality_humanizer.web.app:app --reload
+```
+
+Implemented backend endpoints:
+
+- `GET /health`
+- `POST /api/jobs`
+- `GET /api/jobs/{job_id}`
+- `GET /api/jobs/{job_id}/artifacts/{artifact_name}`
+- `DELETE /api/jobs/{job_id}`
+- `POST /api/maintenance/cleanup`
+
+All API endpoints except `/health` require a bearer token. The first upload flow accepts one file per request, validates an allowlisted audio extension, checks basic audio container headers where practical, stores the file under a random per-job directory, and writes a JSON-safe `status.json`. Processing execution is deferred in this skeleton; the endpoint validates supported modes and creates the upload job only.
+
+Supported single-file MVP modes are `analyze`, `release-check`, `inspect-metadata`, `clean-metadata`, and `visualize`. `visualize-compare`, `compare`, and `humanize` are deferred until a later safe flow covers two-file uploads or output-audio generation.
+
+This backend is private beta only. There is no frontend UI, static asset build chain, deployment config, DNS config, public launch, database, account system, background queue, analytics, billing, or multi-tenant storage in this milestone. Existing safety boundaries apply.
+
 Apply conservative audio-quality processing:
 
 ```bash
@@ -250,6 +289,8 @@ The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_
 `reborn_005` now has a design-only deep review at `docs/design/REBORN_005_DEEP_REVIEW.md`. No active package behavior changed from that review.
 
 The future web upload visualization MVP is documented as design-only at `docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md`. No web app is implemented yet. The candidate subdomain is `release.datenpflege-nord.de`; any future web version must keep the same safety boundary, and spectrum or difference views must show only measured technical changes.
+
+The v0.13.0 private web backend skeleton is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. It is backend-only, private beta only, and keeps frontend UI, deployment, DNS, and public launch deferred.
 
 ## Candidate Reality Gate
 

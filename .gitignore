@@ -216,3 +216,7 @@ v011_validation_outputs/
 
 # Local v0.12 validation outputs
 v012_validation_outputs/
+
+# Local v0.13 private web outputs
+.var/
+v013_web_outputs/

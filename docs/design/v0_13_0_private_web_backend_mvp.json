@@ -1,0 +1,116 @@
+{
+  "version_target": "0.13.0",
+  "status": "implemented_backend_skeleton",
+  "deep_search_decision": "needed_current_library_behavior",
+  "deep_search_completed": true,
+  "approved_backend_stack": [
+    "FastAPI",
+    "Uvicorn",
+    "python-multipart"
+  ],
+  "approved_dependencies": {
+    "web": [
+      "fastapi>=0.138.1,<0.139.0",
+      "uvicorn>=0.49.0,<0.50.0",
+      "python-multipart>=0.0.32,<0.0.33"
+    ],
+    "test": []
+  },
+  "license_concerns": "No license concern was found in the supplied Deep Search summary for the approved direct backend and test dependency direction.",
+  "auth": {
+    "type": "bearer_token",
+    "env_var": "AQH_WEB_TOKEN",
+    "required_for_api_endpoints": true,
+    "health_requires_auth": false,
+    "constant_time_compare": true
+  },
+  "max_upload_mib": 100,
+  "job_storage": {
+    "env_var": "AQH_WEB_JOB_ROOT",
+    "default_root": ".var/private-web/jobs",
+    "per_job_directories": [
+      "input",
+      "artifacts",
+      "status.json"
+    ],
+    "random_job_ids": true,
+    "user_filenames_as_paths": false
+  },
+  "cleanup": {
+    "job_ttl_hours_env": "AQH_JOB_TTL_HOURS",
+    "job_ttl_hours_default": 24,
+    "partial_ttl_minutes_env": "AQH_PARTIAL_TTL_MINUTES",
+    "partial_ttl_minutes_default": 60
+  },
+  "endpoints": [
+    "GET /health",
+    "POST /api/jobs",
+    "GET /api/jobs/{job_id}",
+    "GET /api/jobs/{job_id}/artifacts/{artifact_name}",
+    "DELETE /api/jobs/{job_id}",
+    "POST /api/maintenance/cleanup"
+  ],
+  "supported_modes": [
+    "analyze",
+    "release-check",
+    "inspect-metadata",
+    "clean-metadata",
+    "visualize"
+  ],
+  "deferred_modes": [
+    "visualize-compare",
+    "compare",
+    "humanize"
+  ],
+  "processing_execution": "deferred",
+  "security_requirements": [
+    "private beta only",
+    "bearer-token auth for API endpoints",
+    "one uploaded file per request",
+    "allowlisted audio extensions",
+    "enforce byte count while copying uploads",
+    "advisory content type only",
+    "basic magic-byte sanity checks",
+    "random job IDs",
+    "path traversal protection",
+    "temporary job storage",
+    "automatic cleanup helper"
+  ],
+  "safety_boundary": [
+    "technical job-status responses only",
+    "temporary uploads only",
+    "no committed uploaded audio or generated outputs",
+    "no watermark, fingerprint, provenance, C2PA, source-attribution, detector, evasion, detectability, platform-certification, or distributor-guarantee outcomes"
+  ],
+  "not_approved": [
+    "frontend UI",
+    "React",
+    "Vite",
+    "Next",
+    "wavesurfer.js",
+    "Meyda",
+    "three.js",
+    "audioMotion-analyzer",
+    "deployment",
+    "DNS config",
+    "public launch",
+    "final legal or privacy public text",
+    "accounts",
+    "OAuth",
+    "database",
+    "Redis",
+    "Celery",
+    "billing",
+    "analytics",
+    "multi-tenant storage",
+    "audio processing behavior changes"
+  ],
+  "project_reborn_boundary": {
+    "reference_only": true,
+    "copied": false,
+    "imported": false,
+    "executed": false,
+    "packaged": false,
+    "exposed": false
+  }
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.13.0
+
+- Added private-beta web backend MVP planning and skeleton.
+- Added bearer-token auth, upload validation, job storage, artifact access, and cleanup tests.
+- Kept frontend UI, deployment, and public launch deferred.
+
 ## v0.12.1
 
 - Added release notes and schema hardening for visualization artifacts.

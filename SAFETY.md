@@ -200,6 +200,20 @@ Visualization artifacts are not mastering certification.
 
 Visualization artifacts do not predict platform or distributor acceptance.
 
+The v0.13 private web API is private beta only.
+
+All private web API endpoints except `/health` require bearer-token auth.
+
+Uploaded files are temporary.
+
+Private web storage must use random job IDs and must not use user filenames as storage paths.
+
+Generated private web outputs must not be committed.
+
+No frontend UI, deployment, DNS config, or public launch is included in v0.13.
+
+The private web API must not make watermark, fingerprint, provenance, detector, C2PA, source-attribution, evasion, detectability, platform-certification, or distributor-guarantee claims.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.
