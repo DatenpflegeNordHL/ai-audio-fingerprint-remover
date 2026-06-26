@@ -1,0 +1,283 @@
+{
+  "version_target": "0.11.3",
+  "status": "design_only",
+  "recommended_subdomain": "release.datenpflege-nord.de",
+  "goal": "Future private-beta web interface for safe ai-humanizer upload workflows, before/after visualization, and report downloads.",
+  "deep_search_decision": "not_needed_internal_repo_only",
+  "deep_search_stop_required": true,
+  "allowed_modes": [
+    "analyze",
+    "release-check",
+    "inspect-metadata",
+    "clean-metadata",
+    "compare",
+    "conservative humanize"
+  ],
+  "disallowed_modes": [
+    "No watermark removal",
+    "No fingerprint removal",
+    "No detector bypass",
+    "No recognition failure testing",
+    "No provenance removal",
+    "No origin marker removal",
+    "No C2PA marker removal",
+    "No source-attribution removal",
+    "No detectability reduction",
+    "No platform certification",
+    "No distributor acceptance guarantee",
+    "No detector evasion verification",
+    "No hiding AI origin",
+    "No machine-pattern normalization for detection avoidance"
+  ],
+  "visualization_views": [
+    "original spectrum",
+    "processed spectrum",
+    "difference map",
+    "waveform timeline",
+    "before/after toggle",
+    "metric cards",
+    "download panel"
+  ],
+  "difference_map_rules": [
+    "visualize only measurable backend report changes or generated spectrogram-difference data",
+    "do not invent regions client-side unless they are clearly marked as visual-only",
+    "map highlighted areas to measured technical metrics only"
+  ],
+  "allowed_visual_labels": [
+    "clipping reduced",
+    "peak adjusted",
+    "RMS changed",
+    "dynamic range changed",
+    "spectral centroid changed",
+    "spectral rolloff changed",
+    "stereo correlation changed",
+    "side energy changed",
+    "metadata cleaned"
+  ],
+  "forbidden_visual_labels": [
+    "No UI label may say fingerprint removed",
+    "No UI label may say watermark removed",
+    "No UI label may say AI trace removed",
+    "No UI label may say detector bypassed",
+    "No UI label may say undetectable",
+    "No UI label may say hidden identifier removed",
+    "No UI label may say provenance removed",
+    "No UI label may say source attribution removed",
+    "No UI label may say C2PA removed"
+  ],
+  "color_semantics": {
+    "blue": "unchanged or neutral",
+    "green": "improved or stable",
+    "yellow": "noticeable change",
+    "orange": "warning",
+    "red": "critical issue detected before processing",
+    "violet": "processed or changed region",
+    "forbidden_implication": "Do not use color to imply watermark, fingerprint, detector, provenance, origin, or source-attribution removal."
+  },
+  "tooltip_examples": [
+    {
+      "time": "01:24.8",
+      "frequency_band": "8-12 kHz",
+      "change": "-2.1 dB average energy",
+      "related_metric": "spectral_rolloff_delta_hz",
+      "note": "High-frequency energy changed after processing."
+    },
+    {
+      "issue": "Clipping detected before processing",
+      "before": "53 clipped samples",
+      "after": "0 clipped samples",
+      "status": "improved"
+    },
+    {
+      "metadata": "Standard metadata fields removed: 4",
+      "audio_samples_changed": false,
+      "status": "metadata cleanup only"
+    }
+  ],
+  "candidate_frontend_libraries": [
+    {
+      "name": "wavesurfer.js",
+      "status": "design_candidate_only",
+      "possible_uses": [
+        "waveform",
+        "timeline",
+        "playback",
+        "regions",
+        "possible spectrogram plugin"
+      ],
+      "license_note": "BSD-3-Clause according to project documentation."
+    },
+    {
+      "name": "Meyda",
+      "status": "design_candidate_only",
+      "possible_uses": [
+        "browser-side audio feature extraction experiments",
+        "RMS",
+        "spectral centroid",
+        "spectral rolloff",
+        "realtime or offline feature displays"
+      ],
+      "license_note": "MIT according to GitHub."
+    },
+    {
+      "name": "three.js",
+      "status": "design_candidate_only_optional_visual_identity",
+      "possible_uses": [
+        "animated spectral tunnel",
+        "loading scanner",
+        "background visual identity"
+      ],
+      "license_note": "MIT according to GitHub."
+    },
+    {
+      "name": "audioMotion-analyzer",
+      "status": "visual_inspiration_only_pending_license_approval",
+      "possible_uses": [
+        "visual inspiration for spectrum animation"
+      ],
+      "license_note": "AGPL-3.0 license requires separate approval before dependency use."
+    }
+  ],
+  "recommended_mvp_technical_approach": {
+    "prefer_backend_generated_visualization_data": true,
+    "backend_should_generate": [
+      "JSON metrics",
+      "Markdown report",
+      "optional downsampled waveform peaks",
+      "optional spectrogram matrix",
+      "optional difference matrix"
+    ],
+    "frontend_should_render": [
+      "waveform from peaks or audio file",
+      "spectrum image or matrix",
+      "difference overlay",
+      "metric cards from report JSON",
+      "hover tooltips from backend-provided region metadata"
+    ]
+  },
+  "architecture": {
+    "frontend": "small private-beta upload interface",
+    "backend": "Python API wrapper around existing ai-humanizer CLI",
+    "worker": "job runner for processing",
+    "storage": "temporary per-job folders",
+    "reports": [
+      "JSON",
+      "Markdown"
+    ],
+    "visualization_artifacts": [
+      "safe JSON matrices",
+      "PNG previews"
+    ],
+    "cleanup": "automatic deletion after retention period"
+  },
+  "suggested_endpoints": [
+    "POST /jobs",
+    "GET /jobs/{job_id}",
+    "GET /jobs/{job_id}/visualization/original",
+    "GET /jobs/{job_id}/visualization/processed",
+    "GET /jobs/{job_id}/visualization/difference",
+    "GET /jobs/{job_id}/download/{artifact}",
+    "DELETE /jobs/{job_id}"
+  ],
+  "security_requirements": [
+    "private beta first",
+    "basic auth or simple login",
+    "max upload size",
+    "allowlisted file extensions",
+    "MIME sniffing where practical",
+    "random job IDs",
+    "path traversal protection",
+    "no public directory listing",
+    "automatic deletion",
+    "rate limiting",
+    "server-side timeout",
+    "no logging of full file contents",
+    "no committing uploaded audio or generated outputs"
+  ],
+  "generated_artifacts": [
+    "processed audio",
+    "JSON report",
+    "Markdown report",
+    "waveform peaks JSON",
+    "original spectrogram preview",
+    "processed spectrogram preview",
+    "difference heatmap preview",
+    "ZIP bundle"
+  ],
+  "retention_policy": {
+    "default_retention": "24 hours",
+    "automatic_deletion_required": true,
+    "generated_outputs_temporary": true,
+    "commit_uploaded_audio": false,
+    "commit_generated_outputs": false
+  },
+  "faq": [
+    {
+      "question": "What does this tool do?",
+      "answer": "It checks audio files for technical quality, metadata, release-readiness, and safe before/after differences. Some modes can create a processed output using conservative audio-quality settings."
+    },
+    {
+      "question": "What does the spectrum view show?",
+      "answer": "It shows measurable energy distribution over time and frequency. The difference view highlights measurable technical changes between original and processed audio."
+    },
+    {
+      "question": "Does a highlighted area mean a watermark or fingerprint was removed?",
+      "answer": "No. Highlighted areas only show measured technical differences such as peak, RMS, clipping, spectral centroid, spectral rolloff, stereo correlation, side energy, or metadata changes."
+    },
+    {
+      "question": "Does it change my audio?",
+      "answer": "Analyze, release-check, inspect-metadata, and compare are read-only. Clean-metadata changes metadata only. Conservative humanize can create a processed audio output."
+    },
+    {
+      "question": "Does it remove AI fingerprints or watermarks?",
+      "answer": "No. The tool does not remove watermarks, fingerprints, provenance, C2PA markers, source-attribution markers, or detector signals."
+    },
+    {
+      "question": "Does it make AI music undetectable?",
+      "answer": "No. The tool is not designed to bypass detectors or mislead recognition systems."
+    },
+    {
+      "question": "Is this mastering?",
+      "answer": "No. It provides technical reports and conservative processing. It does not guarantee platform acceptance or replace professional mastering."
+    },
+    {
+      "question": "What happens to uploaded files?",
+      "answer": "Files are processed temporarily and deleted automatically after the retention period."
+    },
+    {
+      "question": "Are reports included?",
+      "answer": "Yes. Reports can be generated as JSON and Markdown."
+    }
+  ],
+  "future_implementation_milestone": "v0.13.1 Web Upload Visualization MVP Implementation",
+  "implementation_requirements": [
+    "real local upload validation",
+    "no-op test for read-only modes",
+    "file cleanup test",
+    "forbidden wording test",
+    "safe CLI mapping test",
+    "basic auth test",
+    "path traversal test",
+    "upload size limit test",
+    "generated artifact ignore test",
+    "visualization artifact JSON-safety test",
+    "tooltip data correctness test",
+    "full project checks"
+  ],
+  "not_approved": {
+    "web_implementation": false,
+    "deployment": false,
+    "new_runtime_dependencies": false,
+    "new_audio_features": false,
+    "public_launch": false,
+    "unsafe_claims": false
+  },
+  "project_reborn_boundary": {
+    "reference_only": true,
+    "executed": false,
+    "imported": false,
+    "copied": false,
+    "packaged": false,
+    "exposed": false
+  }
+}

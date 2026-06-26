@@ -12,6 +12,8 @@ def test_safety_checker_allows_boundary_denials():
     This tool does not bypass detectors.
     This project is not a detector bypass tool.
     This tool does not remove provenance markers.
+    Does it make AI music undetectable?
+    No. It does not bypass detectors.
     """
 
     assert assert_no_unsafe_public_claims(text) == []

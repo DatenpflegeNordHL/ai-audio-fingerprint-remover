@@ -29,6 +29,8 @@ PUBLIC_FILES = (
     "docs/design/REBORN_025_DEEP_REVIEW.md",
     "docs/design/REBORN_005_DEEP_REVIEW.md",
     "docs/design/reborn_005_deep_review.json",
+    "docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md",
+    "docs/design/v0_11_3_web_upload_visualization_mvp.json",
     "docs/design/V0_11_0_COMPARE_METRICS.md",
     "docs/design/v0_11_0_compare_metrics.json",
     "docs/releases/V0_10_0_RELEASE_NOTES.md",

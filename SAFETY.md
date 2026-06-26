@@ -170,6 +170,20 @@ No Project Reborn source was copied, imported, executed, packaged, or exposed du
 
 Future metadata/privacy/statistics behavior must avoid attribution, fingerprint, watermark, detector, provenance, bypass, evasion, and detectability claims.
 
+Any future web upload interface must be private beta first.
+
+Uploaded audio must be temporary.
+
+Generated web outputs must not be committed.
+
+Visualization must not imply watermark, fingerprint, provenance, detector, bypass, origin, C2PA, source-attribution, or detectability outcomes.
+
+Highlighted spectrum areas must map to measured technical metrics only.
+
+Web read-only modes must not modify files.
+
+Web clean-metadata behavior must only affect documented standard metadata fields.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

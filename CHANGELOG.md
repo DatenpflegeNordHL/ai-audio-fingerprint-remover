@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.11.3
+
+- Added design notes for a future safe web upload and spectrum visualization MVP.
+- Documented proposed DatenpflegeNord subdomain flow, spectrum views, difference map, tooltip behavior, and FAQ.
+- Reconfirmed web UI safety boundaries before implementation.
+
 ## v0.11.2
 
 - Added deep-review design notes for deferred Project Reborn candidate `reborn_005`.

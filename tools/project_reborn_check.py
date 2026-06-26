@@ -29,6 +29,8 @@ REBORN_005_REVIEW_MARKDOWN = ROOT / "docs" / "design" / "REBORN_005_DEEP_REVIEW.
 V0_11_COMPARE_JSON = ROOT / "docs" / "design" / "v0_11_0_compare_metrics.json"
 V0_11_COMPARE_MARKDOWN = ROOT / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
 V0_11_RELEASE_NOTES = ROOT / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md"
+V0_11_3_WEB_DESIGN_JSON = ROOT / "docs" / "design" / "v0_11_3_web_upload_visualization_mvp.json"
+V0_11_3_WEB_DESIGN_MARKDOWN = ROOT / "docs" / "design" / "V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md"
 README = PROJECT_REBORN_DIR / "README.md"
 REQUIRED_ENTRY_FIELDS = {
     "reborn_id",
@@ -158,6 +160,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
     reborn_005_review_markdown = root / "docs" / "design" / "REBORN_005_DEEP_REVIEW.md"
     v0_11_compare_json = root / "docs" / "design" / "v0_11_0_compare_metrics.json"
     v0_11_compare_markdown = root / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
+    v0_11_3_web_design_json = root / "docs" / "design" / "v0_11_3_web_upload_visualization_mvp.json"
+    v0_11_3_web_design_markdown = root / "docs" / "design" / "V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md"
     readme = project_dir / "README.md"
 
     for path in (
@@ -178,6 +182,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
         reborn_005_review_markdown,
         v0_11_compare_json,
         v0_11_compare_markdown,
+        v0_11_3_web_design_json,
+        v0_11_3_web_design_markdown,
         root / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md",
         source_drawer,
     ):
@@ -232,6 +238,9 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
 
     if v0_11_compare_json.exists() and v0_11_compare_markdown.exists():
         _validate_v0_11_compare_metrics(v0_11_compare_json, v0_11_compare_markdown, errors)
+
+    if v0_11_3_web_design_json.exists() and v0_11_3_web_design_markdown.exists():
+        _validate_v0_11_3_web_design(v0_11_3_web_design_json, v0_11_3_web_design_markdown, errors)
 
     v0_11_release_notes = root / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md"
     if v0_11_release_notes.exists():
@@ -853,6 +862,94 @@ def _validate_v0_11_compare_metrics(
     ):
         if required_text not in markdown:
             errors.append(f"v0.11 compare metrics markdown missing required text: {required_text}")
+
+
+def _validate_v0_11_3_web_design(
+    design_json: Path,
+    design_markdown: Path,
+    errors: list[str],
+) -> None:
+    design = _load_catalog(design_json, errors)
+    if design is None:
+        return
+    if design.get("version_target") != "0.11.3":
+        errors.append("v0.11.3 web design version_target must be 0.11.3.")
+    if design.get("status") != "design_only":
+        errors.append("v0.11.3 web design status must be design_only.")
+    if design.get("recommended_subdomain") != "release.datenpflege-nord.de":
+        errors.append("v0.11.3 web design recommended_subdomain must be release.datenpflege-nord.de.")
+    if design.get("deep_search_decision") != "not_needed_internal_repo_only":
+        errors.append("v0.11.3 web design deep_search_decision must be not_needed_internal_repo_only.")
+    if design.get("deep_search_stop_required") is not True:
+        errors.append("v0.11.3 web design deep_search_stop_required must be true.")
+
+    allowed_modes = set(design.get("allowed_modes", []))
+    required_modes = {
+        "analyze",
+        "release-check",
+        "inspect-metadata",
+        "clean-metadata",
+        "compare",
+        "conservative humanize",
+    }
+    if not required_modes <= allowed_modes:
+        errors.append(f"v0.11.3 web design allowed_modes missing {sorted(required_modes - allowed_modes)}.")
+
+    views = set(design.get("visualization_views", []))
+    if not {"original spectrum", "processed spectrum", "difference map"} <= views:
+        errors.append("v0.11.3 web design must include original spectrum, processed spectrum, and difference map.")
+
+    for key in ("color_semantics", "retention_policy", "not_approved", "project_reborn_boundary"):
+        if not isinstance(design.get(key), dict):
+            errors.append(f"v0.11.3 web design {key} must be an object.")
+
+    for key in ("tooltip_examples", "candidate_frontend_libraries", "security_requirements", "faq"):
+        value = design.get(key)
+        if not isinstance(value, list) or not value:
+            errors.append(f"v0.11.3 web design {key} must be a non-empty list.")
+
+    if design.get("future_implementation_milestone") != "v0.13.1 Web Upload Visualization MVP Implementation":
+        errors.append("v0.11.3 web design future implementation milestone must be v0.13.1 Web Upload Visualization MVP Implementation.")
+
+    not_approved = design.get("not_approved", {})
+    if isinstance(not_approved, dict):
+        for key in (
+            "web_implementation",
+            "deployment",
+            "new_runtime_dependencies",
+            "new_audio_features",
+            "public_launch",
+            "unsafe_claims",
+        ):
+            if not_approved.get(key) is not False:
+                errors.append(f"v0.11.3 web design not_approved.{key} must be false.")
+
+    boundary = design.get("project_reborn_boundary", {})
+    if isinstance(boundary, dict):
+        if boundary.get("reference_only") is not True:
+            errors.append("v0.11.3 web design project_reborn_boundary.reference_only must be true.")
+        for key in ("executed", "imported", "copied", "packaged", "exposed"):
+            if boundary.get(key) is not False:
+                errors.append(f"v0.11.3 web design project_reborn_boundary.{key} must be false.")
+
+    libraries = {item.get("name"): item for item in design.get("candidate_frontend_libraries", []) if isinstance(item, dict)}
+    audio_motion = libraries.get("audioMotion-analyzer", {})
+    if audio_motion.get("status") != "visual_inspiration_only_pending_license_approval":
+        errors.append("v0.11.3 web design audioMotion-analyzer must remain visual inspiration only pending license approval.")
+    if "AGPL-3.0" not in str(audio_motion.get("license_note", "")):
+        errors.append("v0.11.3 web design audioMotion-analyzer must document AGPL-3.0 license caution.")
+
+    markdown = design_markdown.read_text(encoding="utf-8")
+    for required_text in (
+        "Design only. No implementation.",
+        "`release.datenpflege-nord.de`",
+        "The Difference Map must visualize only measurable changes",
+        "Initial version must be password-protected.",
+        "Generated outputs must stay temporary and uncommitted.",
+        "No web implementation",
+    ):
+        if required_text not in markdown:
+            errors.append(f"v0.11.3 web design markdown missing required text: {required_text}")
 
 
 def _validate_v0_11_release_notes(path: Path, errors: list[str]) -> None:

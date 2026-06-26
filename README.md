@@ -233,6 +233,8 @@ The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_
 
 `reborn_005` now has a design-only deep review at `docs/design/REBORN_005_DEEP_REVIEW.md`. No active package behavior changed from that review.
 
+The future web upload visualization MVP is documented as design-only at `docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md`. No web app is implemented yet. The candidate subdomain is `release.datenpflege-nord.de`; any future web version must keep the same safety boundary, and spectrum or difference views must show only measured technical changes.
+
 ## Candidate Reality Gate
 
 Future audio features must pass the Candidate Reality Gate: synthetic tests, real local audio validation, no-op check, safe wording check, and a documented Deep Search decision.

@@ -60,5 +60,6 @@ def _is_safety_boundary_denial(text: str, match_start: int) -> bool:
         "must never ",
         "must not ",
         "no ",
+        "does it make ",
     )
     return any(marker in prefix for marker in denial_markers)
