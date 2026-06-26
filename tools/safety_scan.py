@@ -44,6 +44,7 @@ PUBLIC_FILES = (
     "docs/design/v0_12_0_visualization_artifacts.json",
     "docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md",
     "docs/design/v0_13_0_private_web_backend_mvp.json",
+    "docs/design/V0_16_0_DEPLOYMENT_READINESS_CHECKLIST.md",
     "docs/design/V0_11_0_COMPARE_METRICS.md",
     "docs/design/v0_11_0_compare_metrics.json",
     "docs/releases/V0_10_0_RELEASE_NOTES.md",

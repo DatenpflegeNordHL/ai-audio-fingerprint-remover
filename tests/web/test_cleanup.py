@@ -5,7 +5,7 @@ import os
 
 from audio_quality_humanizer.web.config import load_config
 from audio_quality_humanizer.web.storage import cleanup_expired_jobs, create_job_directory, write_status
-from tests.web.helpers import prepare_env
+from tests.web.helpers import auth_header, call_app, prepare_env
 
 
 def test_cleanup_removes_expired_job_dirs(tmp_path, monkeypatch):
@@ -45,3 +45,20 @@ def test_cleanup_removes_expired_partial_dirs(tmp_path, monkeypatch):
 
     assert removed == [job_dir.name]
     assert not job_dir.exists()
+
+
+def test_cleanup_endpoint_requires_auth(tmp_path, monkeypatch):
+    prepare_env(monkeypatch, tmp_path)
+
+    response = call_app("POST", "/api/maintenance/cleanup")
+
+    assert response.status_code == 401
+
+
+def test_cleanup_endpoint_returns_safe_result(tmp_path, monkeypatch):
+    prepare_env(monkeypatch, tmp_path)
+
+    response = call_app("POST", "/api/maintenance/cleanup", headers=auth_header())
+
+    assert response.status_code == 200
+    assert response.json() == {"removed_job_ids": [], "removed_count": 0}

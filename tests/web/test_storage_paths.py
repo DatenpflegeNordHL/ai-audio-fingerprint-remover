@@ -70,3 +70,25 @@ def test_artifact_access_cannot_use_parent_segments(tmp_path, monkeypatch):
         assert "Invalid artifact name" in str(exc)
     else:
         raise AssertionError("Traversal artifact path was accepted.")
+
+
+def test_artifact_access_blocks_unlisted_existing_artifact(tmp_path, monkeypatch):
+    prepare_env(monkeypatch, tmp_path)
+    body, content_type = multipart_body(mode="analyze")
+    upload = call_app(
+        "POST",
+        "/api/jobs",
+        headers={**auth_header(), "content-type": content_type},
+        body=body,
+    )
+    job_id = upload.json()["job_id"]
+    job_dir = get_job_directory(load_config(), job_id)
+    (job_dir / "artifacts" / "metadata.json").write_text("{}", encoding="utf-8")
+
+    listed = call_app("GET", f"/api/jobs/{job_id}/artifacts/analysis.json", headers=auth_header())
+    unlisted = call_app("GET", f"/api/jobs/{job_id}/artifacts/metadata.json", headers=auth_header())
+    status_artifact = call_app("GET", f"/api/jobs/{job_id}/artifacts/status.json", headers=auth_header())
+
+    assert listed.status_code == 200
+    assert unlisted.status_code == 404
+    assert status_artifact.status_code == 200

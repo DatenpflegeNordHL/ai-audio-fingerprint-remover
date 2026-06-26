@@ -211,7 +211,7 @@ def test_failed_processing_returns_safe_status_without_traceback(tmp_path, monke
     prepare_env(monkeypatch, tmp_path)
 
     def fail_analysis(_path):
-        raise RuntimeError("internal failure details")
+        raise RuntimeError(f"internal failure details {tmp_path} test-token AQH_WEB_TOKEN")
 
     monkeypatch.setattr(web_processing, "analyze_audio", fail_analysis)
     body, content_type = multipart_body(mode="analyze")
@@ -229,7 +229,20 @@ def test_failed_processing_returns_safe_status_without_traceback(tmp_path, monke
     encoded = json.dumps(data)
     assert "Traceback" not in encoded
     assert "internal failure details" not in encoded
+    assert str(tmp_path) not in encoded
+    assert "test-token" not in encoded
+    assert "AQH_WEB_TOKEN" not in encoded
     assert data["processing"]["error_code"] == "processing_failed"
+
+    status_artifact = call_app(
+        "GET",
+        f"/api/jobs/{data['job_id']}/artifacts/status.json",
+        headers=auth_header(),
+    )
+    status_encoded = status_artifact.body.decode("utf-8")
+    assert "Traceback" not in status_encoded
+    assert str(tmp_path) not in status_encoded
+    assert "test-token" not in status_encoded
 
 
 def test_delete_job_removes_directory(tmp_path, monkeypatch):

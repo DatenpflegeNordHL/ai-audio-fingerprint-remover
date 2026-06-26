@@ -1,6 +1,6 @@
 {
-  "version_target": "0.15.0",
-  "status": "implemented_web_output_and_two_file_workflows",
+  "version_target": "0.16.0",
+  "status": "implemented_local_security_retention_and_operator_hardening",
   "deep_search_decision": "not_needed_internal_repo_only",
   "deep_search_completed": false,
   "approved_backend_stack": [
@@ -45,6 +45,8 @@
   "endpoints": [
     "GET /health",
     "GET /",
+    "GET /api/config",
+    "GET /api/jobs",
     "POST /api/jobs",
     "POST /api/compare-jobs",
     "GET /api/jobs/{job_id}",
@@ -52,6 +54,12 @@
     "DELETE /api/jobs/{job_id}",
     "POST /api/maintenance/cleanup"
   ],
+  "security_headers": {
+    "x_content_type_options": "nosniff",
+    "referrer_policy": "no-referrer",
+    "x_frame_options": "DENY",
+    "api_cache_control": "no-store"
+  },
   "supported_modes": [
     "analyze",
     "release-check",
@@ -106,7 +114,28 @@
     "spectrogram_preview_from_visualization_json": true,
     "metadata_panel_from_metadata_display": true,
     "single_file_and_two_file_modes": true,
+    "local_exposure_warning": true,
+    "cleanup_control": true,
+    "retention_display": true,
+    "recent_jobs_display": true,
     "fake_metrics": false
+  },
+  "operator_config_endpoint": {
+    "path": "GET /api/config",
+    "requires_auth": true,
+    "exposes_paths": false,
+    "exposes_secrets": false
+  },
+  "job_listing_endpoint": {
+    "path": "GET /api/jobs",
+    "requires_auth": true,
+    "recent_summaries_only": true,
+    "exposes_paths": false
+  },
+  "artifact_downloads": {
+    "allowlisted_names": true,
+    "must_be_listed_in_status_json": true,
+    "path_traversal_protected": true
   },
   "metadata_display": {
     "sanitized_embedded_images": true,
@@ -142,7 +171,10 @@
     "random job IDs",
     "path traversal protection",
     "temporary job storage",
-    "automatic cleanup helper"
+    "automatic cleanup helper",
+    "safe auth errors",
+    "lightweight security headers",
+    "status-listed artifact downloads"
   ],
   "safety_boundary": [
     "technical job-status responses only",
@@ -153,7 +185,6 @@
     "no watermark, fingerprint, provenance, C2PA, source-attribution, detector, evasion, detectability, platform-certification, or distributor-guarantee outcomes"
   ],
   "not_approved": [
-    "frontend UI",
     "frontend framework",
     "React",
     "Vite",

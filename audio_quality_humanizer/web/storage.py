@@ -111,6 +111,39 @@ def read_status(job_dir: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def list_job_summaries(config: WebConfig, limit: int = 25) -> list[dict[str, Any]]:
+    root = resolve_job_root(config)
+    summaries: list[tuple[str, float, dict[str, Any]]] = []
+    for child in root.iterdir():
+        if not child.is_dir() or not is_valid_job_id(child.name):
+            continue
+        status_path = child / "status.json"
+        if not status_path.is_file():
+            continue
+        try:
+            status_data = json.loads(status_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        summaries.append((status_data.get("created_at") or "", status_path.stat().st_mtime, _job_summary(status_data)))
+    summaries.sort(key=lambda item: (item[0], item[1]), reverse=True)
+    return [summary for _, _, summary in summaries[:limit]]
+
+
+def _job_summary(status_data: dict[str, Any]) -> dict[str, Any]:
+    summary = {
+        "job_id": status_data.get("job_id"),
+        "status": status_data.get("status"),
+        "mode": status_data.get("mode"),
+        "created_at": status_data.get("created_at"),
+        "artifacts": list(status_data.get("artifacts", [])),
+    }
+    if status_data.get("completed_at"):
+        summary["completed_at"] = status_data["completed_at"]
+    if status_data.get("failed_at"):
+        summary["failed_at"] = status_data["failed_at"]
+    return summary
+
+
 def artifact_path(job_dir: Path, artifact_name: str) -> Path:
     if (
         artifact_name not in ALLOWED_ARTIFACT_NAMES

@@ -200,13 +200,27 @@ Visualization artifacts are not mastering certification.
 
 Visualization artifacts do not predict platform or distributor acceptance.
 
-The v0.15 private web API is private beta only.
+The v0.16 private web API is private beta only.
 
 All private web API endpoints except `/health` require bearer-token auth.
+
+Private web auth errors must use safe messages and must not expose configured tokens.
+
+The private web dashboard must not store bearer tokens in browser storage or cookies.
+
+Recommended private web local bind is `127.0.0.1`.
+
+The private web app must not be bound directly to `0.0.0.0` for public exposure before a future deployment milestone validates proper proxy, rate-limit, upload-limit, logging, auth, and privacy controls.
+
+Private web API responses should use lightweight local hardening headers.
 
 Uploaded files are temporary.
 
 The private web operator page is local and uses no frontend framework or external assets.
+
+The private web operator page may show safe retention settings, max upload size, cleanup controls, and recent job summaries.
+
+Private web safe config and recent job APIs must not expose server paths, environment values, or secrets.
 
 The private web API may execute safe single-file read-only modes and write JSON artifacts.
 
@@ -218,6 +232,8 @@ The private web API may execute safe two-file compare and visualize-compare mode
 
 Private web compare and visualize-compare artifacts must show measured technical deltas only.
 
+Private web artifact downloads must require the requested artifact name to be listed in the job status.
+
 The private web dashboard renders generated artifacts only and must not add fake metrics.
 
 The private web dashboard sanitizes embedded images and long metadata fields for display.
@@ -228,7 +244,7 @@ Private web storage must use random job IDs and must not use user filenames as s
 
 Generated private web outputs must not be committed.
 
-No frontend framework, deployment, DNS config, or public launch is included in v0.15.
+No frontend framework, deployment, DNS config, or public launch is included in v0.16.
 
 The private web API must not make watermark, fingerprint, provenance, detector, C2PA, source-attribution, evasion, detectability, platform-certification, or distributor-guarantee claims.
 

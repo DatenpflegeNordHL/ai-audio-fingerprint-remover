@@ -12,7 +12,8 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     assert response.status_code == 200
     html = response.body.decode("utf-8")
     assert "Audio Quality Humanizer" in html
-    assert "Private beta / local" in html
+    assert "Local private beta" in html
+    assert "Do not expose directly to the public internet" in html
     assert "Bearer token" in html
     assert "before-file" in html
     assert "after-file" in html
@@ -24,6 +25,12 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     assert "Visualization Preview" in html
     assert "Metadata" in html
     assert "Raw JSON Preview" in html
+    assert "Operator" in html
+    assert "Run cleanup" in html
+    assert "Recent Jobs" in html
+    assert "/api/config" in html
+    assert "/api/jobs" in html
+    assert "/api/maintenance/cleanup" in html
     assert "Safety / FAQ" in html
     assert "Preview result" in html
     assert "Waveform preview" in html

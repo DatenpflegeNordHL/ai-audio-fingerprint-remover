@@ -22,6 +22,8 @@ The v0.11 compare workflow adds neutral read-only `comparison_metrics` for befor
 
 The v0.14 private web dashboard adds generated artifact previews, metric cards from real report fields, waveform and spectrogram previews from visualization JSON, and sanitized metadata display for embedded images and long fields. It has no frontend framework, deployment config, DNS config, or public launch.
 
+The v0.16 local web hardening adds safe auth feedback, response headers, retention visibility, cleanup controls, recent job summaries, and per-job artifact-list enforcement. It still has no deployment config, DNS config, public launch, frontend framework, or `humanize` web workflow.
+
 ## v0.10.0 safe core
 
 v0.10.0 adds signal guardrails, optional performance metadata, and synthetic regression scaffolding. These features were designed from Project Reborn planning notes but rewritten from first principles inside the active package. Project Reborn remains non-installed and inert.
@@ -193,7 +195,7 @@ The visualization artifact schema is intentionally stable for future UI work. Re
 
 ## Private web backend MVP
 
-v0.15.0 adds private web output and two-file workflows for local upload work at `release.datenpflege-nord.de`.
+v0.16.0 hardens the private local web MVP with safer auth feedback, retention visibility, cleanup controls, recent job summaries, security headers, and stricter artifact download checks.
 
 Install the optional web extra before running it:
 
@@ -204,14 +206,18 @@ python -m pip install -e ".[web,dev,test]"
 Local run example:
 
 ```bash
-AQH_WEB_TOKEN=dev-token uvicorn audio_quality_humanizer.web.app:app --reload
+AQH_WEB_TOKEN=dev-token uvicorn audio_quality_humanizer.web.app:app --host 127.0.0.1 --reload
 ```
 
 Open `http://127.0.0.1:8000/` for the local operator page.
 
+Recommended local bind is `127.0.0.1`. Do not bind this private beta directly to `0.0.0.0` unless a future deployment milestone adds and validates proper auth, proxy, rate-limit, logging, upload-limit, and privacy controls.
+
 Implemented backend endpoints:
 
 - `GET /health`
+- `GET /api/config`
+- `GET /api/jobs`
 - `POST /api/jobs`
 - `POST /api/compare-jobs`
 - `GET /api/jobs/{job_id}`
@@ -219,7 +225,11 @@ Implemented backend endpoints:
 - `DELETE /api/jobs/{job_id}`
 - `POST /api/maintenance/cleanup`
 
-All API endpoints except `/health` require a bearer token. Single-file upload flow accepts one file per request. Two-file upload flow accepts fixed `before_file` and `after_file` fields. Both flows validate allowlisted audio extensions, check basic audio container headers where practical, store uploads under a random per-job directory, run safe processing synchronously, write JSON-safe artifacts, and update `status.json`.
+All API endpoints except `/health` require a bearer token. Missing server-token, missing request-token, and wrong request-token errors use safe messages and do not expose configured secrets. Single-file upload flow accepts one file per request. Two-file upload flow accepts fixed `before_file` and `after_file` fields. Both flows validate allowlisted audio extensions, check basic audio container headers where practical, store uploads under a random per-job directory, run safe processing synchronously, write JSON-safe artifacts, and update `status.json`.
+
+`GET /api/config` returns safe operator settings only: upload limit, retention TTLs, supported modes, deferred modes, and private-beta status. It does not expose server paths or secrets. `GET /api/jobs` returns recent job summaries only and does not include raw server paths. Artifact downloads require both a safe artifact name and membership in the job's `status.json` artifact list.
+
+The backend sets lightweight response headers for local hardening: `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, and `Cache-Control: no-store` for API responses.
 
 The dashboard renders generated JSON artifacts in-browser after job completion. It shows only fields that exist in the artifacts, keeps raw JSON available, and adds no fake metrics or fake improvement percentages. No fake metrics are added.
 
@@ -242,6 +252,13 @@ Dashboard previews:
 - before/after visualization preview from `visual_compare.json` candidate waveform and spectrogram fields, with difference-map fallback
 - metadata key/value panel from `metadata.json` `metadata_display`
 - before/after metadata panels from `metadata_before.json` and `metadata_after.json`
+
+Operator controls:
+
+- local-private-beta exposure warning
+- safe retention and max-upload display from `/api/config`
+- cleanup button calling `POST /api/maintenance/cleanup`
+- recent job summaries from `GET /api/jobs`
 
 The metadata display is sanitized for embedded images and long fields. Embedded cover values such as `APIC:Cover` are summarized with `[embedded image omitted]`, optional MIME/type/size fields, and preserved metadata keys. Long text display values are truncated for dashboard use. `clean-metadata` writes a cleaned output copy under the job artifacts directory and does not overwrite the uploaded input.
 
@@ -317,7 +334,7 @@ The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_
 
 The future web upload visualization MVP is documented as design-only at `docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md`. No web app is implemented yet. The candidate subdomain is `release.datenpflege-nord.de`; any future web version must keep the same safety boundary, and spectrum or difference views must show only measured technical changes.
 
-The v0.15 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. It is local, private beta only, uses no external frontend libraries, supports documented one-file and two-file modes, and keeps deployment, DNS, public launch, and `humanize` deferred.
+The v0.16 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. Its deployment-readiness checklist is documented at `docs/design/V0_16_0_DEPLOYMENT_READINESS_CHECKLIST.md`. It is local, private beta only, uses no external frontend libraries, supports documented one-file and two-file modes, and keeps deployment, DNS, public launch, and `humanize` deferred.
 
 ## Candidate Reality Gate
 

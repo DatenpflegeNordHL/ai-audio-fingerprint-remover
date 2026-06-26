@@ -22,10 +22,16 @@ def require_bearer_token(
     if not config.token:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Private web API token is not configured.",
+            detail="Private web API bearer token is not configured.",
         )
     if credentials is None or credentials.scheme.casefold() != "bearer":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Bearer token required.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Bearer token is required for private beta API access.",
+        )
     if not secrets.compare_digest(credentials.credentials, config.token):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid bearer token.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Bearer token was not accepted for private beta API access.",
+        )
     return config

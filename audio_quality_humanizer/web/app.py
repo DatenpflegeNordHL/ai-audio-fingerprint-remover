@@ -18,6 +18,7 @@ from audio_quality_humanizer.web.storage import (
     delete_job,
     get_job_directory,
     input_path_for,
+    list_job_summaries,
     named_input_path_for,
     read_status,
     write_status,
@@ -34,10 +35,20 @@ SAFETY_NOTE = (
 def create_app() -> FastAPI:
     web_app = FastAPI(
         title="audio-quality-humanizer private web backend",
-        version="0.15.0",
+        version="0.16.0",
         docs_url=None,
         redoc_url=None,
     )
+
+    @web_app.middleware("http")
+    async def security_headers(request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["X-Frame-Options"] = "DENY"
+        if request.url.path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-store"
+        return response
 
     @web_app.get("/", response_class=HTMLResponse)
     def operator_page() -> str:
@@ -46,6 +57,19 @@ def create_app() -> FastAPI:
     @web_app.get("/health")
     def health() -> dict:
         return health_response()
+
+    @web_app.get("/api/config")
+    def get_safe_config(config: WebConfig = Depends(require_bearer_token)) -> dict:
+        return {
+            "private_beta": True,
+            "max_upload_mib": config.max_upload_mib,
+            "job_ttl_hours": config.job_ttl_hours,
+            "partial_ttl_minutes": config.partial_ttl_minutes,
+            "supported_modes": list(SUPPORTED_MODES),
+            "single_file_modes": list(SINGLE_FILE_MODES),
+            "two_file_modes": list(TWO_FILE_MODES),
+            "deferred_modes": ["humanize"],
+        }
 
     @web_app.post("/api/jobs", status_code=status.HTTP_201_CREATED)
     async def create_job(
@@ -109,6 +133,11 @@ def create_app() -> FastAPI:
         status_data = execute_two_file_job(job_dir, before_path, after_path, mode)
         return job_response(status_data)
 
+    @web_app.get("/api/jobs")
+    def list_jobs(config: WebConfig = Depends(require_bearer_token)) -> dict:
+        jobs = list_job_summaries(config)
+        return {"jobs": jobs, "count": len(jobs)}
+
     @web_app.get("/api/jobs/{job_id}")
     def get_job(job_id: str, config: WebConfig = Depends(require_bearer_token)) -> dict:
         job_dir = get_job_directory(config, job_id)
@@ -118,6 +147,9 @@ def create_app() -> FastAPI:
     def get_artifact(job_id: str, artifact_name: str, config: WebConfig = Depends(require_bearer_token)) -> FileResponse:
         job_dir = get_job_directory(config, job_id)
         path = artifact_path(job_dir, artifact_name)
+        status_data = read_status(job_dir)
+        if artifact_name not in status_data.get("artifacts", []):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Artifact not found.")
         if not path.is_file():
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Artifact not found.")
         return FileResponse(path, media_type=_media_type_for(path), filename=path.name)
@@ -187,6 +219,7 @@ def _operator_page_html() -> str:
     table {{ width: 100%; border-collapse: collapse; }}
     td, th {{ border-bottom: 1px solid #243244; padding: 8px 4px; text-align: left; vertical-align: top; }}
     .badge {{ display: inline-flex; align-items: center; border: 1px solid #2ea043; color: #7ee787; border-radius: 999px; padding: 4px 10px; font-size: 13px; }}
+    .badge.warn {{ border-color: #d29922; color: #f2cc60; }}
     .links button {{ margin: 7px 8px 0 0; width: auto; background: #1f6feb; border-color: #388bfd; }}
     .cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; }}
     .card {{ border: 1px solid #243244; background: #0b1017; border-radius: 8px; padding: 12px; }}
@@ -203,7 +236,10 @@ def _operator_page_html() -> str:
         <h1>Audio Quality Humanizer</h1>
         <p>Local private dashboard for generated technical audio reports. Real artifact data only; no external JavaScript, CSS, cookies, or persistent browser storage.</p>
       </div>
-      <div class="badge">Private beta / local</div>
+      <div>
+        <div class="badge">Local private beta</div>
+        <div class="badge warn">Do not expose directly to the public internet</div>
+      </div>
     </header>
     <div class="layout">
       <div class="stack">
@@ -236,6 +272,13 @@ def _operator_page_html() -> str:
           <p class="muted">Deferred</p>
           <ul>{deferred}</ul>
         </section>
+        <section class="panel" id="operator-panel">
+          <h2>Operator</h2>
+          <div id="config-view" class="cards"><p class="empty">Retention settings appear after refresh.</p></div>
+          <button id="refresh-config" type="button">Refresh operator data</button>
+          <button id="cleanup-jobs" type="button">Run cleanup</button>
+          <pre id="cleanup-result">No cleanup run yet.</pre>
+        </section>
         <section class="panel" id="faq-panel">
           <h2>Safety / FAQ</h2>
           <p>This is a local private beta. Reports show measured technical audio features only.</p>
@@ -252,6 +295,10 @@ def _operator_page_html() -> str:
           <h2>Artifacts</h2>
           <div id="artifacts" class="links"></div>
           <button id="preview-all" type="button" disabled>Preview result</button>
+        </section>
+        <section class="panel" id="recent-jobs-panel">
+          <h2>Recent Jobs</h2>
+          <div id="recent-jobs"><p class="empty">Recent jobs appear after refresh.</p></div>
         </section>
         <section class="panel" id="metric-panel">
           <h2>Metric Cards</h2>
@@ -287,6 +334,11 @@ def _operator_page_html() -> str:
     const rawJson = document.getElementById('raw-json');
     const metadataView = document.getElementById('metadata-view');
     const visualEmpty = document.getElementById('visual-empty');
+    const configView = document.getElementById('config-view');
+    const refreshConfig = document.getElementById('refresh-config');
+    const cleanupJobs = document.getElementById('cleanup-jobs');
+    const cleanupResult = document.getElementById('cleanup-result');
+    const recentJobs = document.getElementById('recent-jobs');
     const modeSelect = document.getElementById('mode');
     const singleFileFields = document.getElementById('single-file-fields');
     const twoFileFields = document.getElementById('two-file-fields');
@@ -298,6 +350,25 @@ def _operator_page_html() -> str:
 
     modeSelect.addEventListener('change', updateFileInputs);
     updateFileInputs();
+
+    refreshConfig.addEventListener('click', async () => {{
+      await loadOperatorData();
+    }});
+
+    cleanupJobs.addEventListener('click', async () => {{
+      cleanupJobs.disabled = true;
+      cleanupResult.textContent = 'Running cleanup...';
+      try {{
+        const response = await authenticatedFetch('/api/maintenance/cleanup', {{ method: 'POST' }});
+        const payload = await response.json();
+        cleanupResult.textContent = JSON.stringify(payload, null, 2);
+        await loadOperatorData();
+      }} catch (error) {{
+        cleanupResult.textContent = 'Cleanup failed safely.';
+      }} finally {{
+        cleanupJobs.disabled = false;
+      }}
+    }});
 
     form.addEventListener('submit', async (event) => {{
       event.preventDefault();
@@ -338,6 +409,7 @@ def _operator_page_html() -> str:
           }}
           previewAll.disabled = false;
           await previewArtifacts(payload);
+          await loadOperatorData();
         }}
       }} catch (error) {{
         result.textContent = 'Request failed safely.';
@@ -357,6 +429,48 @@ def _operator_page_html() -> str:
       singleFileInput.required = !isTwoFileMode;
       beforeFileInput.required = isTwoFileMode;
       afterFileInput.required = isTwoFileMode;
+    }}
+
+    async function loadOperatorData() {{
+      try {{
+        const configResponse = await authenticatedFetch('/api/config');
+        if (configResponse.ok) {{
+          renderConfig(await configResponse.json());
+        }}
+        const jobsResponse = await authenticatedFetch('/api/jobs');
+        if (jobsResponse.ok) {{
+          renderRecentJobs(await jobsResponse.json());
+        }}
+      }} catch (error) {{
+        configView.innerHTML = '<p class="empty">Operator data request failed safely.</p>';
+      }}
+    }}
+
+    async function authenticatedFetch(url, options = {{}}) {{
+      const headers = new Headers(options.headers || {{}});
+      headers.set('Authorization', `Bearer ${{document.getElementById('token').value}}`);
+      return await fetch(url, {{ ...options, headers }});
+    }}
+
+    function renderConfig(config) {{
+      const cards = [];
+      addCard(cards, 'Max upload', config.max_upload_mib, ' MiB');
+      addCard(cards, 'Job TTL', config.job_ttl_hours, ' h');
+      addCard(cards, 'Partial TTL', config.partial_ttl_minutes, ' min');
+      addCard(cards, 'Single-file modes', (config.single_file_modes || []).join(', '));
+      addCard(cards, 'Two-file modes', (config.two_file_modes || []).join(', '));
+      addCard(cards, 'Deferred', (config.deferred_modes || []).join(', '));
+      configView.innerHTML = cards.length ? cards.join('') : '<p class="empty">No safe config returned.</p>';
+    }}
+
+    function renderRecentJobs(payload) {{
+      const jobs = Array.isArray(payload.jobs) ? payload.jobs : [];
+      if (!jobs.length) {{
+        recentJobs.innerHTML = '<p class="empty">No recent jobs found.</p>';
+        return;
+      }}
+      const rows = jobs.map(job => `<tr><td>${{escapeHtml(String(job.job_id || ''))}}</td><td>${{escapeHtml(String(job.mode || ''))}}</td><td>${{escapeHtml(String(job.status || ''))}}</td><td>${{escapeHtml(String(job.created_at || ''))}}</td><td>${{escapeHtml((job.artifacts || []).join(', '))}}</td></tr>`);
+      recentJobs.innerHTML = `<table><thead><tr><th>Job</th><th>Mode</th><th>Status</th><th>Created</th><th>Artifacts</th></tr></thead><tbody>${{rows.join('')}}</tbody></table>`;
     }}
 
     function addArtifactButtons(name, url) {{
@@ -385,7 +499,7 @@ def _operator_page_html() -> str:
     }}
 
     async function fetchJsonArtifact(url) {{
-      const response = await fetch(url, {{ headers: {{ Authorization: `Bearer ${{document.getElementById('token').value}}` }} }});
+      const response = await authenticatedFetch(url);
       if (!response.ok) {{
         result.textContent = 'Artifact preview failed safely.';
         return null;
@@ -394,7 +508,7 @@ def _operator_page_html() -> str:
     }}
 
     async function downloadArtifact(url, name) {{
-      const artifactResponse = await fetch(url, {{ headers: {{ Authorization: `Bearer ${{document.getElementById('token').value}}` }} }});
+      const artifactResponse = await authenticatedFetch(url);
       if (!artifactResponse.ok) {{
         result.textContent = 'Artifact download failed safely.';
         return;

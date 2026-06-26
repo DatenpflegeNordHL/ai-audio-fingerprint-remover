@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.16.0
+
+- Hardened private web auth feedback, security headers, retention visibility, cleanup controls, and recent job summaries.
+- Added authenticated safe config and job-list endpoints without exposing server paths or secrets.
+- Restricted artifact downloads to names listed in each job status.
+- Added local exposure warnings and operator controls to the plain dashboard.
+- Added docs-only deployment readiness checklist; no deployment, provider config, frontend framework, or `humanize` implementation was added.
+
 ## v0.15.0
 
 - Added private web `clean-metadata` output workflow with cleaned audio and before/after metadata artifacts.

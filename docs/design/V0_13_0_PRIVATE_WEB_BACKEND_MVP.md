@@ -1,14 +1,14 @@
-# v0.15 Private Dashboard and Web Backend MVP
+# v0.16 Private Dashboard and Web Backend MVP
 
 ## Status
 
-Implemented working local dashboard and backend MVP with output and two-file workflows.
+Implemented working local dashboard and backend MVP with output workflows, two-file workflows, and local operator hardening.
 
 ## Deep Search Summary
 
-Deep Search decision for v0.15.0: `not_needed_internal_repo_only`.
+Deep Search decision for v0.16.0: `not_needed_internal_repo_only`.
 
-The current milestone only extends the already-approved local backend. No new external frontend libraries or current external information were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per single-file request or fixed before/after uploads for two-file requests, random job IDs from `secrets.token_urlsafe`, and temporary per-job directories under a controlled local root.
+The current milestone only extends the already-approved local backend. No new external frontend libraries or current external information were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per single-file request or fixed before/after uploads for two-file requests, random job IDs from `secrets.token_urlsafe`, temporary per-job directories under a controlled local root, safe operator config, recent job summaries, cleanup controls, and lightweight response headers.
 
 ## Approved Dependencies
 
@@ -32,9 +32,13 @@ The API reads `AQH_WEB_TOKEN` and requires `Authorization: Bearer <token>` for a
 
 Token comparison uses constant-time comparison.
 
+Auth errors use safe generic messages for missing server token, missing request token, and wrong request token. Responses must not reveal configured tokens.
+
 ## Endpoint Design
 
 - `GET /health`
+- `GET /api/config`
+- `GET /api/jobs`
 - `POST /api/jobs`
 - `POST /api/compare-jobs`
 - `GET /api/jobs/{job_id}`
@@ -42,13 +46,21 @@ Token comparison uses constant-time comparison.
 - `DELETE /api/jobs/{job_id}`
 - `POST /api/maintenance/cleanup`
 
-`GET /` returns a local private dashboard with a token field, upload form, mode selector, job status area, artifact actions, metric cards, visualization preview, metadata panel, raw JSON preview, supported/deferred mode lists, and safety note. The page uses plain HTML, inline CSS, and minimal vanilla JavaScript only.
+`GET /` returns a local private dashboard with a token field, upload form, mode selector, job status area, artifact actions, metric cards, visualization preview, metadata panel, raw JSON preview, supported/deferred mode lists, retention settings, cleanup control, recent job summaries, local exposure warning, and safety note. The page uses plain HTML, inline CSS, and minimal vanilla JavaScript only.
 
 The dashboard renders only generated JSON artifact data. It does not add fake metrics, fake percentages, or platform/distributor outcome language.
 
 `POST /api/jobs` validates the requested single-file mode, validates and stores the uploaded file, executes the selected safe single-file mode synchronously, writes generated JSON artifacts, updates `status.json`, and returns job metadata.
 
 `POST /api/compare-jobs` validates the requested two-file mode, validates and stores fixed `before_file` and `after_file` uploads, executes the selected safe two-file mode synchronously, writes generated JSON artifacts, updates `status.json`, and returns job metadata.
+
+`GET /api/config` returns safe operator configuration only: max upload size, retention TTLs, supported modes, deferred modes, and private-beta status. It does not return server paths or secrets.
+
+`GET /api/jobs` returns recent job summaries only. Summaries include job ID, status, mode, timestamps, and artifact names. They do not return raw server paths.
+
+Artifact downloads require both a safe artifact name and membership in the job `status.json` artifact list.
+
+Response headers include `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, and `Cache-Control: no-store` for API responses.
 
 ## Upload Validation Design
 
@@ -102,6 +114,8 @@ Defaults:
 
 The cleanup helper removes expired complete job directories and older partial job directories.
 
+The dashboard cleanup button calls `POST /api/maintenance/cleanup` with bearer-token auth and renders the safe cleanup result.
+
 ## Job State Model
 
 Successful job state is `completed`.
@@ -152,6 +166,8 @@ The dashboard can fetch and render generated JSON artifacts.
 Metric cards are populated only from fields present in artifacts, including peak, RMS or loudness approximation, clipping sample count, duration, sample rate, channel count, release-check score, and comparison metrics.
 
 Raw JSON remains available in a preview panel.
+
+The operator panel shows safe retention settings, max upload size, cleanup results, and recent job summaries from authenticated API endpoints.
 
 ## Visualization Preview
 
@@ -227,14 +243,20 @@ Tests cover:
 - generated artifacts for analyze, release-check, inspect-metadata, clean-metadata, visualize, compare, and visualize-compare
 - fixed before/after storage paths for two-file uploads
 - downloadable cleaned output artifacts
+- authenticated safe config endpoint
+- authenticated recent job summaries
+- authenticated cleanup control
+- safe auth errors
+- lightweight security headers
+- artifact downloads restricted to status-listed artifacts
 - completed and failed job states
 - design and safety documentation
 
 ## Generated Artifact Policy
 
-Do not commit uploaded audio, generated web reports, generated audio, local job directories, or `v015_web_outputs/`.
+Do not commit uploaded audio, generated web reports, generated audio, local job directories, or `v016_web_outputs/`.
 
-`.var/`, `v013_web_outputs/`, and `v015_web_outputs/` are ignored by Git.
+`.var/`, `v013_web_outputs/`, `v015_web_outputs/`, and `v016_web_outputs/` are ignored by Git.
 
 ## Not Approved
 
