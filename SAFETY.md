@@ -194,6 +194,12 @@ Generated visualization reports from real user audio must not be committed.
 
 No web app exists yet.
 
+Visualization artifacts are preview data for measured technical review only.
+
+Visualization artifacts are not mastering certification.
+
+Visualization artifacts do not predict platform or distributor acceptance.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

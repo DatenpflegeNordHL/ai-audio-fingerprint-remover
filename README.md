@@ -181,6 +181,8 @@ ai-humanizer visualize-compare before.wav after.wav \
 
 Visualization artifacts include waveform peaks, downsampled spectrogram summaries, metric cards, before/after difference maps, and safe tooltip-region metadata. They are read-only, do not modify audio, and difference maps show measured technical changes only. They do not make watermark, fingerprint, provenance, detector, platform, or distributor claims.
 
+The visualization artifact schema is intentionally stable for future UI work. Reports include `schema_version`, bounded waveform and spectrogram arrays, JSON-safe numeric values, and safe tooltip labels only. The artifacts are preview data for technical review; they are not mastering certification and do not predict platform or distributor acceptance.
+
 Apply conservative audio-quality processing:
 
 ```bash
@@ -265,6 +267,17 @@ Each command runs locally and writes a JSON report when `--report` is provided. 
 
 - `v0.10.0`: `docs/releases/V0_10_0_RELEASE_NOTES.md`
 - `v0.11.0`: `docs/releases/V0_11_0_RELEASE_NOTES.md`
+- `v0.12.0`: `docs/releases/V0_12_0_RELEASE_NOTES.md`
+
+## Developer troubleshooting
+
+If editable install hangs in a local virtual environment because of stale package metadata, remove or move old `audio_quality_humanizer*.dist-info` and `__editable__audio_quality_humanizer*` files from the active venv `site-packages`, then rerun:
+
+```bash
+python -m pip install -e ".[dev,test]"
+```
+
+This is local environment cleanup, not a repository issue.
 
 ## Roadmap
 

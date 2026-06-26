@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.12.1
+
+- Added release notes and schema hardening for visualization artifacts.
+- Hardened tests for visualization JSON shape, CLI help wording, and forbidden labels.
+- Added local editable-install troubleshooting note.
+
 ## v0.12.0
 
 - Added read-only visualization artifact generation for future web UI use.

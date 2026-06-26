@@ -9,6 +9,7 @@ MARKDOWN = ROOT / "docs" / "design" / "V0_12_0_VISUALIZATION_ARTIFACTS.md"
 DESIGN_JSON = ROOT / "docs" / "design" / "v0_12_0_visualization_artifacts.json"
 README = ROOT / "README.md"
 SAFETY = ROOT / "SAFETY.md"
+GITIGNORE = ROOT / ".gitignore"
 
 
 def _design() -> dict:
@@ -97,5 +98,16 @@ def test_v0_12_visualization_readme_and_safety_notes():
     assert "ai-humanizer visualize input.wav" in readme
     assert "ai-humanizer visualize-compare before.wav after.wav" in readme
     assert "difference maps show measured technical changes only" in readme
+    assert "The visualization artifact schema is intentionally stable" in readme
+    assert "Developer troubleshooting" in readme
+    assert "__editable__audio_quality_humanizer" in readme
     assert "visualization artifacts are read-only" in safety.casefold()
     assert "no web app exists yet" in safety.casefold()
+    assert "not mastering certification" in safety.casefold()
+    assert "do not predict platform or distributor acceptance" in safety.casefold()
+
+
+def test_v0_12_validation_outputs_remain_ignored():
+    gitignore = GITIGNORE.read_text(encoding="utf-8")
+
+    assert "v012_validation_outputs/" in gitignore

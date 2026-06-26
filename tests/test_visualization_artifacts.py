@@ -77,7 +77,16 @@ def test_visualization_report_contains_expected_top_level_keys(tmp_path):
 
     assert report["action"] == "visualize"
     assert report["schema_version"] == "1.0"
-    assert {"source", "waveform_peaks", "spectrogram", "metric_cards", "tooltip_regions", "safety_notes"} <= set(report)
+    assert set(report) == {
+        "action",
+        "schema_version",
+        "source",
+        "waveform_peaks",
+        "spectrogram",
+        "metric_cards",
+        "tooltip_regions",
+        "safety_notes",
+    }
     assert report["source"]["sample_rate"] == 48000
     _assert_json_safe(report)
 
@@ -140,9 +149,51 @@ def test_visualize_compare_contains_difference_map_and_json_safe_values(tmp_path
     report = build_visualization_comparison(reference, candidate, max_time_bins=16, max_frequency_bins=16)
 
     assert report["action"] == "visualize-compare"
+    assert report["schema_version"] == "1.0"
+    assert set(report) == {
+        "action",
+        "schema_version",
+        "target",
+        "reference",
+        "candidate",
+        "comparison_metrics",
+        "compatibility",
+        "difference_map",
+        "tooltip_regions",
+        "safety_notes",
+    }
+    assert set(report["reference"]) == {"source", "waveform_peaks", "spectrogram", "metric_cards"}
+    assert set(report["candidate"]) == {"source", "waveform_peaks", "spectrogram", "metric_cards"}
     assert report["difference_map"]["summary"]["comparison_available"] is True
     assert report["comparison_metrics"]["rmse"] > 0.0
     _assert_json_safe(report)
+
+
+def test_visualization_artifact_nested_keys_remain_stable(tmp_path):
+    input_path = tmp_path / "input.wav"
+    _write_sine(input_path)
+
+    report = build_visualization_artifacts(input_path, max_time_bins=8, max_frequency_bins=8, max_waveform_windows=8)
+
+    assert set(report["source"]) == {"path", "duration_seconds", "sample_rate", "channels", "frames", "format", "subtype"}
+    assert set(report["waveform_peaks"]) == {"sample_count", "window_count", "window_size_samples", "peaks"}
+    assert set(report["waveform_peaks"]["peaks"][0]) == {
+        "time_start_seconds",
+        "time_end_seconds",
+        "min",
+        "max",
+        "abs_peak",
+    }
+    assert set(report["spectrogram"]) == {"time_bins", "frequency_bins_hz", "energy_db", "summary"}
+    assert set(report["spectrogram"]["summary"]) == {
+        "min_energy_db",
+        "max_energy_db",
+        "mean_energy_db",
+        "time_bin_count",
+        "frequency_bin_count",
+        "energy_floor_db",
+        "official_standard",
+    }
 
 
 def test_visualize_compare_identical_input_has_near_zero_difference(tmp_path):
@@ -249,4 +300,7 @@ def test_visualize_cli_help_is_safe(capsys):
         except SystemExit as exc:
             assert exc.code == 0
         output = capsys.readouterr().out
+        assert "read-only measured" in output
+        assert "--max-time-bins" in output
+        assert "--max-frequency-bins" in output
         assert assert_no_unsafe_public_claims(output) == []

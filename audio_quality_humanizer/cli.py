@@ -142,7 +142,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
     visualize_parser = subparsers.add_parser(
         "visualize",
-        help="Generate read-only waveform and spectrum visualization JSON.",
+        help="Generate read-only measured waveform and spectrum visualization JSON.",
+        description="Generate read-only measured waveform and spectrum visualization JSON.",
     )
     visualize_parser.add_argument("input", type=Path)
     visualize_parser.add_argument("--report", type=Path, required=True)
@@ -152,7 +153,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
     visualize_compare_parser = subparsers.add_parser(
         "visualize-compare",
-        help="Generate read-only before/after visualization comparison JSON.",
+        help="Generate read-only measured before/after visualization comparison JSON.",
+        description="Generate read-only measured before/after visualization comparison JSON.",
     )
     visualize_compare_parser.add_argument("reference", type=Path)
     visualize_compare_parser.add_argument("candidate", type=Path)
