@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.13.1
+
+- Added execution for safe single-file private web backend modes.
+- Added generated JSON artifacts for analyze, release-check, inspect-metadata, and visualize jobs.
+- Added minimal local operator page.
+- Kept file-modifying, two-file, frontend-framework, deployment, and public-launch work deferred.
+
 ## v0.13.0
 
 - Added private-beta web backend MVP planning and skeleton.

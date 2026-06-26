@@ -27,6 +27,7 @@ PUBLIC_FILES = (
     "audio_quality_humanizer/web/auth.py",
     "audio_quality_humanizer/web/config.py",
     "audio_quality_humanizer/web/models.py",
+    "audio_quality_humanizer/web/processing.py",
     "audio_quality_humanizer/web/storage.py",
     "audio_quality_humanizer/web/upload_validation.py",
     "audio_quality_humanizer/reports/markdown_report.py",

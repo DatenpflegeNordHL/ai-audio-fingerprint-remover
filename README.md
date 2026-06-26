@@ -20,7 +20,7 @@ The v0.9 `validate-samples` command runs local real-world validation over user-s
 
 The v0.11 compare workflow adds neutral read-only `comparison_metrics` for before/after quality deltas. These metrics are additive report fields and do not modify audio, change release-check scoring, or add a new CLI command.
 
-The v0.13 private web backend MVP adds an optional FastAPI backend skeleton for future private-beta upload workflows. It has no frontend UI, deployment config, DNS config, or public launch.
+The v0.13 private web backend MVP adds an optional FastAPI backend for future private-beta upload workflows. It includes a simple local operator page and safe single-file JSON artifact generation. It has no frontend framework, deployment config, DNS config, or public launch.
 
 ## v0.10.0 safe core
 
@@ -193,7 +193,7 @@ The visualization artifact schema is intentionally stable for future UI work. Re
 
 ## Private web backend MVP
 
-v0.13.0 adds an optional private-beta backend skeleton for future upload workflows at `release.datenpflege-nord.de`.
+v0.13.1 adds a working optional private-beta backend MVP for local upload workflows at `release.datenpflege-nord.de`.
 
 Install the optional web extra before running it:
 
@@ -207,6 +207,8 @@ Local run example:
 AQH_WEB_TOKEN=dev-token uvicorn audio_quality_humanizer.web.app:app --reload
 ```
 
+Open `http://127.0.0.1:8000/` for the local operator page.
+
 Implemented backend endpoints:
 
 - `GET /health`
@@ -216,11 +218,18 @@ Implemented backend endpoints:
 - `DELETE /api/jobs/{job_id}`
 - `POST /api/maintenance/cleanup`
 
-All API endpoints except `/health` require a bearer token. The first upload flow accepts one file per request, validates an allowlisted audio extension, checks basic audio container headers where practical, stores the file under a random per-job directory, and writes a JSON-safe `status.json`. Processing execution is deferred in this skeleton; the endpoint validates supported modes and creates the upload job only.
+All API endpoints except `/health` require a bearer token. The first upload flow accepts one file per request, validates an allowlisted audio extension, checks basic audio container headers where practical, stores the file under a random per-job directory, runs a safe single-file mode synchronously, writes JSON-safe artifacts, and updates `status.json`.
 
-Supported single-file MVP modes are `analyze`, `release-check`, `inspect-metadata`, `clean-metadata`, and `visualize`. `visualize-compare`, `compare`, and `humanize` are deferred until a later safe flow covers two-file uploads or output-audio generation.
+Generated artifacts:
 
-This backend is private beta only. There is no frontend UI, static asset build chain, deployment config, DNS config, public launch, database, account system, background queue, analytics, billing, or multi-tenant storage in this milestone. Existing safety boundaries apply.
+- `analyze` writes `analysis.json`
+- `release-check` writes `release_check.json`
+- `inspect-metadata` writes `metadata.json`
+- `visualize` writes `visualization.json`
+
+Supported single-file MVP modes are `analyze`, `release-check`, `inspect-metadata`, and `visualize`. `clean-metadata`, `visualize-compare`, `compare`, and `humanize` are deferred until a later safe flow covers file-modifying behavior, two-file uploads, or output-audio generation.
+
+This backend is private beta only. The operator page uses plain HTML, inline CSS, and minimal vanilla JavaScript. There is no frontend framework, static asset build chain, deployment config, DNS config, public launch, database, account system, background queue, analytics, billing, or multi-tenant storage in this milestone. Existing safety boundaries apply.
 
 Apply conservative audio-quality processing:
 
@@ -290,7 +299,7 @@ The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_
 
 The future web upload visualization MVP is documented as design-only at `docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md`. No web app is implemented yet. The candidate subdomain is `release.datenpflege-nord.de`; any future web version must keep the same safety boundary, and spectrum or difference views must show only measured technical changes.
 
-The v0.13.0 private web backend skeleton is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. It is backend-only, private beta only, and keeps frontend UI, deployment, DNS, and public launch deferred.
+The v0.13 private web backend MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. It is local, private beta only, uses no frontend framework, and keeps deployment, DNS, and public launch deferred.
 
 ## Candidate Reality Gate
 

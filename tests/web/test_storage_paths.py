@@ -23,6 +23,7 @@ def test_filename_traversal_does_not_escape_storage(tmp_path, monkeypatch):
     assert (job_dir / "input" / "upload.wav").is_file()
     assert not (tmp_path / "evil.wav").exists()
     assert "../../evil.wav" not in read_status(job_dir)["input"].values()
+    assert (job_dir / "artifacts" / "analysis.json").is_file()
 
 
 def test_job_id_is_random_looking_and_not_path_like(tmp_path, monkeypatch):

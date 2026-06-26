@@ -47,4 +47,4 @@ def test_api_accepts_correct_bearer_token(tmp_path, monkeypatch):
     )
 
     assert response.status_code == 201
-    assert response.json()["status"] == "uploaded"
+    assert response.json()["status"] == "completed"

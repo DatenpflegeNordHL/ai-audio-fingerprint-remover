@@ -206,6 +206,12 @@ All private web API endpoints except `/health` require bearer-token auth.
 
 Uploaded files are temporary.
 
+The private web operator page is local and uses no frontend framework or external assets.
+
+The private web API may execute safe single-file read-only modes and write JSON artifacts.
+
+Private web file-modifying, two-file, and output-audio modes remain deferred.
+
 Private web storage must use random job IDs and must not use user filenames as storage paths.
 
 Generated private web outputs must not be committed.

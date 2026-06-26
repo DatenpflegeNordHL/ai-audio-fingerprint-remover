@@ -1,8 +1,8 @@
 {
-  "version_target": "0.13.0",
-  "status": "implemented_backend_skeleton",
-  "deep_search_decision": "needed_current_library_behavior",
-  "deep_search_completed": true,
+  "version_target": "0.13.1",
+  "status": "implemented_working_local_mvp",
+  "deep_search_decision": "not_needed_internal_repo_only",
+  "deep_search_completed": false,
   "approved_backend_stack": [
     "FastAPI",
     "Uvicorn",
@@ -44,6 +44,7 @@
   },
   "endpoints": [
     "GET /health",
+    "GET /",
     "POST /api/jobs",
     "GET /api/jobs/{job_id}",
     "GET /api/jobs/{job_id}/artifacts/{artifact_name}",
@@ -54,15 +55,29 @@
     "analyze",
     "release-check",
     "inspect-metadata",
-    "clean-metadata",
     "visualize"
   ],
   "deferred_modes": [
+    "clean-metadata",
     "visualize-compare",
     "compare",
     "humanize"
   ],
-  "processing_execution": "deferred",
+  "processing_execution": "synchronous_safe_single_file_modes",
+  "generated_artifacts": {
+    "analyze": "analysis.json",
+    "release-check": "release_check.json",
+    "inspect-metadata": "metadata.json",
+    "visualize": "visualization.json"
+  },
+  "operator_page": {
+    "path": "/",
+    "plain_html": true,
+    "inline_css": true,
+    "vanilla_javascript": true,
+    "external_assets": false,
+    "token_persistence": false
+  },
   "security_requirements": [
     "private beta only",
     "bearer-token auth for API endpoints",
@@ -84,6 +99,7 @@
   ],
   "not_approved": [
     "frontend UI",
+    "frontend framework",
     "React",
     "Vite",
     "Next",
@@ -103,7 +119,10 @@
     "billing",
     "analytics",
     "multi-tenant storage",
-    "audio processing behavior changes"
+    "audio processing behavior changes",
+    "file-modifying web modes",
+    "two-file web modes",
+    "output-audio web modes"
   ],
   "project_reborn_boundary": {
     "reference_only": true,

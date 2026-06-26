@@ -9,11 +9,11 @@ SUPPORTED_MODES = (
     "analyze",
     "release-check",
     "inspect-metadata",
-    "clean-metadata",
     "visualize",
 )
 
 DEFERRED_MODES = (
+    "clean-metadata",
     "visualize-compare",
     "compare",
     "humanize",

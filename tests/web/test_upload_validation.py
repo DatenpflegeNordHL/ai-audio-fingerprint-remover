@@ -20,6 +20,7 @@ def test_valid_tiny_wav_upload_is_accepted(tmp_path, monkeypatch):
     assert response.status_code == 201
     data = response.json()
     assert data["mode"] == "analyze"
+    assert data["status"] == "completed"
     assert data["input"]["extension"] == ".wav"
     assert data["input"]["size_bytes"] == len(tiny_wav_bytes())
 

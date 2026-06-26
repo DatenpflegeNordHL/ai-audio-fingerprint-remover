@@ -1,14 +1,14 @@
-# v0.13.0 Private Web Backend MVP
+# v0.13 Private Web Backend MVP
 
 ## Status
 
-Implemented backend skeleton.
+Implemented working local backend MVP.
 
 ## Deep Search Summary
 
-Deep Search decision: `needed_current_library_behavior`.
+Deep Search decision for v0.13.1: `not_needed_internal_repo_only`.
 
-Deep Search was completed before implementation. The approved stack is FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per request, random job IDs from `secrets.token_urlsafe`, and temporary per-job directories under a controlled local root.
+The current milestone only extends the already-approved local backend skeleton. No new external frontend libraries or current external information were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per request, random job IDs from `secrets.token_urlsafe`, and temporary per-job directories under a controlled local root.
 
 ## Approved Dependencies
 
@@ -41,7 +41,9 @@ Token comparison uses constant-time comparison.
 - `DELETE /api/jobs/{job_id}`
 - `POST /api/maintenance/cleanup`
 
-`POST /api/jobs` validates the requested single-file mode, validates and stores the uploaded file, writes `status.json`, and returns job metadata. Processing execution is deferred in this skeleton.
+`GET /` returns a local operator page with a token field, upload form, mode selector, job status area, artifact links, supported/deferred mode lists, and safety note. The page uses plain HTML, inline CSS, and minimal vanilla JavaScript only.
+
+`POST /api/jobs` validates the requested single-file mode, validates and stores the uploaded file, executes the selected safe single-file mode synchronously, writes generated JSON artifacts, updates `status.json`, and returns job metadata.
 
 ## Upload Validation Design
 
@@ -97,7 +99,9 @@ The cleanup helper removes expired complete job directories and older partial jo
 
 ## Job State Model
 
-Initial job state is `uploaded`.
+Successful job state is `completed`.
+
+Safe processing failure state is `failed`.
 
 The status JSON includes:
 
@@ -117,8 +121,14 @@ Supported single-file MVP modes:
 - `analyze`
 - `release-check`
 - `inspect-metadata`
-- `clean-metadata`
 - `visualize`
+
+Generated artifacts:
+
+- `analyze` writes `analysis.json`
+- `release-check` writes `release_check.json`
+- `inspect-metadata` writes `metadata.json`
+- `visualize` writes `visualization.json`
 
 ## Deferred Modes
 
@@ -126,9 +136,10 @@ Deferred until later safe flows:
 
 - `visualize-compare`
 - `compare`
+- `clean-metadata`
 - `humanize`
 
-Two-file comparison and output-audio generation are not implemented in this skeleton.
+File-modifying behavior, two-file comparison, and output-audio generation are not implemented in this MVP.
 
 ## Safety Boundary
 
@@ -139,6 +150,8 @@ The backend stores uploads temporarily and must not commit uploaded audio or gen
 The backend must not imply watermark, fingerprint, provenance, C2PA, source-attribution, detector, evasion, detectability, platform-certification, or distributor-guarantee outcomes.
 
 Endpoint responses are technical job-status responses only.
+
+Failures must not expose tracebacks in status JSON or API responses.
 
 ## Test Plan
 
@@ -159,6 +172,9 @@ Tests cover:
 - cleanup of expired jobs
 - JSON-safe status files
 - endpoint response wording
+- operator page rendering and safe wording
+- generated artifacts for analyze, release-check, inspect-metadata, and visualize
+- completed and failed job states
 - design and safety documentation
 
 ## Generated Artifact Policy
@@ -169,7 +185,7 @@ Do not commit uploaded audio, generated web reports, generated audio, local job 
 
 ## Not Approved
 
-- no frontend UI
+- no frontend framework
 - no React, Vite, Next, wavesurfer.js, Meyda, three.js, or audioMotion-analyzer
 - no static asset build chain
 - no deployment
@@ -177,13 +193,14 @@ Do not commit uploaded audio, generated web reports, generated audio, local job 
 - no public launch
 - no final legal, privacy, or GDPR public text
 - no accounts, OAuth, database, Redis, Celery, billing, analytics, or multi-tenant storage
-- no audio processing behavior changes
+- no audio algorithm changes
+- no file-modifying or output-audio modes
 
 ## Future Relationship
 
-This backend skeleton is a private-beta foundation for a future upload interface at `release.datenpflege-nord.de`.
+This working local backend MVP is a private-beta foundation for a future upload interface at `release.datenpflege-nord.de`.
 
-Public launch, hosting, deployment, frontend UI, and final legal/privacy copy remain deferred.
+Public launch, hosting, deployment, frontend framework work, and final legal/privacy copy remain deferred.
 
 ## Project Boundary
 
