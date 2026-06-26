@@ -1,12 +1,12 @@
-# v0.17 Private Dashboard and Web Backend MVP
+# v0.18 Private Dashboard and Web Backend MVP
 
 ## Status
 
-Implemented working local dashboard and backend MVP with output workflows, two-file workflows, local operator hardening, and private side-project beta deployment-prep docs.
+Implemented working local dashboard and backend MVP with output workflows, two-file workflows, local operator hardening, private side-project beta deployment-prep docs, and home-server rollout runbooks.
 
 ## Deep Search Summary
 
-Deep Search decision for v0.17.0: `not_needed_internal_repo_only`.
+Deep Search decision for v0.18.0: `not_needed_internal_repo_only`.
 
 The current milestone only extends the already-approved local backend and adds documentation/examples for the existing DatenpflegeNord home-server plus Cloudflare Tunnel setup. No new external frontend libraries or provider comparisons were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta API access, optional temporary beta-password dashboard access, one uploaded file per single-file request or fixed before/after uploads for two-file requests, random job IDs from `secrets.token_urlsafe`, temporary per-job directories under a controlled local root, safe operator config, recent job summaries, cleanup controls, and lightweight response headers.
 
@@ -87,6 +87,19 @@ Runtime config names:
 - `AQH_WEB_JOB_TTL_HOURS`
 - `AQH_WEB_MAX_ACTIVE_JOBS`
 - `AQH_BETA_PASSWORD_HASH` preferred, or `AQH_BETA_PASSWORD` temporarily
+
+## Server Rollout Runbooks
+
+v0.18.0 adds documentation-only rollout material for the existing home server:
+
+- `deployment/server-rollout.md`
+- `deployment/checklists/preflight.md`
+- `deployment/checklists/post-deploy.md`
+- `deployment/smoke-test.md`
+- `deployment/rollback.md`
+- `scripts/private-beta-smoke.sh`
+
+These files do not add public CI/CD, infrastructure automation, hosting-provider comparisons, database services, worker queues, public launch features, marketing, analytics, SEO, or DatenpflegeNord dashboard integration.
 
 ## Upload Validation Design
 
@@ -280,9 +293,9 @@ Tests cover:
 
 ## Generated Artifact Policy
 
-Do not commit uploaded audio, generated web reports, generated audio, local job directories, or `v017_web_outputs/`.
+Do not commit uploaded audio, generated web reports, generated audio, local job directories, or `v018_web_outputs/`.
 
-`.var/`, `v013_web_outputs/`, `v015_web_outputs/`, `v016_web_outputs/`, and `v017_web_outputs/` are ignored by Git.
+`.var/`, `v013_web_outputs/`, `v015_web_outputs/`, `v016_web_outputs/`, `v017_web_outputs/`, and `v018_web_outputs/` are ignored by Git.
 
 ## Not Approved
 

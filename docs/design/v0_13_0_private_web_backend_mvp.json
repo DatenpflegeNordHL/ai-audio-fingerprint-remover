@@ -1,6 +1,6 @@
 {
-  "version_target": "0.17.0",
-  "status": "implemented_private_beta_deployment_prep",
+  "version_target": "0.18.0",
+  "status": "implemented_private_beta_server_rollout_plan",
   "deep_search_decision": "not_needed_internal_repo_only",
   "deep_search_completed": false,
   "approved_backend_stack": [
@@ -234,6 +234,16 @@
     "official_product_positioning": false,
     "datenpflege_dashboard_integration": false,
     "provider_comparison": false
+  },
+  "server_rollout": {
+    "runbook": "deployment/server-rollout.md",
+    "rollback": "deployment/rollback.md",
+    "smoke_test": "deployment/smoke-test.md",
+    "preflight_checklist": "deployment/checklists/preflight.md",
+    "post_deploy_checklist": "deployment/checklists/post-deploy.md",
+    "optional_smoke_script": "scripts/private-beta-smoke.sh",
+    "public_ci_cd": false,
+    "infrastructure_automation": false
   },
   "project_reborn_boundary": {
     "reference_only": true,

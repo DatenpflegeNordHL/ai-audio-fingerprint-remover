@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.18.0
+
+- Added private beta home-server rollout runbook for `beta.datenpflege-nord.de` behind the existing Cloudflare Tunnel.
+- Added preflight, post-deploy, rollback, and smoke-test documentation for the v0.17.0 private beta deployment.
+- Added optional local smoke-test script for health, dashboard gate, API auth, upload limit, and cleanup checks.
+- Kept runtime behavior, audio algorithms, `humanize`, public launch features, provider comparisons, databases, queues, analytics, and official product positioning deferred.
+
 ## v0.17.0
 
 - Added private beta deployment-prep documentation for `beta.datenpflege-nord.de` behind the existing Cloudflare Tunnel.

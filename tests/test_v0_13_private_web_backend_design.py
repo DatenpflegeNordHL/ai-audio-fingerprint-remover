@@ -9,6 +9,7 @@ MARKDOWN = ROOT / "docs" / "design" / "V0_13_0_PRIVATE_WEB_BACKEND_MVP.md"
 DESIGN_JSON = ROOT / "docs" / "design" / "v0_13_0_private_web_backend_mvp.json"
 DEPLOYMENT_CHECKLIST = ROOT / "docs" / "design" / "V0_16_0_DEPLOYMENT_READINESS_CHECKLIST.md"
 DEPLOYMENT_ROOT = ROOT / "deployment"
+SMOKE_SCRIPT = ROOT / "scripts" / "private-beta-smoke.sh"
 README = ROOT / "README.md"
 SAFETY = ROOT / "SAFETY.md"
 GITIGNORE = ROOT / ".gitignore"
@@ -25,8 +26,8 @@ def test_v0_13_private_web_design_docs_exist_and_record_deep_search():
     text = MARKDOWN.read_text(encoding="utf-8")
     design = _design()
 
-    assert "Deep Search decision for v0.17.0: `not_needed_internal_repo_only`" in text
-    assert design["version_target"] == "0.17.0"
+    assert "Deep Search decision for v0.18.0: `not_needed_internal_repo_only`" in text
+    assert design["version_target"] == "0.18.0"
     assert design["deep_search_decision"] == "not_needed_internal_repo_only"
     assert design["deep_search_completed"] is False
 
@@ -97,6 +98,11 @@ def test_v0_13_private_web_design_shape_and_boundaries():
     assert design["deployment_prep"]["target_hostname"] == "beta.datenpflege-nord.de"
     assert design["deployment_prep"]["local_service_target"] == "http://localhost:8017"
     assert design["deployment_prep"]["provider_comparison"] is False
+    assert design["server_rollout"]["runbook"] == "deployment/server-rollout.md"
+    assert design["server_rollout"]["rollback"] == "deployment/rollback.md"
+    assert design["server_rollout"]["optional_smoke_script"] == "scripts/private-beta-smoke.sh"
+    assert design["server_rollout"]["public_ci_cd"] is False
+    assert design["server_rollout"]["infrastructure_automation"] is False
     assert design["metadata_display"]["sanitized_embedded_images"] is True
     assert design["metadata_display"]["max_display_chars"] == 500
     assert "frontend framework" in design["not_approved"]
@@ -190,6 +196,45 @@ def test_v0_17_private_beta_deployment_docs_are_placeholder_only():
         assert forbidden not in combined
 
 
+def test_v0_18_server_rollout_docs_and_smoke_script_cover_required_steps():
+    expected = [
+        "server-rollout.md",
+        "rollback.md",
+        "smoke-test.md",
+        "checklists/preflight.md",
+        "checklists/post-deploy.md",
+    ]
+    for relative in expected:
+        assert (DEPLOYMENT_ROOT / relative).exists()
+    assert SMOKE_SCRIPT.exists()
+
+    combined = "\n".join((DEPLOYMENT_ROOT / relative).read_text(encoding="utf-8") for relative in expected)
+    script = SMOKE_SCRIPT.read_text(encoding="utf-8")
+
+    assert "git fetch --tags" in combined
+    assert "git checkout v0.17.0" in combined
+    assert "AQH_WEB_HOST=127.0.0.1" in combined
+    assert "AQH_WEB_PORT=8017" in combined
+    assert "AQH_WEB_MAX_UPLOAD_MB=50" in combined
+    assert "AQH_WEB_JOB_TTL_HOURS=24" in combined
+    assert "AQH_WEB_MAX_ACTIVE_JOBS=1" in combined
+    assert "AQH_WEB_TOKEN=<server-only secret>" in combined
+    assert "AQH_BETA_PASSWORD_HASH=<server-only value>" in combined
+    assert "curl -i http://127.0.0.1:8017/health" in combined
+    assert "Public hostname: beta.datenpflege-nord.de" in combined
+    assert "Service: http://localhost:8017" in combined
+    assert "dashboard without password returns HTTP `401`" in combined
+    assert "dashboard with beta password returns HTTP `200`" in combined
+    assert "oversized upload returns HTTP `413`" in combined
+    assert "active job limit can return HTTP `429`" in combined
+    assert "no token values" in combined
+    assert "no upload/output backups" in combined
+    assert "docker compose down" in combined
+    assert "AQH_WEB_TOKEN is required" in script
+    assert "AQH_BETA_SMOKE_PASSWORD is required" in script
+    assert "Private beta smoke checks passed." in script
+
+
 def test_v0_13_generated_outputs_are_ignored():
     text = GITIGNORE.read_text(encoding="utf-8")
 
@@ -198,3 +243,4 @@ def test_v0_13_generated_outputs_are_ignored():
     assert "v015_web_outputs/" in text
     assert "v016_web_outputs/" in text
     assert "v017_web_outputs/" in text
+    assert "v018_web_outputs/" in text

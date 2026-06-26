@@ -200,7 +200,7 @@ Visualization artifacts are not mastering certification.
 
 Visualization artifacts do not predict platform or distributor acceptance.
 
-The v0.17 private web API is private beta only.
+The v0.18 private web API is private beta only.
 
 All private web API endpoints except `/health` require bearer-token auth.
 
@@ -244,7 +244,7 @@ Private web storage must use random job IDs and must not use user filenames as s
 
 Generated private web outputs must not be committed.
 
-No frontend framework, public launch, official product positioning, SEO, analytics, or DatenpflegeNord dashboard integration is included in v0.17.
+No frontend framework, public launch, official product positioning, SEO, analytics, or DatenpflegeNord dashboard integration is included in v0.18.
 
 The v0.17 deployment prep is for a private side-project beta only.
 

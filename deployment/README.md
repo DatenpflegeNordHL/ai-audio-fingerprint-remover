@@ -44,6 +44,15 @@ Required private beta settings:
 
 Before any official launch, replace shared password access with Cloudflare Access OTP or an equivalent stronger access-control layer.
 
+## Rollout Documents
+
+- `server-rollout.md`: practical home-server rollout steps
+- `checklists/preflight.md`: release, server, env, and tunnel preflight
+- `checklists/post-deploy.md`: local, remote, log, cleanup, and privacy checks
+- `smoke-test.md`: manual and scripted smoke-test instructions
+- `rollback.md`: manual rollback steps
+- `scripts/private-beta-smoke.sh`: optional local smoke-test helper
+
 ## Deferred
 
 - Cloudflare Access OTP until official launch

@@ -26,6 +26,8 @@ The v0.16 local web hardening adds safe auth feedback, response headers, retenti
 
 The v0.17 deployment prep adds private side-project beta documentation and examples for `beta.datenpflege-nord.de` behind the already configured Cloudflare Tunnel. It is not an official public DatenpflegeNord product and must not be advertised or linked from the DatenpflegeNord dashboard.
 
+The v0.18 rollout prep adds home-server runbooks, preflight/post-deploy checklists, rollback notes, and an optional smoke-test helper for the existing Cloudflare Tunnel deployment path. It still does not add public launch features or production infrastructure automation.
+
 ## v0.10.0 safe core
 
 v0.10.0 adds signal guardrails, optional performance metadata, and synthetic regression scaffolding. These features were designed from Project Reborn planning notes but rewritten from first principles inside the active package. Project Reborn remains non-installed and inert.
@@ -357,7 +359,7 @@ The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_
 
 The future web upload visualization MVP is documented as design-only at `docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md`. No web app is implemented yet. The candidate subdomain is `release.datenpflege-nord.de`; any future web version must keep the same safety boundary, and spectrum or difference views must show only measured technical changes.
 
-The v0.17 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. Its deployment-readiness checklist is documented at `docs/design/V0_16_0_DEPLOYMENT_READINESS_CHECKLIST.md`, and private-beta deployment prep examples are in `deployment/`. It is private beta only, uses no external frontend libraries, supports documented one-file and two-file modes, and keeps public launch, official product positioning, dashboard integration, OTP, database, queues, and `humanize` deferred.
+The v0.18 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. Its deployment-readiness checklist is documented at `docs/design/V0_16_0_DEPLOYMENT_READINESS_CHECKLIST.md`, and private-beta rollout docs are in `deployment/`. It is private beta only, uses no external frontend libraries, supports documented one-file and two-file modes, and keeps public launch, official product positioning, dashboard integration, OTP, database, queues, and `humanize` deferred.
 
 ## Candidate Reality Gate
 
