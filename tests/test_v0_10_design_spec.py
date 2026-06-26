@@ -43,6 +43,7 @@ def test_v0_10_design_json_records_implemented_and_deferred_candidates():
         "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md",
         "docs/design/CANDIDATE_REALITY_GATE.md",
         "docs/design/REBORN_025_DEEP_REVIEW.md",
+        "docs/design/REBORN_005_DEEP_REVIEW.md",
     }
     assert {item["reborn_id"] for item in design["implemented_candidates"]} == IMPLEMENTED
     assert {item["reborn_id"] for item in design["deferred_candidates"]} == DEFERRED
@@ -59,6 +60,7 @@ def test_v0_10_design_markdown_records_safe_boundaries():
     assert "Status: implemented safe core" in text
     assert "Candidate 1, `reborn_008`, is implemented" in text
     assert "Candidate 4, `reborn_025`, is deferred" in text
+    assert "Candidate 5, `reborn_005`, now has a deep-review design-only document" in text
     assert "Candidate Reality Gate" in text
     assert "Deep Search stop rule" in text
     assert "real local audio validation" in text

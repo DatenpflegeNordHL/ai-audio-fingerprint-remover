@@ -6,7 +6,8 @@
     "project_reborn/planning/PROJECT_REBORN_TOP5_PLAN.md",
     "project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md",
     "docs/design/CANDIDATE_REALITY_GATE.md",
-    "docs/design/REBORN_025_DEEP_REVIEW.md"
+    "docs/design/REBORN_025_DEEP_REVIEW.md",
+    "docs/design/REBORN_005_DEEP_REVIEW.md"
   ],
   "safety_boundary": [
     "The v0.10.0 safe core was rewritten from first principles inside audio_quality_humanizer/.",
@@ -77,6 +78,13 @@
       "reborn_id": "reborn_005",
       "candidate": "metadata_privacy_and_analysis_stats_review",
       "status": "deferred_deeper_manual_review",
+      "deep_review_status": "deep_review_design_only",
+      "implementation_status": "deferred",
+      "deep_review_document": "docs/design/REBORN_005_DEEP_REVIEW.md",
+      "future_implementation_requires_separate_approval": true,
+      "future_implementation_requires_candidate_reality_gate": true,
+      "future_implementation_requires_real_local_audio_validation_if_user_facing_behavior_changes": true,
+      "future_implementation_requires_no_op_check_if_user_facing_behavior_changes": true,
       "reason": "Metadata/privacy and analysis-stat expansion needs deeper review because the source file has the highest legacy-framing risk."
     }
   ],
@@ -90,6 +98,7 @@
     "Candidate Reality Gate is required for future feature candidates.",
     "Deep Search stop rule is required when current external information is needed.",
     "reborn_025 remains deep-review design-only and deferred.",
+    "reborn_005 remains deep-review design-only and deferred.",
     "Future user-facing audio behavior requires real local audio validation and no-op checks.",
     "No Project Reborn source file is copied, imported, executed, packaged, or exposed.",
     "Project Reborn remains excluded from package discovery.",
@@ -105,6 +114,7 @@
     "Unit-test performance helpers for elapsed seconds and platform metadata.",
     "Unit-test design JSON for implemented and deferred candidate status.",
     "Unit-test Candidate Reality Gate and reborn_025 deep-review planning documents.",
+    "Unit-test reborn_005 deep-review planning documents.",
     "Run pytest.",
     "Run root cleanliness, Project Reborn, safety scan, CLI smoke, and build checks.",
     "Confirm built wheels still exclude project_reborn/."

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.11.2
+
+- Added deep-review design notes for deferred Project Reborn candidate `reborn_005`.
+- Kept `reborn_005` implementation deferred pending separate approval.
+- Reconfirmed Project Reborn remains inert and reference-only.
+
 ## v0.11.1
 
 - Added v0.11.0 release notes.

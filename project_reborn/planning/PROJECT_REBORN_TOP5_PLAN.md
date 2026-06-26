@@ -20,7 +20,7 @@ Old filenames are historical labels only. Future work must inspect behavior, des
 | 2 | `reborn_015` | Workflow performance harness design | `audio_quality_humanizer.validation` | `candidate_for_v0_10_design` |
 | 3 | `reborn_022` | Audio-quality regression test ideas | `audio_quality_humanizer.validation` | `candidate_for_v0_10_design` |
 | 4 | `reborn_025` | Comparison report metrics review | `audio_quality_humanizer.compare` | `needs_deeper_manual_review` |
-| 5 | `reborn_005` | Metadata privacy and analysis stats review | `audio_quality_humanizer.metadata` | `needs_deeper_manual_review` |
+| 5 | `reborn_005` | Metadata privacy and analysis stats review | `audio_quality_humanizer.metadata` | `keep_as_reference_only` |
 
 ## v0.10.0 Status
 
@@ -45,6 +45,14 @@ Old filenames are historical labels only. Future work must inspect behavior, des
 - The v0.11.0 implementation extends the existing `compare` workflow only.
 - No Project Reborn source code was copied, imported, executed, packaged, or exposed.
 - `reborn_005` remains deferred pending separate deep manual review.
+
+## v0.11.2 Status
+
+- `reborn_005` now has a deep-review design-only document.
+- `reborn_005` implementation remains deferred pending separate approval.
+- Any future `reborn_005` implementation must pass the Candidate Reality Gate.
+- Future user-facing metadata/privacy or analysis-stat behavior must include real local validation and a no-op check.
+- No Project Reborn source code was copied, imported, executed, packaged, or exposed.
 
 ## Manual Review Notes
 
@@ -183,4 +191,4 @@ The strongest future direction is a v0.10 design pass around three safe areas:
 - Read-only comparison and quality-report metrics.
 - Validation and performance scaffolding for existing workflows.
 
-`reborn_005` needs deeper review before design work because it contains high legacy unsafe framing. All Project Reborn source files remain reference-only unless a new implementation is designed, tested, safety-reviewed, and rewritten from first principles in the active package.
+`reborn_005` has now been reviewed as design-only reference material. Implementation remains deferred and requires separate approval. All Project Reborn source files remain reference-only unless a new implementation is designed, tested, safety-reviewed, and rewritten from first principles in the active package.

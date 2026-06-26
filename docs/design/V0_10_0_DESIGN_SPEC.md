@@ -8,6 +8,9 @@ Source planning documents:
 
 - `project_reborn/planning/PROJECT_REBORN_TOP5_PLAN.md`
 - `project_reborn/audit/PROJECT_REBORN_AUDIT_MAP.md`
+- `docs/design/CANDIDATE_REALITY_GATE.md`
+- `docs/design/REBORN_025_DEEP_REVIEW.md`
+- `docs/design/REBORN_005_DEEP_REVIEW.md`
 
 ## Safety Boundary
 
@@ -63,6 +66,8 @@ Future implementation must stop for a user research update if current external s
 
 Candidate 5, `reborn_005`, is deferred. Future metadata/privacy and analysis-stat expansion may review metadata inspection/reporting, changed-tag reporting, processing stats, spectral entropy, spectral flatness, and neutral complexity metrics. It needs deeper review because the source file has the highest legacy-framing risk.
 
+Candidate 5, `reborn_005`, now has a deep-review design-only document. Implementation remains deferred and requires separate approval. Any future implementation must pass the Candidate Reality Gate. Future user-facing metadata/privacy or analysis-stat behavior must include real local validation and a no-op check. Project Reborn source remains reference-only.
+
 ## Report Field Changes
 
 `analyze`, `humanize`, `doctor`, and `validate-samples` can include additive `guardrails` fields.
@@ -89,6 +94,7 @@ Project Reborn is not exposed through CLI help.
 - Unit-test performance helpers for elapsed seconds and platform metadata.
 - Unit-test design JSON for implemented and deferred candidate status.
 - Unit-test Candidate Reality Gate and `reborn_025` deep-review planning documents.
+- Unit-test `reborn_005` deep-review planning documents.
 - Run the full test suite.
 - Run root cleanliness, Project Reborn, safety scan, CLI smoke, and build checks.
 - Confirm built wheels still exclude `project_reborn/`.
@@ -104,6 +110,7 @@ Project Reborn is not exposed through CLI help.
 - Candidate Reality Gate is required for future feature candidates.
 - Deep Search stop rule is required when current external information is needed.
 - `reborn_025` remains deep-review design-only and deferred.
+- `reborn_005` remains deep-review design-only and deferred.
 - Future user-facing audio behavior requires real local audio validation and no-op checks.
 - No Project Reborn source file is copied, imported, executed, packaged, or exposed.
 - Project Reborn remains excluded from package discovery.

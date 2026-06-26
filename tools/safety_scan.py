@@ -18,6 +18,7 @@ from audio_quality_humanizer.safety import assert_no_unsafe_public_claims
 PUBLIC_FILES = (
     "README.md",
     "SAFETY.md",
+    "CHANGELOG.md",
     "pyproject.toml",
     "audio_quality_humanizer/cli.py",
     "audio_quality_humanizer/safety.py",
@@ -26,6 +27,8 @@ PUBLIC_FILES = (
     "docs/design/v0_10_0_design_spec.json",
     "docs/design/CANDIDATE_REALITY_GATE.md",
     "docs/design/REBORN_025_DEEP_REVIEW.md",
+    "docs/design/REBORN_005_DEEP_REVIEW.md",
+    "docs/design/reborn_005_deep_review.json",
     "docs/design/V0_11_0_COMPARE_METRICS.md",
     "docs/design/v0_11_0_compare_metrics.json",
     "docs/releases/V0_10_0_RELEASE_NOTES.md",

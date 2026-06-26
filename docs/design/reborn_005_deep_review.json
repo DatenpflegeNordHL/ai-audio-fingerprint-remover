@@ -1,0 +1,100 @@
+{
+  "reborn_id": "reborn_005",
+  "status": "deep_review_design_only",
+  "implementation_status": "deferred",
+  "deep_search_decision": "not_needed_internal_repo_only",
+  "deep_search_stop_required": true,
+  "deep_search_reason": "This review only inspects local Project Reborn reference material and existing repository planning docs.",
+  "source_inspection": {
+    "path": "project_reborn/source_drawer/reborn_005_reference.py",
+    "method": "manual_text_only",
+    "executed": false,
+    "imported": false,
+    "copied": false,
+    "packaged": false,
+    "exposed": false
+  },
+  "observed_legacy_behavior": [
+    "metadata rewriting and changed-tag category reporting for common audio containers",
+    "processing runtime, operation timing, optional memory, cache, and chunk-processing statistics",
+    "neutralizable analysis metrics including spectral entropy, spectral flatness, frequency-distribution summaries, and simple complexity measures",
+    "chunk splitting and reconstruction structure with fallback to original chunks on failure",
+    "unsafe detector, attribution, recognizability, concealment, and remover framing that is rejected"
+  ],
+  "safe_ideas": [
+    "metadata inspection for ordinary container tags",
+    "metadata change reporting with explicit before and after categories",
+    "privacy-safe container tag cleanup summary limited to documented user-editable fields",
+    "processing runtime statistics",
+    "operation timing statistics",
+    "basic analysis statistics for audio quality reports",
+    "spectral entropy as a neutral audio texture metric",
+    "spectral flatness as a neutral audio texture metric",
+    "simple complexity metrics as neutral analysis aids",
+    "chunked processing structure only if rewritten safely and only if needed"
+  ],
+  "rejected_ideas": [
+    "No fingerprint removal",
+    "No watermark removal",
+    "No pattern normalization for attribution targeting",
+    "No recognizability targeting",
+    "No detector targeting",
+    "No provenance removal",
+    "No origin marker removal",
+    "No C2PA marker removal",
+    "No source-attribution removal",
+    "No evasion or bypass framing",
+    "No legacy CLI behavior",
+    "No user-facing claims tied to concealment, removal, or detectability reduction"
+  ],
+  "future_synthetic_tests": [
+    "normal metadata-bearing file fixture",
+    "file with no metadata",
+    "malformed or unusual metadata",
+    "silent or quiet audio for analysis stats",
+    "short audio",
+    "mono and stereo files",
+    "JSON safety",
+    "forbidden wording scan"
+  ],
+  "future_real_audio_validation": [
+    "validate future user-facing metadata or analysis behavior with local user-supplied files",
+    "do not commit real audio files",
+    "do not commit generated metadata reports",
+    "do not commit generated validation outputs"
+  ],
+  "no_op_check_plan": [
+    "inspect-only commands do not modify files",
+    "cleanup commands only change documented metadata fields",
+    "analysis stats are populated from real calculations",
+    "reports do not invent changes",
+    "JSON contains no NaN or Infinity"
+  ],
+  "possible_future_scope": {
+    "status": "design_only",
+    "possible_milestone": "v0.12.0 metadata/privacy and analysis stats",
+    "allowed_future_directions": [
+      "metadata inspection/reporting",
+      "metadata change summary",
+      "neutral processing statistics",
+      "neutral analysis texture metrics"
+    ],
+    "active_implementation_approved": false,
+    "new_cli_behavior_approved": false,
+    "metadata_cleanup_changes_approved": false,
+    "audio_processing_changes_approved": false,
+    "release_check_scoring_changes_approved": false,
+    "requires_separate_approval": true,
+    "requires_candidate_reality_gate": true,
+    "requires_real_local_audio_validation_if_user_facing_behavior_changes": true,
+    "requires_no_op_check_if_user_facing_behavior_changes": true
+  },
+  "project_reborn_boundary": {
+    "reference_only": true,
+    "executed": false,
+    "imported": false,
+    "copied": false,
+    "packaged": false,
+    "exposed": false
+  }
+}

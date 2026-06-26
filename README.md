@@ -231,13 +231,15 @@ The v0.10.0 design spec is available at `docs/design/V0_10_0_DESIGN_SPEC.md`.
 
 The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_METRICS.md`.
 
+`reborn_005` now has a design-only deep review at `docs/design/REBORN_005_DEEP_REVIEW.md`. No active package behavior changed from that review.
+
 ## Candidate Reality Gate
 
 Future audio features must pass the Candidate Reality Gate: synthetic tests, real local audio validation, no-op check, safe wording check, and a documented Deep Search decision.
 
 If external current information is required, work stops until the user provides a research update or approves a constrained internal-only scope.
 
-See `docs/design/CANDIDATE_REALITY_GATE.md`. The deferred `reborn_025` deep review is documented at `docs/design/REBORN_025_DEEP_REVIEW.md`.
+See `docs/design/CANDIDATE_REALITY_GATE.md`. The deferred `reborn_025` deep review is documented at `docs/design/REBORN_025_DEEP_REVIEW.md`. The deferred `reborn_005` deep review is documented at `docs/design/REBORN_005_DEEP_REVIEW.md`.
 
 See `project_reborn/catalog/PROJECT_REBORN_CATALOG.md`.
 

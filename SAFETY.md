@@ -162,6 +162,14 @@ Generated reports and generated audio are not part of the repository.
 
 Release notes may summarize validation outcomes without bundling user audio.
 
+`reborn_005` remains deferred after design-only review.
+
+High-risk legacy framing in `reborn_005` was reviewed only as text.
+
+No Project Reborn source was copied, imported, executed, packaged, or exposed during the `reborn_005` review.
+
+Future metadata/privacy/statistics behavior must avoid attribution, fingerprint, watermark, detector, provenance, bypass, evasion, and detectability claims.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.

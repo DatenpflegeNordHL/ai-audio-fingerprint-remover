@@ -24,6 +24,8 @@ CANDIDATE_GATE_JSON = ROOT / "docs" / "design" / "candidate_reality_gate.json"
 CANDIDATE_GATE_MARKDOWN = ROOT / "docs" / "design" / "CANDIDATE_REALITY_GATE.md"
 REBORN_025_REVIEW_JSON = ROOT / "docs" / "design" / "reborn_025_deep_review.json"
 REBORN_025_REVIEW_MARKDOWN = ROOT / "docs" / "design" / "REBORN_025_DEEP_REVIEW.md"
+REBORN_005_REVIEW_JSON = ROOT / "docs" / "design" / "reborn_005_deep_review.json"
+REBORN_005_REVIEW_MARKDOWN = ROOT / "docs" / "design" / "REBORN_005_DEEP_REVIEW.md"
 V0_11_COMPARE_JSON = ROOT / "docs" / "design" / "v0_11_0_compare_metrics.json"
 V0_11_COMPARE_MARKDOWN = ROOT / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
 V0_11_RELEASE_NOTES = ROOT / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md"
@@ -152,6 +154,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
     candidate_gate_markdown = root / "docs" / "design" / "CANDIDATE_REALITY_GATE.md"
     reborn_025_review_json = root / "docs" / "design" / "reborn_025_deep_review.json"
     reborn_025_review_markdown = root / "docs" / "design" / "REBORN_025_DEEP_REVIEW.md"
+    reborn_005_review_json = root / "docs" / "design" / "reborn_005_deep_review.json"
+    reborn_005_review_markdown = root / "docs" / "design" / "REBORN_005_DEEP_REVIEW.md"
     v0_11_compare_json = root / "docs" / "design" / "v0_11_0_compare_metrics.json"
     v0_11_compare_markdown = root / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
     readme = project_dir / "README.md"
@@ -170,6 +174,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
         candidate_gate_markdown,
         reborn_025_review_json,
         reborn_025_review_markdown,
+        reborn_005_review_json,
+        reborn_005_review_markdown,
         v0_11_compare_json,
         v0_11_compare_markdown,
         root / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md",
@@ -220,6 +226,9 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
 
     if reborn_025_review_json.exists() and reborn_025_review_markdown.exists():
         _validate_reborn_025_deep_review(reborn_025_review_json, reborn_025_review_markdown, errors)
+
+    if reborn_005_review_json.exists() and reborn_005_review_markdown.exists():
+        _validate_reborn_005_deep_review(reborn_005_review_json, reborn_005_review_markdown, errors)
 
     if v0_11_compare_json.exists() and v0_11_compare_markdown.exists():
         _validate_v0_11_compare_metrics(v0_11_compare_json, v0_11_compare_markdown, errors)
@@ -391,8 +400,29 @@ def _validate_plan(root: Path, plan_json: Path, plan_markdown: Path, errors: lis
     else:
         if v0_11_status.get("reborn_025") != "safe_read_only_compare_metrics_rewritten_from_first_principles":
             errors.append("Top-5 plan v0_11_status must record reborn_025 safe read-only rewrite.")
-        if v0_11_status.get("reborn_005") != "still_deferred_pending_deep_manual_review":
-            errors.append("Top-5 plan v0_11_status must keep reborn_005 deferred.")
+        if v0_11_status.get("reborn_005") != "deep_review_design_only_deferred_pending_separate_approval":
+            errors.append("Top-5 plan v0_11_status must record reborn_005 design-only deferred review.")
+
+    review_005 = plan.get("reborn_005_deep_review", {})
+    if not isinstance(review_005, dict):
+        errors.append("Top-5 plan reborn_005_deep_review must be an object.")
+    else:
+        if review_005.get("status") != "deep_review_design_only":
+            errors.append("Top-5 plan reborn_005_deep_review status must be deep_review_design_only.")
+        if review_005.get("implementation_status") != "deferred":
+            errors.append("Top-5 plan reborn_005_deep_review implementation_status must be deferred.")
+        if review_005.get("deep_search_decision") != "not_needed_internal_repo_only":
+            errors.append("Top-5 plan reborn_005_deep_review deep_search_decision must be not_needed_internal_repo_only.")
+        if review_005.get("deep_search_stop_required") is not True:
+            errors.append("Top-5 plan reborn_005_deep_review deep_search_stop_required must be true.")
+        for key in (
+            "future_implementation_requires_separate_approval",
+            "future_implementation_requires_candidate_reality_gate",
+            "future_implementation_requires_real_local_audio_validation_if_user_facing_behavior_changes",
+            "future_implementation_requires_no_op_check_if_user_facing_behavior_changes",
+        ):
+            if review_005.get(key) is not True:
+                errors.append(f"Top-5 plan reborn_005_deep_review.{key} must be true.")
 
 
 def _validate_plan_entry(
@@ -525,6 +555,19 @@ def _validate_design_spec(root: Path, design_json: Path, design_markdown: Path, 
                 errors.append("v0.10 design spec reborn_025 deep_review_status must be deep_review_design_only.")
             if item.get("implementation_status") != "deferred":
                 errors.append("v0.10 design spec reborn_025 implementation_status must be deferred.")
+        if isinstance(item, dict) and item.get("reborn_id") == "reborn_005":
+            if item.get("deep_review_status") != "deep_review_design_only":
+                errors.append("v0.10 design spec reborn_005 deep_review_status must be deep_review_design_only.")
+            if item.get("implementation_status") != "deferred":
+                errors.append("v0.10 design spec reborn_005 implementation_status must be deferred.")
+            for key in (
+                "future_implementation_requires_separate_approval",
+                "future_implementation_requires_candidate_reality_gate",
+                "future_implementation_requires_real_local_audio_validation_if_user_facing_behavior_changes",
+                "future_implementation_requires_no_op_check_if_user_facing_behavior_changes",
+            ):
+                if item.get(key) is not True:
+                    errors.append(f"v0.10 design spec reborn_005 {key} must be true.")
 
 
 def _validate_candidate_reality_gate(
@@ -641,6 +684,106 @@ def _validate_reborn_025_deep_review(
     ):
         if required_text not in markdown:
             errors.append(f"reborn_025 deep review markdown missing required text: {required_text}")
+
+
+def _validate_reborn_005_deep_review(
+    review_json: Path,
+    review_markdown: Path,
+    errors: list[str],
+) -> None:
+    review = _load_catalog(review_json, errors)
+    if review is None:
+        return
+    if review.get("reborn_id") != "reborn_005":
+        errors.append("reborn_005 deep review reborn_id must be reborn_005.")
+    if review.get("status") != "deep_review_design_only":
+        errors.append("reborn_005 deep review status must be deep_review_design_only.")
+    if review.get("implementation_status") != "deferred":
+        errors.append("reborn_005 deep review implementation_status must be deferred.")
+    if review.get("deep_search_decision") != "not_needed_internal_repo_only":
+        errors.append("reborn_005 deep review deep_search_decision must be not_needed_internal_repo_only.")
+    if review.get("deep_search_stop_required") is not True:
+        errors.append("reborn_005 deep review deep_search_stop_required must be true.")
+
+    for key in (
+        "source_inspection",
+        "possible_future_scope",
+        "project_reborn_boundary",
+    ):
+        if not isinstance(review.get(key), dict):
+            errors.append(f"reborn_005 deep review {key} must be an object.")
+
+    for key in (
+        "safe_ideas",
+        "rejected_ideas",
+        "future_synthetic_tests",
+        "future_real_audio_validation",
+        "no_op_check_plan",
+    ):
+        value = review.get(key)
+        if not isinstance(value, list) or not value:
+            errors.append(f"reborn_005 deep review {key} must be a non-empty list.")
+
+    source = review.get("source_inspection", {})
+    if isinstance(source, dict):
+        if source.get("method") != "manual_text_only":
+            errors.append("reborn_005 deep review source_inspection.method must be manual_text_only.")
+        for key in ("executed", "imported", "copied", "packaged", "exposed"):
+            if source.get(key) is not False:
+                errors.append(f"reborn_005 deep review source_inspection.{key} must be false.")
+
+    scope = review.get("possible_future_scope", {})
+    if isinstance(scope, dict):
+        for key in (
+            "active_implementation_approved",
+            "new_cli_behavior_approved",
+            "metadata_cleanup_changes_approved",
+            "audio_processing_changes_approved",
+            "release_check_scoring_changes_approved",
+        ):
+            if scope.get(key) is not False:
+                errors.append(f"reborn_005 deep review possible_future_scope.{key} must be false.")
+        for key in (
+            "requires_separate_approval",
+            "requires_candidate_reality_gate",
+            "requires_real_local_audio_validation_if_user_facing_behavior_changes",
+            "requires_no_op_check_if_user_facing_behavior_changes",
+        ):
+            if scope.get(key) is not True:
+                errors.append(f"reborn_005 deep review possible_future_scope.{key} must be true.")
+
+    boundary = review.get("project_reborn_boundary", {})
+    if isinstance(boundary, dict):
+        if boundary.get("reference_only") is not True:
+            errors.append("reborn_005 deep review project_reborn_boundary.reference_only must be true.")
+        for key in ("executed", "imported", "copied", "packaged", "exposed"):
+            if boundary.get(key) is not False:
+                errors.append(f"reborn_005 deep review project_reborn_boundary.{key} must be false.")
+
+    safe_text = " ".join(review.get("safe_ideas", [])).casefold()
+    for unsafe in ("removal", "bypass", "detector", "provenance"):
+        if unsafe in safe_text:
+            errors.append(f"reborn_005 deep review safe_ideas must not include unsafe concept: {unsafe}")
+
+    rejected_text = " ".join(review.get("rejected_ideas", [])).casefold()
+    for required in ("fingerprint", "watermark", "detector", "provenance", "attribution", "bypass", "evasion", "detectability"):
+        if required not in rejected_text:
+            errors.append(f"reborn_005 deep review rejected_ideas missing required concept: {required}")
+
+    review_text = json.dumps(review, sort_keys=True).casefold()
+    if "safe to import" in review_text or "ready_to_import" in review_text or "active_feature" in review_text:
+        errors.append("reborn_005 deep review must not mark Project Reborn as active or import-ready.")
+
+    markdown = review_markdown.read_text(encoding="utf-8")
+    for required_text in (
+        "Manual text-only review. Design only. No implementation.",
+        "`not_needed_internal_repo_only`",
+        "No Project Reborn source was executed, imported, copied, packaged, or exposed.",
+        "Implementation remains deferred.",
+        "No active package code changes are approved by this review.",
+    ):
+        if required_text not in markdown:
+            errors.append(f"reborn_005 deep review markdown missing required text: {required_text}")
 
 
 def _validate_v0_11_compare_metrics(

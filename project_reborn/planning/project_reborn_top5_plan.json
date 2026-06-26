@@ -16,8 +16,8 @@
     "reviewed_entries": 5,
     "selected_top5": 5,
     "candidate_for_v0_10_design": 3,
-    "needs_deeper_manual_review": 2,
-    "keep_as_reference_only": 0,
+    "needs_deeper_manual_review": 1,
+    "keep_as_reference_only": 1,
     "discard_after_confirmation": 0
   },
   "v0_10_status": {
@@ -49,8 +49,19 @@
   },
   "v0_11_status": {
     "reborn_025": "safe_read_only_compare_metrics_rewritten_from_first_principles",
-    "reborn_005": "still_deferred_pending_deep_manual_review",
+    "reborn_005": "deep_review_design_only_deferred_pending_separate_approval",
     "project_reborn_boundary": "reference_only_non_installed_unpacked_hidden_from_cli"
+  },
+  "reborn_005_deep_review": {
+    "status": "deep_review_design_only",
+    "implementation_status": "deferred",
+    "document": "docs/design/REBORN_005_DEEP_REVIEW.md",
+    "deep_search_decision": "not_needed_internal_repo_only",
+    "deep_search_stop_required": true,
+    "future_implementation_requires_separate_approval": true,
+    "future_implementation_requires_candidate_reality_gate": true,
+    "future_implementation_requires_real_local_audio_validation_if_user_facing_behavior_changes": true,
+    "future_implementation_requires_no_op_check_if_user_facing_behavior_changes": true
   },
   "top5": [
     {
@@ -202,8 +213,8 @@
         "Any pattern-normalization, attribution-targeting, or recognizability-targeting logic.",
         "Legacy CLI behavior and user-facing claims."
       ],
-      "recommendation": "Do a deeper manual review focused only on metadata/statistics and analysis metrics before any design work.",
-      "next_step": "needs_deeper_manual_review"
+      "recommendation": "Keep as design-only reference material until a separate approved milestone defines safe metadata/statistics or analysis behavior from first principles.",
+      "next_step": "keep_as_reference_only"
     }
   ]
 }
