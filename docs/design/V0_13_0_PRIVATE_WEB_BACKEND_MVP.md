@@ -1,14 +1,14 @@
-# v0.16 Private Dashboard and Web Backend MVP
+# v0.17 Private Dashboard and Web Backend MVP
 
 ## Status
 
-Implemented working local dashboard and backend MVP with output workflows, two-file workflows, and local operator hardening.
+Implemented working local dashboard and backend MVP with output workflows, two-file workflows, local operator hardening, and private side-project beta deployment-prep docs.
 
 ## Deep Search Summary
 
-Deep Search decision for v0.16.0: `not_needed_internal_repo_only`.
+Deep Search decision for v0.17.0: `not_needed_internal_repo_only`.
 
-The current milestone only extends the already-approved local backend. No new external frontend libraries or current external information were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per single-file request or fixed before/after uploads for two-file requests, random job IDs from `secrets.token_urlsafe`, temporary per-job directories under a controlled local root, safe operator config, recent job summaries, cleanup controls, and lightweight response headers.
+The current milestone only extends the already-approved local backend and adds documentation/examples for the existing DatenpflegeNord home-server plus Cloudflare Tunnel setup. No new external frontend libraries or provider comparisons were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta API access, optional temporary beta-password dashboard access, one uploaded file per single-file request or fixed before/after uploads for two-file requests, random job IDs from `secrets.token_urlsafe`, temporary per-job directories under a controlled local root, safe operator config, recent job summaries, cleanup controls, and lightweight response headers.
 
 ## Approved Dependencies
 
@@ -33,6 +33,8 @@ The API reads `AQH_WEB_TOKEN` and requires `Authorization: Bearer <token>` for a
 Token comparison uses constant-time comparison.
 
 Auth errors use safe generic messages for missing server token, missing request token, and wrong request token. Responses must not reveal configured tokens.
+
+The dashboard may be protected by a temporary shared beta password loaded from `AQH_BETA_PASSWORD_HASH` or `AQH_BETA_PASSWORD`. Real password values must not be committed.
 
 ## Endpoint Design
 
@@ -62,6 +64,30 @@ Artifact downloads require both a safe artifact name and membership in the job `
 
 Response headers include `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`, and `Cache-Control: no-store` for API responses.
 
+## Private Beta Deployment Prep
+
+Deployment prep is documentation and examples only.
+
+- target hostname: `beta.datenpflege-nord.de`
+- public entry: existing Cloudflare Tunnel
+- local service target: `http://localhost:8017`
+- Uvicorn binds locally to `127.0.0.1`
+- no router port forwarding
+- no local Certbot, Caddy, or Nginx required by default
+- no official product positioning
+- no DatenpflegeNord dashboard integration
+
+Runtime config names:
+
+- `AQH_WEB_HOST`
+- `AQH_WEB_PORT`
+- `AQH_WEB_TOKEN`
+- `AQH_WEB_JOBS_DIR`
+- `AQH_WEB_MAX_UPLOAD_MB`
+- `AQH_WEB_JOB_TTL_HOURS`
+- `AQH_WEB_MAX_ACTIVE_JOBS`
+- `AQH_BETA_PASSWORD_HASH` preferred, or `AQH_BETA_PASSWORD` temporarily
+
 ## Upload Validation Design
 
 Allowed extensions:
@@ -76,7 +102,7 @@ Allowed extensions:
 - `.aif`
 - `.aiff`
 
-The default upload limit is `100 MiB`, read from `AQH_MAX_UPLOAD_MIB`. The backend enforces byte count while copying the upload to disk and returns `413` when the limit is exceeded.
+The default private-beta upload limit is `50 MiB`, read from `AQH_WEB_MAX_UPLOAD_MB`. The legacy `AQH_MAX_UPLOAD_MIB` name remains supported for local compatibility. The backend enforces byte count while copying the upload to disk and returns `413` when the limit is exceeded.
 
 MIME/content type is advisory only.
 
@@ -93,7 +119,7 @@ The checks are conservative container sanity checks and are not full audio decod
 
 ## Storage Model
 
-The default job root is `.var/private-web/jobs`, configurable with `AQH_WEB_JOB_ROOT`.
+The default job root is `.var/private-web/jobs`, configurable with `AQH_WEB_JOBS_DIR`. The legacy `AQH_WEB_JOB_ROOT` name remains supported for local compatibility.
 
 Each job uses a random URL-safe job ID and a per-job directory:
 
@@ -109,7 +135,7 @@ Path helpers resolve paths under the configured job root and reject traversal.
 
 Defaults:
 
-- `AQH_JOB_TTL_HOURS=24`
+- `AQH_WEB_JOB_TTL_HOURS=24`
 - `AQH_PARTIAL_TTL_MINUTES=60`
 
 The cleanup helper removes expired complete job directories and older partial job directories.
@@ -254,9 +280,9 @@ Tests cover:
 
 ## Generated Artifact Policy
 
-Do not commit uploaded audio, generated web reports, generated audio, local job directories, or `v016_web_outputs/`.
+Do not commit uploaded audio, generated web reports, generated audio, local job directories, or `v017_web_outputs/`.
 
-`.var/`, `v013_web_outputs/`, `v015_web_outputs/`, and `v016_web_outputs/` are ignored by Git.
+`.var/`, `v013_web_outputs/`, `v015_web_outputs/`, `v016_web_outputs/`, and `v017_web_outputs/` are ignored by Git.
 
 ## Not Approved
 

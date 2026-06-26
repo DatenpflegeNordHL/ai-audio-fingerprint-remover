@@ -7,11 +7,12 @@ from pathlib import Path
 from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse, HTMLResponse
 
-from audio_quality_humanizer.web.auth import require_bearer_token
+from audio_quality_humanizer.web.auth import require_bearer_token, require_beta_dashboard_access
 from audio_quality_humanizer.web.config import WebConfig
 from audio_quality_humanizer.web.models import SINGLE_FILE_MODES, SUPPORTED_MODES, TWO_FILE_MODES, health_response, job_response
 from audio_quality_humanizer.web.processing import execute_job, execute_two_file_job
 from audio_quality_humanizer.web.storage import (
+    active_job_count,
     artifact_path,
     cleanup_expired_jobs,
     create_job_directory,
@@ -35,7 +36,7 @@ SAFETY_NOTE = (
 def create_app() -> FastAPI:
     web_app = FastAPI(
         title="audio-quality-humanizer private web backend",
-        version="0.16.0",
+        version="0.17.0",
         docs_url=None,
         redoc_url=None,
     )
@@ -51,7 +52,7 @@ def create_app() -> FastAPI:
         return response
 
     @web_app.get("/", response_class=HTMLResponse)
-    def operator_page() -> str:
+    def operator_page(_config: WebConfig = Depends(require_beta_dashboard_access)) -> str:
         return _operator_page_html()
 
     @web_app.get("/health")
@@ -62,9 +63,12 @@ def create_app() -> FastAPI:
     def get_safe_config(config: WebConfig = Depends(require_bearer_token)) -> dict:
         return {
             "private_beta": True,
+            "web_host": config.host,
+            "web_port": config.port,
             "max_upload_mib": config.max_upload_mib,
             "job_ttl_hours": config.job_ttl_hours,
             "partial_ttl_minutes": config.partial_ttl_minutes,
+            "max_active_jobs": config.max_active_jobs,
             "supported_modes": list(SUPPORTED_MODES),
             "single_file_modes": list(SINGLE_FILE_MODES),
             "two_file_modes": list(TWO_FILE_MODES),
@@ -79,6 +83,7 @@ def create_app() -> FastAPI:
     ) -> dict:
         if mode not in SINGLE_FILE_MODES:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported mode for single-file MVP.")
+        _enforce_active_job_limit(config)
         extension = validate_extension(file.filename)
         job_dir = create_job_directory(config)
         input_path = input_path_for(job_dir, extension)
@@ -109,6 +114,7 @@ def create_app() -> FastAPI:
     ) -> dict:
         if mode not in TWO_FILE_MODES:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported mode for two-file MVP.")
+        _enforce_active_job_limit(config)
         before_extension = validate_extension(before_file.filename)
         after_extension = validate_extension(after_file.filename)
         job_dir = create_job_directory(config)
@@ -165,6 +171,14 @@ def create_app() -> FastAPI:
         return {"removed_job_ids": removed, "removed_count": len(removed)}
 
     return web_app
+
+
+def _enforce_active_job_limit(config: WebConfig) -> None:
+    if active_job_count(config) >= config.max_active_jobs:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Private beta active job limit reached.",
+        )
 
 
 def _media_type_for(path: Path) -> str:
@@ -454,7 +468,10 @@ def _operator_page_html() -> str:
 
     function renderConfig(config) {{
       const cards = [];
+      addCard(cards, 'Local host', config.web_host);
+      addCard(cards, 'Local port', config.web_port);
       addCard(cards, 'Max upload', config.max_upload_mib, ' MiB');
+      addCard(cards, 'Active jobs', config.max_active_jobs);
       addCard(cards, 'Job TTL', config.job_ttl_hours, ' h');
       addCard(cards, 'Partial TTL', config.partial_ttl_minutes, ' min');
       addCard(cards, 'Single-file modes', (config.single_file_modes || []).join(', '));

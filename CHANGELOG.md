@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.17.0
+
+- Added private beta deployment-prep documentation for `beta.datenpflege-nord.de` behind the existing Cloudflare Tunnel.
+- Added environment, Cloudflare Tunnel, security, privacy, Docker Compose, and optional systemd examples with placeholders only.
+- Added optional shared beta-password dashboard gate loaded from environment config.
+- Added v0.17 runtime config aliases for the intended private beta deployment.
+- Kept public launch, official product positioning, provider comparisons, frontend frameworks, databases, queues, `humanize`, and audio algorithm changes deferred.
+
 ## v0.16.0
 
 - Hardened private web auth feedback, security headers, retention visibility, cleanup controls, and recent job summaries.

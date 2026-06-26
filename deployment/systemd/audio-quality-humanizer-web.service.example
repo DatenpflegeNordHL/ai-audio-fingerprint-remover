@@ -1,0 +1,15 @@
+[Unit]
+Description=Audio Quality Humanizer private beta web service
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/audio-quality-humanizer
+EnvironmentFile=/opt/audio-quality-humanizer/web.env
+ExecStart=/opt/audio-quality-humanizer/.venv/bin/uvicorn audio_quality_humanizer.web.app:app --host ${AQH_WEB_HOST} --port ${AQH_WEB_PORT}
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

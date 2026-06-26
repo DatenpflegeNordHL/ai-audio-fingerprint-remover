@@ -129,6 +129,10 @@ def list_job_summaries(config: WebConfig, limit: int = 25) -> list[dict[str, Any
     return [summary for _, _, summary in summaries[:limit]]
 
 
+def active_job_count(config: WebConfig) -> int:
+    return sum(1 for summary in list_job_summaries(config, limit=10_000) if summary.get("status") in {"uploaded", "processing"})
+
+
 def _job_summary(status_data: dict[str, Any]) -> dict[str, Any]:
     summary = {
         "job_id": status_data.get("job_id"),

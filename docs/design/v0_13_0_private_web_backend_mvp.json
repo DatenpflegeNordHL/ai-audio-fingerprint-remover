@@ -1,6 +1,6 @@
 {
-  "version_target": "0.16.0",
-  "status": "implemented_local_security_retention_and_operator_hardening",
+  "version_target": "0.17.0",
+  "status": "implemented_private_beta_deployment_prep",
   "deep_search_decision": "not_needed_internal_repo_only",
   "deep_search_completed": false,
   "approved_backend_stack": [
@@ -22,11 +22,24 @@
     "env_var": "AQH_WEB_TOKEN",
     "required_for_api_endpoints": true,
     "health_requires_auth": false,
-    "constant_time_compare": true
+    "constant_time_compare": true,
+    "optional_dashboard_beta_password": true,
+    "beta_password_env_vars": [
+      "AQH_BETA_PASSWORD_HASH",
+      "AQH_BETA_PASSWORD"
+    ]
   },
-  "max_upload_mib": 100,
+  "max_upload_mib": 50,
+  "runtime_config": {
+    "AQH_WEB_HOST": "127.0.0.1",
+    "AQH_WEB_PORT": 8017,
+    "AQH_WEB_MAX_UPLOAD_MB": 50,
+    "AQH_WEB_JOB_TTL_HOURS": 24,
+    "AQH_WEB_MAX_ACTIVE_JOBS": 1
+  },
   "job_storage": {
-    "env_var": "AQH_WEB_JOB_ROOT",
+    "env_var": "AQH_WEB_JOBS_DIR",
+    "legacy_env_var": "AQH_WEB_JOB_ROOT",
     "default_root": ".var/private-web/jobs",
     "per_job_directories": [
       "input",
@@ -37,7 +50,8 @@
     "user_filenames_as_paths": false
   },
   "cleanup": {
-    "job_ttl_hours_env": "AQH_JOB_TTL_HOURS",
+    "job_ttl_hours_env": "AQH_WEB_JOB_TTL_HOURS",
+    "legacy_job_ttl_hours_env": "AQH_JOB_TTL_HOURS",
     "job_ttl_hours_default": 24,
     "partial_ttl_minutes_env": "AQH_PARTIAL_TTL_MINUTES",
     "partial_ttl_minutes_default": 60
@@ -209,6 +223,18 @@
     "humanize web mode",
     "other output-audio web modes"
   ],
+  "deployment_prep": {
+    "private_side_project_beta": true,
+    "target_hostname": "beta.datenpflege-nord.de",
+    "cloudflare_tunnel_already_exists": true,
+    "local_service_target": "http://localhost:8017",
+    "uvicorn_direct_public_exposure": false,
+    "router_port_forwarding": false,
+    "local_https_termination_required": false,
+    "official_product_positioning": false,
+    "datenpflege_dashboard_integration": false,
+    "provider_comparison": false
+  },
   "project_reborn_boundary": {
     "reference_only": true,
     "copied": false,

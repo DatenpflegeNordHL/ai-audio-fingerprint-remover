@@ -24,6 +24,8 @@ The v0.14 private web dashboard adds generated artifact previews, metric cards f
 
 The v0.16 local web hardening adds safe auth feedback, response headers, retention visibility, cleanup controls, recent job summaries, and per-job artifact-list enforcement. It still has no deployment config, DNS config, public launch, frontend framework, or `humanize` web workflow.
 
+The v0.17 deployment prep adds private side-project beta documentation and examples for `beta.datenpflege-nord.de` behind the already configured Cloudflare Tunnel. It is not an official public DatenpflegeNord product and must not be advertised or linked from the DatenpflegeNord dashboard.
+
 ## v0.10.0 safe core
 
 v0.10.0 adds signal guardrails, optional performance metadata, and synthetic regression scaffolding. These features were designed from Project Reborn planning notes but rewritten from first principles inside the active package. Project Reborn remains non-installed and inert.
@@ -195,7 +197,7 @@ The visualization artifact schema is intentionally stable for future UI work. Re
 
 ## Private web backend MVP
 
-v0.16.0 hardens the private local web MVP with safer auth feedback, retention visibility, cleanup controls, recent job summaries, security headers, and stricter artifact download checks.
+v0.17.0 prepares the private local web MVP for a private side-project beta on the existing DatenpflegeNord home server behind the already configured Cloudflare Tunnel.
 
 Install the optional web extra before running it:
 
@@ -212,6 +214,27 @@ AQH_WEB_TOKEN=dev-token uvicorn audio_quality_humanizer.web.app:app --host 127.0
 Open `http://127.0.0.1:8000/` for the local operator page.
 
 Recommended local bind is `127.0.0.1`. Do not bind this private beta directly to `0.0.0.0` unless a future deployment milestone adds and validates proper auth, proxy, rate-limit, logging, upload-limit, and privacy controls.
+
+Private beta deployment-prep docs are in `deployment/`. The intended manual Cloudflare Tunnel route is:
+
+- public hostname: `beta.datenpflege-nord.de`
+- local service: `http://localhost:8017`
+- local Uvicorn bind: `127.0.0.1:8017`
+
+The Cloudflare Tunnel already exists. No local router port forwarding, local Certbot/Caddy/Nginx, public launch, marketing, SEO, analytics, provider comparison, database, account system, Redis/Celery queue, or official DatenpflegeNord dashboard integration is added.
+
+Runtime config names for the private beta:
+
+- `AQH_WEB_HOST`
+- `AQH_WEB_PORT`
+- `AQH_WEB_TOKEN`
+- `AQH_WEB_JOBS_DIR`
+- `AQH_WEB_MAX_UPLOAD_MB`
+- `AQH_WEB_JOB_TTL_HOURS`
+- `AQH_WEB_MAX_ACTIVE_JOBS`
+- `AQH_BETA_PASSWORD_HASH` preferred, or `AQH_BETA_PASSWORD` temporarily
+
+Use `deployment/env/web.env.example` as a placeholder template only. Real token and password values must be set outside Git.
 
 Implemented backend endpoints:
 
@@ -334,7 +357,7 @@ The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_
 
 The future web upload visualization MVP is documented as design-only at `docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md`. No web app is implemented yet. The candidate subdomain is `release.datenpflege-nord.de`; any future web version must keep the same safety boundary, and spectrum or difference views must show only measured technical changes.
 
-The v0.16 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. Its deployment-readiness checklist is documented at `docs/design/V0_16_0_DEPLOYMENT_READINESS_CHECKLIST.md`. It is local, private beta only, uses no external frontend libraries, supports documented one-file and two-file modes, and keeps deployment, DNS, public launch, and `humanize` deferred.
+The v0.17 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. Its deployment-readiness checklist is documented at `docs/design/V0_16_0_DEPLOYMENT_READINESS_CHECKLIST.md`, and private-beta deployment prep examples are in `deployment/`. It is private beta only, uses no external frontend libraries, supports documented one-file and two-file modes, and keeps public launch, official product positioning, dashboard integration, OTP, database, queues, and `humanize` deferred.
 
 ## Candidate Reality Gate
 

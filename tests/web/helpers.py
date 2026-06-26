@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
+import base64
 import io
 import json
 from pathlib import Path
@@ -87,6 +88,11 @@ def auth_header(token: str = "test-token") -> dict[str, str]:
     return {"authorization": f"Bearer {token}"}
 
 
+def basic_auth_header(username: str = "beta", password: str = "secret") -> dict[str, str]:
+    encoded = base64.b64encode(f"{username}:{password}".encode("utf-8")).decode("ascii")
+    return {"authorization": f"Basic {encoded}"}
+
+
 def call_app(
     method: str,
     path: str,
@@ -159,4 +165,9 @@ def prepare_env(monkeypatch, tmp_path: Path, *, token: str = "test-token", max_u
     monkeypatch.setenv("AQH_MAX_UPLOAD_MIB", str(max_upload_mib))
     monkeypatch.setenv("AQH_JOB_TTL_HOURS", "24")
     monkeypatch.setenv("AQH_PARTIAL_TTL_MINUTES", "60")
+    monkeypatch.delenv("AQH_WEB_JOBS_DIR", raising=False)
+    monkeypatch.delenv("AQH_WEB_MAX_UPLOAD_MB", raising=False)
+    monkeypatch.delenv("AQH_WEB_JOB_TTL_HOURS", raising=False)
+    monkeypatch.delenv("AQH_BETA_PASSWORD", raising=False)
+    monkeypatch.delenv("AQH_BETA_PASSWORD_HASH", raising=False)
     return job_root

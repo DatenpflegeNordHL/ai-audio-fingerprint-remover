@@ -200,7 +200,7 @@ Visualization artifacts are not mastering certification.
 
 Visualization artifacts do not predict platform or distributor acceptance.
 
-The v0.16 private web API is private beta only.
+The v0.17 private web API is private beta only.
 
 All private web API endpoints except `/health` require bearer-token auth.
 
@@ -244,7 +244,25 @@ Private web storage must use random job IDs and must not use user filenames as s
 
 Generated private web outputs must not be committed.
 
-No frontend framework, deployment, DNS config, or public launch is included in v0.16.
+No frontend framework, public launch, official product positioning, SEO, analytics, or DatenpflegeNord dashboard integration is included in v0.17.
+
+The v0.17 deployment prep is for a private side-project beta only.
+
+The private beta hostname is `beta.datenpflege-nord.de`.
+
+The private beta must not be advertised on `datenpflege-nord.de`.
+
+The private beta must not be linked from the DatenpflegeNord dashboard.
+
+Cloudflare Tunnel is the only intended public entry for the private beta.
+
+Uvicorn must bind locally and must not be exposed directly to the internet.
+
+The temporary shared beta password must be configured outside Git.
+
+The real beta password, beta password hash, and `AQH_WEB_TOKEN` must not be committed.
+
+Before any official launch, shared password access must be replaced by Cloudflare Access OTP or equivalent stronger access control.
 
 The private web API must not make watermark, fingerprint, provenance, detector, C2PA, source-attribution, evasion, detectability, platform-certification, or distributor-guarantee claims.
 
