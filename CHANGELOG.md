@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.15.0
+
+- Added private web `clean-metadata` output workflow with cleaned audio and before/after metadata artifacts.
+- Added private web `compare` two-file workflow with downloadable `compare.json`.
+- Added private web `visualize-compare` two-file workflow with downloadable `compare.json` and `visual_compare.json`.
+- Updated the local dashboard for one-file and two-file modes without adding frontend dependencies.
+- Kept `humanize`, deployment, public launch, accounts, queueing, billing, analytics, and frontend frameworks deferred.
+
 ## v0.14.0
 
 - Added private dashboard shell for local web MVP.

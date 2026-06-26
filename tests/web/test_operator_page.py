@@ -14,6 +14,9 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     assert "Audio Quality Humanizer" in html
     assert "Private beta / local" in html
     assert "Bearer token" in html
+    assert "before-file" in html
+    assert "after-file" in html
+    assert "/api/compare-jobs" in html
     assert "Create job" in html
     assert "Job Status" in html
     assert "Artifacts" in html
@@ -30,6 +33,8 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     assert "inspect-metadata" in html
     assert "visualize" in html
     assert "clean-metadata" in html
+    assert "compare" in html
+    assert "visualize-compare" in html
     assert "localStorage" not in html
     assert "sessionStorage" not in html
     assert "document.cookie" not in html

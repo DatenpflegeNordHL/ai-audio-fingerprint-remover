@@ -52,6 +52,37 @@ def multipart_body(
     return body, f"multipart/form-data; boundary={boundary}"
 
 
+def multipart_two_file_body(
+    *,
+    mode: str = "compare",
+    before_filename: str = "before.wav",
+    after_filename: str = "after.wav",
+    before_content: bytes | None = None,
+    after_content: bytes | None = None,
+    content_type: str = "audio/wav",
+) -> tuple[bytes, str]:
+    boundary = "aqh-test-boundary"
+    before_content = tiny_wav_bytes() if before_content is None else before_content
+    after_content = tiny_wav_bytes() if after_content is None else after_content
+    body = (
+        f"--{boundary}\r\n"
+        'Content-Disposition: form-data; name="mode"\r\n\r\n'
+        f"{mode}\r\n"
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="before_file"; filename="{before_filename}"\r\n'
+        f"Content-Type: {content_type}\r\n\r\n"
+    ).encode("utf-8")
+    body += before_content
+    body += (
+        f"\r\n--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="after_file"; filename="{after_filename}"\r\n'
+        f"Content-Type: {content_type}\r\n\r\n"
+    ).encode("utf-8")
+    body += after_content
+    body += f"\r\n--{boundary}--\r\n".encode("utf-8")
+    return body, f"multipart/form-data; boundary={boundary}"
+
+
 def auth_header(token: str = "test-token") -> dict[str, str]:
     return {"authorization": f"Bearer {token}"}
 

@@ -193,7 +193,7 @@ The visualization artifact schema is intentionally stable for future UI work. Re
 
 ## Private web backend MVP
 
-v0.14.0 adds a working optional private dashboard for local upload workflows at `release.datenpflege-nord.de`.
+v0.15.0 adds private web output and two-file workflows for local upload work at `release.datenpflege-nord.de`.
 
 Install the optional web extra before running it:
 
@@ -213,12 +213,13 @@ Implemented backend endpoints:
 
 - `GET /health`
 - `POST /api/jobs`
+- `POST /api/compare-jobs`
 - `GET /api/jobs/{job_id}`
 - `GET /api/jobs/{job_id}/artifacts/{artifact_name}`
 - `DELETE /api/jobs/{job_id}`
 - `POST /api/maintenance/cleanup`
 
-All API endpoints except `/health` require a bearer token. The first upload flow accepts one file per request, validates an allowlisted audio extension, checks basic audio container headers where practical, stores the file under a random per-job directory, runs a safe single-file mode synchronously, writes JSON-safe artifacts, and updates `status.json`.
+All API endpoints except `/health` require a bearer token. Single-file upload flow accepts one file per request. Two-file upload flow accepts fixed `before_file` and `after_file` fields. Both flows validate allowlisted audio extensions, check basic audio container headers where practical, store uploads under a random per-job directory, run safe processing synchronously, write JSON-safe artifacts, and update `status.json`.
 
 The dashboard renders generated JSON artifacts in-browser after job completion. It shows only fields that exist in the artifacts, keeps raw JSON available, and adds no fake metrics or fake improvement percentages. No fake metrics are added.
 
@@ -227,18 +228,24 @@ Generated artifacts:
 - `analyze` writes `analysis.json`
 - `release-check` writes `release_check.json`
 - `inspect-metadata` writes `metadata.json`
+- `clean-metadata` writes `cleaned_output.<ext>`, `metadata_before.json`, `clean_metadata.json`, and `metadata_after.json`
 - `visualize` writes `visualization.json`
+- `compare` writes `compare.json`
+- `visualize-compare` writes `compare.json` and `visual_compare.json`
 
 Dashboard previews:
 
 - metric cards from existing analyze, release-check, and visualization report fields
+- comparison metric cards from existing compare report fields
 - waveform preview from `visualization.json` `waveform_peaks.peaks`
 - spectrogram energy preview from `visualization.json` `spectrogram.energy_db`
+- before/after visualization preview from `visual_compare.json` candidate waveform and spectrogram fields, with difference-map fallback
 - metadata key/value panel from `metadata.json` `metadata_display`
+- before/after metadata panels from `metadata_before.json` and `metadata_after.json`
 
-The metadata display is sanitized for embedded images and long fields. Embedded cover values such as `APIC:Cover` are summarized with `[embedded image omitted]`, optional MIME/type/size fields, and preserved metadata keys. Long text display values are truncated for dashboard use. The uploaded file is not modified.
+The metadata display is sanitized for embedded images and long fields. Embedded cover values such as `APIC:Cover` are summarized with `[embedded image omitted]`, optional MIME/type/size fields, and preserved metadata keys. Long text display values are truncated for dashboard use. `clean-metadata` writes a cleaned output copy under the job artifacts directory and does not overwrite the uploaded input.
 
-Supported single-file MVP modes are `analyze`, `release-check`, `inspect-metadata`, and `visualize`. `clean-metadata`, `visualize-compare`, `compare`, and `humanize` are deferred until a later safe flow covers file-modifying behavior, two-file uploads, or output-audio generation.
+Supported single-file MVP modes are `analyze`, `release-check`, `inspect-metadata`, `clean-metadata`, and `visualize`. Supported two-file MVP modes are `compare` and `visualize-compare`. `humanize` is deferred until a later safe flow covers output-audio generation.
 
 This backend is private beta only. The operator page uses plain HTML, inline CSS, and minimal vanilla JavaScript. There is no frontend framework, static asset build chain, deployment config, DNS config, public launch, database, account system, background queue, analytics, billing, or multi-tenant storage in this milestone. Existing safety boundaries apply.
 
@@ -310,7 +317,7 @@ The v0.11.0 compare metrics design is available at `docs/design/V0_11_0_COMPARE_
 
 The future web upload visualization MVP is documented as design-only at `docs/design/V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md`. No web app is implemented yet. The candidate subdomain is `release.datenpflege-nord.de`; any future web version must keep the same safety boundary, and spectrum or difference views must show only measured technical changes.
 
-The v0.14 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. It is local, private beta only, uses no external frontend libraries, and keeps deployment, DNS, public launch, file-modifying modes, and two-file modes deferred.
+The v0.15 private web dashboard MVP is documented at `docs/design/V0_13_0_PRIVATE_WEB_BACKEND_MVP.md`. It is local, private beta only, uses no external frontend libraries, supports documented one-file and two-file modes, and keeps deployment, DNS, public launch, and `humanize` deferred.
 
 ## Candidate Reality Gate
 

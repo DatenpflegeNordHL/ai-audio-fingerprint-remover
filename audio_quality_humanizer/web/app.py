@@ -9,8 +9,8 @@ from fastapi.responses import FileResponse, HTMLResponse
 
 from audio_quality_humanizer.web.auth import require_bearer_token
 from audio_quality_humanizer.web.config import WebConfig
-from audio_quality_humanizer.web.models import SUPPORTED_MODES, health_response, job_response
-from audio_quality_humanizer.web.processing import execute_job
+from audio_quality_humanizer.web.models import SINGLE_FILE_MODES, SUPPORTED_MODES, TWO_FILE_MODES, health_response, job_response
+from audio_quality_humanizer.web.processing import execute_job, execute_two_file_job
 from audio_quality_humanizer.web.storage import (
     artifact_path,
     cleanup_expired_jobs,
@@ -18,6 +18,7 @@ from audio_quality_humanizer.web.storage import (
     delete_job,
     get_job_directory,
     input_path_for,
+    named_input_path_for,
     read_status,
     write_status,
     utc_now_iso,
@@ -33,7 +34,7 @@ SAFETY_NOTE = (
 def create_app() -> FastAPI:
     web_app = FastAPI(
         title="audio-quality-humanizer private web backend",
-        version="0.14.0",
+        version="0.15.0",
         docs_url=None,
         redoc_url=None,
     )
@@ -52,7 +53,7 @@ def create_app() -> FastAPI:
         file: UploadFile = File(...),
         config: WebConfig = Depends(require_bearer_token),
     ) -> dict:
-        if mode not in SUPPORTED_MODES:
+        if mode not in SINGLE_FILE_MODES:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported mode for single-file MVP.")
         extension = validate_extension(file.filename)
         job_dir = create_job_directory(config)
@@ -73,6 +74,39 @@ def create_app() -> FastAPI:
         }
         write_status(job_dir, status_data)
         status_data = execute_job(job_dir, input_path, mode)
+        return job_response(status_data)
+
+    @web_app.post("/api/compare-jobs", status_code=status.HTTP_201_CREATED)
+    async def create_compare_job(
+        mode: str = Form(...),
+        before_file: UploadFile = File(...),
+        after_file: UploadFile = File(...),
+        config: WebConfig = Depends(require_bearer_token),
+    ) -> dict:
+        if mode not in TWO_FILE_MODES:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported mode for two-file MVP.")
+        before_extension = validate_extension(before_file.filename)
+        after_extension = validate_extension(after_file.filename)
+        job_dir = create_job_directory(config)
+        before_path = named_input_path_for(job_dir, "before", before_extension)
+        after_path = named_input_path_for(job_dir, "after", after_extension)
+        before_info = await copy_upload_to_disk(before_file, before_path, config.max_upload_bytes)
+        after_info = await copy_upload_to_disk(after_file, after_path, config.max_upload_bytes)
+        status_data = {
+            "job_id": job_dir.name,
+            "status": "uploaded",
+            "mode": mode,
+            "created_at": utc_now_iso(),
+            "inputs": {"before": before_info, "after": after_info},
+            "processing": {
+                "execution": "pending",
+                "message": "Uploads accepted. Safe two-file processing will run synchronously.",
+            },
+            "artifacts": ["status.json"],
+            "safety_notes": [SAFETY_NOTE],
+        }
+        write_status(job_dir, status_data)
+        status_data = execute_two_file_job(job_dir, before_path, after_path, mode)
         return job_response(status_data)
 
     @web_app.get("/api/jobs/{job_id}")
@@ -104,13 +138,27 @@ def create_app() -> FastAPI:
 def _media_type_for(path: Path) -> str:
     if path.suffix.casefold() == ".json":
         return "application/json"
+    media_types = {
+        ".wav": "audio/wav",
+        ".flac": "audio/flac",
+        ".mp3": "audio/mpeg",
+        ".m4a": "audio/mp4",
+        ".aac": "audio/mp4",
+        ".ogg": "audio/ogg",
+        ".opus": "audio/ogg",
+        ".aif": "audio/aiff",
+        ".aiff": "audio/aiff",
+    }
+    if path.suffix.casefold() in media_types:
+        return media_types[path.suffix.casefold()]
     return "application/octet-stream"
 
 
 def _operator_page_html() -> str:
     modes = "".join(f'<option value="{mode}">{mode}</option>' for mode in SUPPORTED_MODES)
-    supported = "".join(f"<li>{mode}</li>" for mode in SUPPORTED_MODES)
-    deferred = "".join(f"<li>{mode}</li>" for mode in ("clean-metadata", "humanize", "compare", "visualize-compare"))
+    single_file_modes = "".join(f"<li>{mode}</li>" for mode in SINGLE_FILE_MODES)
+    two_file_modes = "".join(f"<li>{mode}</li>" for mode in TWO_FILE_MODES)
+    deferred = "".join(f"<li>{mode}</li>" for mode in ("humanize",))
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -166,15 +214,25 @@ def _operator_page_html() -> str:
             <input id="token" name="token" type="password" autocomplete="off" required>
             <label for="mode">Mode</label>
             <select id="mode" name="mode">{modes}</select>
-            <label for="file">Audio file</label>
-            <input id="file" name="file" type="file" accept=".wav,.flac,.mp3,.m4a,.aac,.ogg,.opus,.aif,.aiff" required>
+            <div id="single-file-fields">
+              <label for="file">Audio file</label>
+              <input id="file" name="file" type="file" accept=".wav,.flac,.mp3,.m4a,.aac,.ogg,.opus,.aif,.aiff">
+            </div>
+            <div id="two-file-fields" hidden>
+              <label for="before-file">Before audio file</label>
+              <input id="before-file" name="before_file" type="file" accept=".wav,.flac,.mp3,.m4a,.aac,.ogg,.opus,.aif,.aiff">
+              <label for="after-file">After audio file</label>
+              <input id="after-file" name="after_file" type="file" accept=".wav,.flac,.mp3,.m4a,.aac,.ogg,.opus,.aif,.aiff">
+            </div>
             <button id="submit" type="submit">Create job</button>
           </form>
         </section>
         <section class="panel" id="mode-panel">
           <h2>Modes</h2>
-          <p class="muted">Supported now</p>
-          <ul>{supported}</ul>
+          <p class="muted">Single-file modes</p>
+          <ul>{single_file_modes}</ul>
+          <p class="muted">Two-file modes</p>
+          <ul>{two_file_modes}</ul>
           <p class="muted">Deferred</p>
           <ul>{deferred}</ul>
         </section>
@@ -229,7 +287,17 @@ def _operator_page_html() -> str:
     const rawJson = document.getElementById('raw-json');
     const metadataView = document.getElementById('metadata-view');
     const visualEmpty = document.getElementById('visual-empty');
+    const modeSelect = document.getElementById('mode');
+    const singleFileFields = document.getElementById('single-file-fields');
+    const twoFileFields = document.getElementById('two-file-fields');
+    const singleFileInput = document.getElementById('file');
+    const beforeFileInput = document.getElementById('before-file');
+    const afterFileInput = document.getElementById('after-file');
+    const twoFileModes = new Set(['compare', 'visualize-compare']);
     let latestJob = null;
+
+    modeSelect.addEventListener('change', updateFileInputs);
+    updateFileInputs();
 
     form.addEventListener('submit', async (event) => {{
       event.preventDefault();
@@ -243,11 +311,18 @@ def _operator_page_html() -> str:
       submit.disabled = true;
       result.textContent = 'Creating job...';
       const token = document.getElementById('token').value;
+      const selectedMode = modeSelect.value;
+      const isTwoFileMode = twoFileModes.has(selectedMode);
       const data = new FormData();
-      data.append('mode', document.getElementById('mode').value);
-      data.append('file', document.getElementById('file').files[0]);
+      data.append('mode', selectedMode);
+      if (isTwoFileMode) {{
+        data.append('before_file', beforeFileInput.files[0]);
+        data.append('after_file', afterFileInput.files[0]);
+      }} else {{
+        data.append('file', singleFileInput.files[0]);
+      }}
       try {{
-        const response = await fetch('/api/jobs', {{
+        const response = await fetch(isTwoFileMode ? '/api/compare-jobs' : '/api/jobs', {{
           method: 'POST',
           headers: {{ Authorization: `Bearer ${{token}}` }},
           body: data
@@ -274,6 +349,15 @@ def _operator_page_html() -> str:
     previewAll.addEventListener('click', async () => {{
       if (latestJob) await previewArtifacts(latestJob);
     }});
+
+    function updateFileInputs() {{
+      const isTwoFileMode = twoFileModes.has(modeSelect.value);
+      singleFileFields.hidden = isTwoFileMode;
+      twoFileFields.hidden = !isTwoFileMode;
+      singleFileInput.required = !isTwoFileMode;
+      beforeFileInput.required = isTwoFileMode;
+      afterFileInput.required = isTwoFileMode;
+    }}
 
     function addArtifactButtons(name, url) {{
       const preview = document.createElement('button');
@@ -332,8 +416,8 @@ def _operator_page_html() -> str:
         ['Mode', job.mode],
         ['Status', job.status],
         ['Created', job.created_at],
-        ['Completed', job.status === 'completed' ? job.created_at : ''],
-        ['Failed', job.status === 'failed' ? job.created_at : '']
+        ['Completed', job.completed_at],
+        ['Failed', job.failed_at]
       ].filter(([, value]) => value);
       statusFields.innerHTML = values.map(([label, value]) => `<div class="card"><span>${{label}}</span><strong>${{escapeHtml(String(value))}}</strong></div>`).join('');
     }}
@@ -342,7 +426,8 @@ def _operator_page_html() -> str:
       rawJson.textContent = JSON.stringify(report, null, 2);
       renderMetricCards(report);
       if (name === 'visualization.json') renderVisualization(report);
-      if (name === 'metadata.json') renderMetadata(report);
+      if (name === 'visual_compare.json') renderVisualization(report);
+      if (name === 'metadata.json' || name === 'metadata_before.json' || name === 'metadata_after.json') renderMetadata(report);
     }}
 
     function renderMetricCards(report) {{
@@ -356,6 +441,11 @@ def _operator_page_html() -> str:
       addCard(cards, 'Sample rate', source.sample_rate || source.samplerate, 'Hz');
       addCard(cards, 'Channels', source.channel_count || source.channels);
       addCard(cards, 'Release score', report.score);
+      const comparison = report.comparison_metrics || {{}};
+      addCard(cards, 'RMSE', comparison.rmse);
+      addCard(cards, 'MAE', comparison.mean_absolute_error);
+      addCard(cards, 'Correlation', comparison.correlation);
+      addCard(cards, 'SNR approx', comparison.snr_db_approx, ' dB');
       metrics.innerHTML = cards.length ? cards.join('') : '<p class="empty">No known metric fields found in this artifact.</p>';
     }}
 
@@ -366,8 +456,12 @@ def _operator_page_html() -> str:
     }}
 
     function renderVisualization(report) {{
-      const peaks = report.waveform_peaks && Array.isArray(report.waveform_peaks.peaks) ? report.waveform_peaks.peaks : [];
-      const energy = report.spectrogram && Array.isArray(report.spectrogram.energy_db) ? report.spectrogram.energy_db : [];
+      const source = report.candidate || report;
+      const peaks = source.waveform_peaks && Array.isArray(source.waveform_peaks.peaks) ? source.waveform_peaks.peaks : [];
+      let energy = source.spectrogram && Array.isArray(source.spectrogram.energy_db) ? source.spectrogram.energy_db : [];
+      if (!energy.length && report.difference_map && Array.isArray(report.difference_map.energy_delta_db)) {{
+        energy = report.difference_map.energy_delta_db;
+      }}
       if (peaks.length) drawWaveform(peaks);
       if (energy.length) drawSpectrogram(energy);
       visualEmpty.textContent = peaks.length || energy.length ? '' : 'Visualization artifact data not available.';

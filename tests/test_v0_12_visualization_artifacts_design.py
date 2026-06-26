@@ -102,7 +102,7 @@ def test_v0_12_visualization_readme_and_safety_notes():
     assert "Developer troubleshooting" in readme
     assert "__editable__audio_quality_humanizer" in readme
     assert "visualization artifacts are read-only" in safety.casefold()
-    assert "no web app exists yet" in safety.casefold()
+    assert "the private web app is local and private beta only" in safety.casefold()
     assert "not mastering certification" in safety.casefold()
     assert "do not predict platform or distributor acceptance" in safety.casefold()
 

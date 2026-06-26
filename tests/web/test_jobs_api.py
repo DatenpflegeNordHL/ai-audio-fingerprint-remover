@@ -49,6 +49,7 @@ def test_safe_single_file_modes_generate_downloadable_artifacts(tmp_path, monkey
         "analyze": "analysis.json",
         "release-check": "release_check.json",
         "inspect-metadata": "metadata.json",
+        "clean-metadata": "clean_metadata.json",
         "visualize": "visualization.json",
     }
 
@@ -66,6 +67,10 @@ def test_safe_single_file_modes_generate_downloadable_artifacts(tmp_path, monkey
         data = upload.json()
         assert data["status"] == "completed"
         assert artifact_name in data["artifacts"]
+        if mode == "clean-metadata":
+            assert "cleaned_output.wav" in data["artifacts"]
+            assert "metadata_before.json" in data["artifacts"]
+            assert "metadata_after.json" in data["artifacts"]
         job_dir = get_job_directory(load_config(), data["job_id"])
         assert (job_dir / "artifacts" / artifact_name).is_file()
         assert job_dir.resolve() in (job_dir / "artifacts" / artifact_name).resolve().parents
@@ -153,7 +158,7 @@ def test_status_artifact_can_be_downloaded(tmp_path, monkeypatch):
 
 def test_deferred_modes_are_rejected(tmp_path, monkeypatch):
     prepare_env(monkeypatch, tmp_path)
-    for mode in ("clean-metadata", "visualize-compare", "compare", "humanize"):
+    for mode in ("visualize-compare", "compare", "humanize"):
         body, content_type = multipart_body(mode=mode)
         response = call_app(
             "POST",
@@ -162,6 +167,44 @@ def test_deferred_modes_are_rejected(tmp_path, monkeypatch):
             body=body,
         )
         assert response.status_code == 400
+
+
+def test_clean_metadata_web_job_creates_output_and_preserves_input(tmp_path, monkeypatch):
+    prepare_env(monkeypatch, tmp_path)
+    body, content_type = multipart_body(mode="clean-metadata")
+
+    upload = call_app(
+        "POST",
+        "/api/jobs",
+        headers={**auth_header(), "content-type": content_type},
+        body=body,
+    )
+
+    assert upload.status_code == 201
+    data = upload.json()
+    assert data["status"] == "completed"
+    assert {"cleaned_output.wav", "metadata_before.json", "clean_metadata.json", "metadata_after.json"}.issubset(data["artifacts"])
+    job_dir = get_job_directory(load_config(), data["job_id"])
+    assert (job_dir / "input" / "upload.wav").is_file()
+    assert (job_dir / "artifacts" / "cleaned_output.wav").is_file()
+    assert (job_dir / "artifacts" / "cleaned_output.wav").read_bytes() == (job_dir / "input" / "upload.wav").read_bytes()
+
+    artifact = call_app(
+        "GET",
+        f"/api/jobs/{data['job_id']}/artifacts/cleaned_output.wav",
+        headers=auth_header(),
+    )
+    assert artifact.status_code == 200
+    assert artifact.headers["content-type"].startswith("audio/wav")
+
+    clean_report = call_app(
+        "GET",
+        f"/api/jobs/{data['job_id']}/artifacts/clean_metadata.json",
+        headers=auth_header(),
+    )
+    encoded = clean_report.body.decode("utf-8")
+    assert assert_no_unsafe_public_claims(encoded) == []
+    json.dumps(json.loads(encoded), allow_nan=False)
 
 
 def test_failed_processing_returns_safe_status_without_traceback(tmp_path, monkeypatch):

@@ -1,6 +1,6 @@
 {
-  "version_target": "0.14.0",
-  "status": "implemented_private_dashboard_artifact_rendering",
+  "version_target": "0.15.0",
+  "status": "implemented_web_output_and_two_file_workflows",
   "deep_search_decision": "not_needed_internal_repo_only",
   "deep_search_completed": false,
   "approved_backend_stack": [
@@ -46,6 +46,7 @@
     "GET /health",
     "GET /",
     "POST /api/jobs",
+    "POST /api/compare-jobs",
     "GET /api/jobs/{job_id}",
     "GET /api/jobs/{job_id}/artifacts/{artifact_name}",
     "DELETE /api/jobs/{job_id}",
@@ -55,20 +56,42 @@
     "analyze",
     "release-check",
     "inspect-metadata",
+    "clean-metadata",
+    "visualize",
+    "compare",
+    "visualize-compare"
+  ],
+  "single_file_modes": [
+    "analyze",
+    "release-check",
+    "inspect-metadata",
+    "clean-metadata",
     "visualize"
   ],
-  "deferred_modes": [
-    "clean-metadata",
-    "visualize-compare",
+  "two_file_modes": [
     "compare",
+    "visualize-compare"
+  ],
+  "deferred_modes": [
     "humanize"
   ],
-  "processing_execution": "synchronous_safe_single_file_modes",
+  "processing_execution": "synchronous_safe_single_and_two_file_modes",
   "generated_artifacts": {
     "analyze": "analysis.json",
     "release-check": "release_check.json",
     "inspect-metadata": "metadata.json",
-    "visualize": "visualization.json"
+    "clean-metadata": [
+      "cleaned_output.<ext>",
+      "metadata_before.json",
+      "clean_metadata.json",
+      "metadata_after.json"
+    ],
+    "visualize": "visualization.json",
+    "compare": "compare.json",
+    "visualize-compare": [
+      "compare.json",
+      "visual_compare.json"
+    ]
   },
   "operator_page": {
     "path": "/",
@@ -82,6 +105,7 @@
     "waveform_preview_from_visualization_json": true,
     "spectrogram_preview_from_visualization_json": true,
     "metadata_panel_from_metadata_display": true,
+    "single_file_and_two_file_modes": true,
     "fake_metrics": false
   },
   "metadata_display": {
@@ -90,10 +114,27 @@
     "max_display_chars": 500,
     "modifies_uploaded_file": false
   },
+  "clean_metadata_web": {
+    "writes_cleaned_copy_to_artifacts": true,
+    "overwrites_uploaded_input": false,
+    "before_after_metadata_artifacts": true
+  },
+  "two_file_workflows": {
+    "fixed_upload_fields": [
+      "before_file",
+      "after_file"
+    ],
+    "fixed_storage_paths": [
+      "input/before.<ext>",
+      "input/after.<ext>"
+    ],
+    "user_filenames_as_paths": false
+  },
   "security_requirements": [
     "private beta only",
     "bearer-token auth for API endpoints",
-    "one uploaded file per request",
+    "one uploaded file for single-file requests",
+    "fixed before and after uploaded files for two-file requests",
     "allowlisted audio extensions",
     "enforce byte count while copying uploads",
     "advisory content type only",
@@ -134,9 +175,8 @@
     "analytics",
     "multi-tenant storage",
     "audio processing behavior changes",
-    "file-modifying web modes",
-    "two-file web modes",
-    "output-audio web modes"
+    "humanize web mode",
+    "other output-audio web modes"
   ],
   "project_reborn_boundary": {
     "reference_only": true,

@@ -220,3 +220,6 @@ v012_validation_outputs/
 # Local v0.13 private web outputs
 .var/
 v013_web_outputs/
+
+# Local v0.15 private web outputs
+v015_web_outputs/

@@ -1,14 +1,14 @@
-# v0.14 Private Dashboard and Web Backend MVP
+# v0.15 Private Dashboard and Web Backend MVP
 
 ## Status
 
-Implemented working local dashboard and backend MVP.
+Implemented working local dashboard and backend MVP with output and two-file workflows.
 
 ## Deep Search Summary
 
-Deep Search decision for v0.14.0: `not_needed_internal_repo_only`.
+Deep Search decision for v0.15.0: `not_needed_internal_repo_only`.
 
-The current milestone only extends the already-approved local backend. No new external frontend libraries or current external information were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per request, random job IDs from `secrets.token_urlsafe`, and temporary per-job directories under a controlled local root.
+The current milestone only extends the already-approved local backend. No new external frontend libraries or current external information were needed. The approved stack remains FastAPI, Uvicorn, and python-multipart as an optional `web` extra. The backend uses FastAPI `UploadFile`, bearer-token auth for private beta access, one uploaded file per single-file request or fixed before/after uploads for two-file requests, random job IDs from `secrets.token_urlsafe`, and temporary per-job directories under a controlled local root.
 
 ## Approved Dependencies
 
@@ -36,6 +36,7 @@ Token comparison uses constant-time comparison.
 
 - `GET /health`
 - `POST /api/jobs`
+- `POST /api/compare-jobs`
 - `GET /api/jobs/{job_id}`
 - `GET /api/jobs/{job_id}/artifacts/{artifact_name}`
 - `DELETE /api/jobs/{job_id}`
@@ -46,6 +47,8 @@ Token comparison uses constant-time comparison.
 The dashboard renders only generated JSON artifact data. It does not add fake metrics, fake percentages, or platform/distributor outcome language.
 
 `POST /api/jobs` validates the requested single-file mode, validates and stores the uploaded file, executes the selected safe single-file mode synchronously, writes generated JSON artifacts, updates `status.json`, and returns job metadata.
+
+`POST /api/compare-jobs` validates the requested two-file mode, validates and stores fixed `before_file` and `after_file` uploads, executes the selected safe two-file mode synchronously, writes generated JSON artifacts, updates `status.json`, and returns job metadata.
 
 ## Upload Validation Design
 
@@ -86,7 +89,7 @@ Each job uses a random URL-safe job ID and a per-job directory:
 - `artifacts/`
 - `status.json`
 
-The uploaded file is stored as `input/upload.<ext>`. User filenames are never used as storage paths.
+The uploaded single-file input is stored as `input/upload.<ext>`. Two-file inputs are stored as `input/before.<ext>` and `input/after.<ext>`. User filenames are never used as storage paths.
 
 Path helpers resolve paths under the configured job root and reject traversal.
 
@@ -111,7 +114,8 @@ The status JSON includes:
 - `status`
 - `mode`
 - `created_at`
-- sanitized input metadata
+- sanitized input metadata for single-file jobs or sanitized before/after input metadata for two-file jobs
+- `completed_at` or `failed_at`
 - processing state
 - artifact names
 - safety notes
@@ -123,20 +127,29 @@ Supported single-file MVP modes:
 - `analyze`
 - `release-check`
 - `inspect-metadata`
+- `clean-metadata`
 - `visualize`
+
+Supported two-file MVP modes:
+
+- `compare`
+- `visualize-compare`
 
 Generated artifacts:
 
 - `analyze` writes `analysis.json`
 - `release-check` writes `release_check.json`
 - `inspect-metadata` writes `metadata.json`
+- `clean-metadata` writes `cleaned_output.<ext>`, `metadata_before.json`, `clean_metadata.json`, and `metadata_after.json`
 - `visualize` writes `visualization.json`
+- `compare` writes `compare.json`
+- `visualize-compare` writes `compare.json` and `visual_compare.json`
 
 ## Dashboard Rendering
 
 The dashboard can fetch and render generated JSON artifacts.
 
-Metric cards are populated only from fields present in artifacts, including peak, RMS or loudness approximation, clipping sample count, duration, sample rate, channel count, and release-check score.
+Metric cards are populated only from fields present in artifacts, including peak, RMS or loudness approximation, clipping sample count, duration, sample rate, channel count, release-check score, and comparison metrics.
 
 Raw JSON remains available in a preview panel.
 
@@ -148,6 +161,8 @@ For `visualize` mode, the dashboard renders:
 - spectrogram energy preview from `spectrogram.energy_db`
 
 These previews are generated from artifact data and are not official mastering-standard displays.
+
+For `visualize-compare` mode, the dashboard renders candidate waveform and spectrogram data from `visual_compare.json`, with difference-map energy data as a fallback.
 
 ## Metadata Display Cleanup
 
@@ -165,16 +180,15 @@ Embedded cover fields such as `APIC:Cover` use:
 
 Long text display values are truncated to 500 characters. The uploaded file is not modified.
 
+For `clean-metadata` mode, the web workflow writes the cleaned copy to the artifacts directory and records sanitized before/after metadata reports. The uploaded input is not overwritten.
+
 ## Deferred Modes
 
 Deferred until later safe flows:
 
-- `visualize-compare`
-- `compare`
-- `clean-metadata`
 - `humanize`
 
-File-modifying behavior, two-file comparison, and output-audio generation are not implemented in this MVP.
+Humanize output-audio generation is not implemented in this MVP.
 
 ## Safety Boundary
 
@@ -210,15 +224,17 @@ Tests cover:
 - operator page rendering and safe wording
 - dashboard artifact preview rendering
 - sanitized metadata display for embedded images and long fields
-- generated artifacts for analyze, release-check, inspect-metadata, and visualize
+- generated artifacts for analyze, release-check, inspect-metadata, clean-metadata, visualize, compare, and visualize-compare
+- fixed before/after storage paths for two-file uploads
+- downloadable cleaned output artifacts
 - completed and failed job states
 - design and safety documentation
 
 ## Generated Artifact Policy
 
-Do not commit uploaded audio, generated web reports, generated audio, local job directories, or `v013_web_outputs/`.
+Do not commit uploaded audio, generated web reports, generated audio, local job directories, or `v015_web_outputs/`.
 
-`.var/` and `v013_web_outputs/` are ignored by Git.
+`.var/`, `v013_web_outputs/`, and `v015_web_outputs/` are ignored by Git.
 
 ## Not Approved
 
@@ -231,7 +247,7 @@ Do not commit uploaded audio, generated web reports, generated audio, local job 
 - no final legal, privacy, or GDPR public text
 - no accounts, OAuth, database, Redis, Celery, billing, analytics, or multi-tenant storage
 - no audio algorithm changes
-- no file-modifying or output-audio modes
+- no `humanize` or other output-audio processing modes
 - no fake metrics
 - no platform or distributor guarantees
 

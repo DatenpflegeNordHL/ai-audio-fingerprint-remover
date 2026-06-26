@@ -192,7 +192,7 @@ Difference maps must not imply watermark, fingerprint, provenance, detector, ori
 
 Generated visualization reports from real user audio must not be committed.
 
-No web app exists yet.
+The private web app is local and private beta only.
 
 Visualization artifacts are preview data for measured technical review only.
 
@@ -200,7 +200,7 @@ Visualization artifacts are not mastering certification.
 
 Visualization artifacts do not predict platform or distributor acceptance.
 
-The v0.13 private web API is private beta only.
+The v0.15 private web API is private beta only.
 
 All private web API endpoints except `/health` require bearer-token auth.
 
@@ -210,17 +210,25 @@ The private web operator page is local and uses no frontend framework or externa
 
 The private web API may execute safe single-file read-only modes and write JSON artifacts.
 
+The private web API may execute `clean-metadata` by writing a cleaned copy under the job artifacts directory.
+
+Private web `clean-metadata` must not overwrite the uploaded input file.
+
+The private web API may execute safe two-file compare and visualize-compare modes with fixed before/after upload fields.
+
+Private web compare and visualize-compare artifacts must show measured technical deltas only.
+
 The private web dashboard renders generated artifacts only and must not add fake metrics.
 
 The private web dashboard sanitizes embedded images and long metadata fields for display.
 
-Private web file-modifying, two-file, and output-audio modes remain deferred.
+Private web `humanize` and other output-audio processing modes remain deferred.
 
 Private web storage must use random job IDs and must not use user filenames as storage paths.
 
 Generated private web outputs must not be committed.
 
-No frontend UI, deployment, DNS config, or public launch is included in v0.13.
+No frontend framework, deployment, DNS config, or public launch is included in v0.15.
 
 The private web API must not make watermark, fingerprint, provenance, detector, C2PA, source-attribution, evasion, detectability, platform-certification, or distributor-guarantee claims.
 

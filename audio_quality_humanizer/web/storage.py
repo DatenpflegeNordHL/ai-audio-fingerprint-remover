@@ -22,9 +22,19 @@ ALLOWED_ARTIFACT_NAMES = {
     "analysis.json",
     "release_check.json",
     "metadata.json",
+    "metadata_before.json",
+    "metadata_after.json",
     "clean_metadata.json",
+    "compare.json",
     "visualization.json",
+    "visual_compare.json",
 }
+ALLOWED_ARTIFACT_NAMES.update(
+    {
+        f"cleaned_output{extension}"
+        for extension in (".wav", ".flac", ".mp3", ".m4a", ".aac", ".ogg", ".opus", ".aif", ".aiff")
+    }
+)
 
 
 def utc_now_iso() -> str:
@@ -80,6 +90,12 @@ def get_job_directory(config: WebConfig, job_id: str) -> Path:
 
 def input_path_for(job_dir: Path, extension: str) -> Path:
     return safe_child(job_dir / "input", f"upload{extension.casefold()}")
+
+
+def named_input_path_for(job_dir: Path, stem: str, extension: str) -> Path:
+    if stem not in {"before", "after"}:
+        raise ValueError("Unsupported input stem.")
+    return safe_child(job_dir / "input", f"{stem}{extension.casefold()}")
 
 
 def write_status(job_dir: Path, status_data: dict[str, Any]) -> Path:

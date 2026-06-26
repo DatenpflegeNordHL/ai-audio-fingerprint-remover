@@ -1,4 +1,4 @@
-"""Synchronous safe single-file processing for the private web backend."""
+"""Synchronous safe processing for the private web backend."""
 
 from __future__ import annotations
 
@@ -6,12 +6,13 @@ import json
 from pathlib import Path
 from typing import Any, Callable
 
+from audio_quality_humanizer.analysis.compare import compare_audio
 from audio_quality_humanizer.analysis.metrics import analyze_audio
 from audio_quality_humanizer.analysis.release_check import release_check
-from audio_quality_humanizer.metadata.cleaner import inspect_metadata
+from audio_quality_humanizer.metadata.cleaner import clean_metadata, inspect_metadata
 from audio_quality_humanizer.web.metadata_display import build_metadata_display
-from audio_quality_humanizer.web.storage import artifact_path, read_status, write_status
-from audio_quality_humanizer.visualization_artifacts import build_visualization_artifacts
+from audio_quality_humanizer.web.storage import artifact_path, read_status, utc_now_iso, write_status
+from audio_quality_humanizer.visualization_artifacts import build_visualization_artifacts, build_visualization_comparison
 
 
 ARTIFACT_BY_MODE = {
@@ -27,22 +28,61 @@ def execute_job(job_dir: Path, input_path: Path, mode: str) -> dict[str, Any]:
 
     status_data = read_status(job_dir)
     try:
-        report = _run_mode(input_path, mode)
-        _assert_json_safe(report)
-        artifact_name = ARTIFACT_BY_MODE[mode]
-        artifact = artifact_path(job_dir, artifact_name)
-        artifact.write_text(
-            json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False) + "\n",
-            encoding="utf-8",
-        )
+        if mode == "clean-metadata":
+            artifacts = _run_clean_metadata(job_dir, input_path)
+        else:
+            report = _run_mode(input_path, mode)
+            artifact_name = ARTIFACT_BY_MODE[mode]
+            _write_json_artifact(job_dir, artifact_name, report)
+            artifacts = ["status.json", artifact_name]
         status_data["status"] = "completed"
+        status_data["completed_at"] = utc_now_iso()
         status_data["processing"] = {
             "execution": "completed",
             "message": "Safe single-file processing completed.",
         }
-        status_data["artifacts"] = ["status.json", artifact_name]
+        status_data["artifacts"] = artifacts
     except Exception:
         status_data["status"] = "failed"
+        status_data["failed_at"] = utc_now_iso()
+        status_data["processing"] = {
+            "execution": "failed",
+            "message": "Processing failed safely.",
+            "error_code": "processing_failed",
+        }
+        status_data["artifacts"] = ["status.json"]
+    write_status(job_dir, status_data)
+    return status_data
+
+
+def execute_two_file_job(job_dir: Path, before_path: Path, after_path: Path, mode: str) -> dict[str, Any]:
+    """Execute a safe two-file mode and update status JSON."""
+
+    status_data = read_status(job_dir)
+    try:
+        artifacts = ["status.json"]
+        if mode == "compare":
+            compare_report = compare_audio(before_path, after_path, "streaming")
+            _write_json_artifact(job_dir, "compare.json", compare_report)
+            artifacts.append("compare.json")
+        elif mode == "visualize-compare":
+            compare_report = compare_audio(before_path, after_path, "streaming")
+            _write_json_artifact(job_dir, "compare.json", compare_report)
+            visual_report = build_visualization_comparison(before_path, after_path, target="streaming")
+            _write_json_artifact(job_dir, "visual_compare.json", visual_report)
+            artifacts.extend(["compare.json", "visual_compare.json"])
+        else:
+            raise ValueError("Unsupported two-file mode.")
+        status_data["status"] = "completed"
+        status_data["completed_at"] = utc_now_iso()
+        status_data["processing"] = {
+            "execution": "completed",
+            "message": "Safe two-file processing completed.",
+        }
+        status_data["artifacts"] = artifacts
+    except Exception:
+        status_data["status"] = "failed"
+        status_data["failed_at"] = utc_now_iso()
         status_data["processing"] = {
             "execution": "failed",
             "message": "Processing failed safely.",
@@ -63,6 +103,27 @@ def _run_mode(input_path: Path, mode: str) -> dict[str, Any]:
     if mode not in handlers:
         raise ValueError("Unsupported processing mode.")
     return handlers[mode](input_path)
+
+
+def _run_clean_metadata(job_dir: Path, input_path: Path) -> list[str]:
+    output_name = f"cleaned_output{input_path.suffix.casefold()}"
+    output_path = artifact_path(job_dir, output_name)
+    before = _inspect_metadata_for_web(input_path)
+    clean_report = clean_metadata(input_path, output_path)
+    after = _inspect_metadata_for_web(output_path)
+    _write_json_artifact(job_dir, "metadata_before.json", before)
+    _write_json_artifact(job_dir, "clean_metadata.json", clean_report)
+    _write_json_artifact(job_dir, "metadata_after.json", after)
+    return ["status.json", output_name, "metadata_before.json", "clean_metadata.json", "metadata_after.json"]
+
+
+def _write_json_artifact(job_dir: Path, artifact_name: str, report: dict[str, Any]) -> None:
+    _assert_json_safe(report)
+    artifact = artifact_path(job_dir, artifact_name)
+    artifact.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _assert_json_safe(report: dict[str, Any]) -> None:
