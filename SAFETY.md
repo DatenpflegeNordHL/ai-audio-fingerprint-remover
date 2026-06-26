@@ -162,6 +162,12 @@ Generated reports and generated audio are not part of the repository.
 
 Release notes may summarize validation outcomes without bundling user audio.
 
+Private beta workflow jobs are available only through the protected beta web app.
+
+Workflow reports must use audio-quality, metadata cleanup, release-readiness, comparison, and artifact-integrity wording only.
+
+Workflow jobs must preserve Bearer token auth for `/api/*`, beta password auth for the dashboard, public `/health`, active job limits, temporary job storage, and artifact-list enforcement.
+
 `reborn_005` remains deferred after design-only review.
 
 High-risk legacy framing in `reborn_005` was reviewed only as text.

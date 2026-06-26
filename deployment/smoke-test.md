@@ -40,6 +40,13 @@ curl -i "$AQH_BASE_URL/api/config"
 curl -i -H "Authorization: Bearer $AQH_WEB_TOKEN" "$AQH_BASE_URL/api/config"
 ```
 
+Workflow discovery:
+
+```bash
+curl -sS -H "Authorization: Bearer $AQH_WEB_TOKEN" "$AQH_BASE_URL/api/config" \
+  | grep -E '"workflow_modes"|"quick-scan"|"metadata-clean"|"quality-naturalize"|"full-release-pass"'
+```
+
 Cleanup:
 
 ```bash

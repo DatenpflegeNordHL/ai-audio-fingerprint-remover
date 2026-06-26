@@ -9,8 +9,9 @@ from fastapi.responses import FileResponse, HTMLResponse
 
 from audio_quality_humanizer.web.auth import require_bearer_token, require_beta_dashboard_access
 from audio_quality_humanizer.web.config import WebConfig
+from audio_quality_humanizer.__version__ import __version__
 from audio_quality_humanizer.web.models import SINGLE_FILE_MODES, SUPPORTED_MODES, TWO_FILE_MODES, health_response, job_response
-from audio_quality_humanizer.web.processing import execute_job, execute_two_file_job
+from audio_quality_humanizer.web.processing import execute_job, execute_two_file_job, execute_workflow_job
 from audio_quality_humanizer.web.storage import (
     active_job_count,
     artifact_path,
@@ -26,6 +27,7 @@ from audio_quality_humanizer.web.storage import (
     utc_now_iso,
 )
 from audio_quality_humanizer.web.upload_validation import copy_upload_to_disk, validate_extension
+from audio_quality_humanizer.web.workflow_registry import WORKFLOW_DEFINITIONS, WORKFLOW_NAMES, workflow_config, workflow_status_steps
 
 
 SAFETY_NOTE = (
@@ -36,7 +38,7 @@ SAFETY_NOTE = (
 def create_app() -> FastAPI:
     web_app = FastAPI(
         title="audio-quality-humanizer private web backend",
-        version="0.17.0",
+        version=__version__,
         docs_url=None,
         redoc_url=None,
     )
@@ -73,6 +75,8 @@ def create_app() -> FastAPI:
             "single_file_modes": list(SINGLE_FILE_MODES),
             "two_file_modes": list(TWO_FILE_MODES),
             "deferred_modes": ["humanize"],
+            "workflow_modes": list(WORKFLOW_NAMES),
+            "workflows": workflow_config(),
         }
 
     @web_app.post("/api/jobs", status_code=status.HTTP_201_CREATED)
@@ -81,7 +85,7 @@ def create_app() -> FastAPI:
         file: UploadFile = File(...),
         config: WebConfig = Depends(require_bearer_token),
     ) -> dict:
-        if mode not in SINGLE_FILE_MODES:
+        if mode not in SINGLE_FILE_MODES and mode not in WORKFLOW_NAMES:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported mode for single-file MVP.")
         _enforce_active_job_limit(config)
         extension = validate_extension(file.filename)
@@ -91,18 +95,26 @@ def create_app() -> FastAPI:
         status_data = {
             "job_id": job_dir.name,
             "status": "uploaded",
-            "mode": mode,
+            "mode": "workflow" if mode in WORKFLOW_NAMES else mode,
             "created_at": utc_now_iso(),
             "input": input_info,
             "processing": {
                 "execution": "pending",
-                "message": "Upload accepted. Safe single-file processing will run synchronously.",
+                "message": "Upload accepted. Safe processing will run synchronously.",
             },
             "artifacts": ["status.json"],
             "safety_notes": [SAFETY_NOTE],
         }
+        if mode in WORKFLOW_NAMES:
+            status_data["workflow_name"] = mode
+            status_data["workflow_label"] = WORKFLOW_DEFINITIONS[mode]["label"]
+            status_data["steps"] = workflow_status_steps(mode)
+            status_data["artifact_groups"] = {}
         write_status(job_dir, status_data)
-        status_data = execute_job(job_dir, input_path, mode)
+        if mode in WORKFLOW_NAMES:
+            status_data = execute_workflow_job(job_dir, input_path, mode)
+        else:
+            status_data = execute_job(job_dir, input_path, mode)
         return job_response(status_data)
 
     @web_app.post("/api/compare-jobs", status_code=status.HTTP_201_CREATED)
@@ -184,6 +196,8 @@ def _enforce_active_job_limit(config: WebConfig) -> None:
 def _media_type_for(path: Path) -> str:
     if path.suffix.casefold() == ".json":
         return "application/json"
+    if path.suffix.casefold() == ".md":
+        return "text/markdown; charset=utf-8"
     media_types = {
         ".wav": "audio/wav",
         ".flac": "audio/flac",
@@ -201,10 +215,23 @@ def _media_type_for(path: Path) -> str:
 
 
 def _operator_page_html() -> str:
-    modes = "".join(f'<option value="{mode}">{mode}</option>' for mode in SUPPORTED_MODES)
+    single_mode_options = "".join(f'<option value="{mode}">{mode}</option>' for mode in SINGLE_FILE_MODES)
+    workflow_options = "".join(
+        f'<option value="{name}">{definition["label"]}</option>' for name, definition in WORKFLOW_DEFINITIONS.items()
+    )
+    two_mode_options = "".join(f'<option value="{mode}">{mode}</option>' for mode in TWO_FILE_MODES)
+    modes = (
+        f'<optgroup label="Single-file modes">{single_mode_options}</optgroup>'
+        f'<optgroup label="Private beta workflows">{workflow_options}</optgroup>'
+        f'<optgroup label="Two-file modes">{two_mode_options}</optgroup>'
+    )
     single_file_modes = "".join(f"<li>{mode}</li>" for mode in SINGLE_FILE_MODES)
     two_file_modes = "".join(f"<li>{mode}</li>" for mode in TWO_FILE_MODES)
     deferred = "".join(f"<li>{mode}</li>" for mode in ("humanize",))
+    workflow_cards = "".join(
+        f'<article class="workflow-card"><h3>{definition["label"]}</h3><p>{definition["description"]}</p></article>'
+        for definition in WORKFLOW_DEFINITIONS.values()
+    )
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -218,6 +245,7 @@ def _operator_page_html() -> str:
     header {{ display: flex; justify-content: space-between; gap: 18px; align-items: flex-start; border-bottom: 1px solid #243244; padding-bottom: 20px; margin-bottom: 22px; }}
     h1 {{ font-size: 34px; margin: 0 0 8px; font-weight: 760; }}
     h2 {{ font-size: 17px; margin: 0 0 12px; }}
+    h3 {{ font-size: 15px; margin: 0 0 8px; }}
     p {{ color: #9da7b1; line-height: 1.55; }}
     .layout {{ display: grid; grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.6fr); gap: 18px; align-items: start; }}
     .stack {{ display: grid; gap: 18px; }}
@@ -238,6 +266,13 @@ def _operator_page_html() -> str:
     .cards {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; }}
     .card {{ border: 1px solid #243244; background: #0b1017; border-radius: 8px; padding: 12px; }}
     .card strong {{ display: block; font-size: 20px; margin-top: 6px; }}
+    .workflow-grid {{ display: grid; grid-template-columns: 1fr; gap: 10px; }}
+    .workflow-card {{ border: 1px solid #243244; background: #0b1017; border-radius: 8px; padding: 12px; }}
+    .workflow-card p {{ margin: 0; font-size: 14px; }}
+    .step-list {{ display: grid; gap: 8px; margin-top: 12px; }}
+    .step {{ display: flex; justify-content: space-between; gap: 10px; border: 1px solid #243244; border-radius: 6px; padding: 8px 10px; background: #0b1017; }}
+    .artifact-group {{ margin-top: 12px; }}
+    .artifact-group h3 {{ color: #c9d1d9; }}
     .muted {{ color: #9da7b1; }}
     .empty {{ color: #8b949e; font-style: italic; }}
     @media (max-width: 860px) {{ header, .layout {{ grid-template-columns: 1fr; display: grid; }} main {{ width: min(100% - 20px, 1220px); padding-top: 20px; }} }}
@@ -283,6 +318,8 @@ def _operator_page_html() -> str:
           <ul>{single_file_modes}</ul>
           <p class="muted">Two-file modes</p>
           <ul>{two_file_modes}</ul>
+          <p class="muted">Private beta workflows</p>
+          <div class="workflow-grid">{workflow_cards}</div>
           <p class="muted">Deferred</p>
           <ul>{deferred}</ul>
         </section>
@@ -303,6 +340,7 @@ def _operator_page_html() -> str:
         <section class="panel" id="job-status-panel">
           <h2>Job Status</h2>
           <div id="status-fields" class="cards"></div>
+          <div id="step-progress" class="step-list"></div>
           <pre id="result">No job submitted yet.</pre>
         </section>
         <section class="panel" id="artifact-panel">
@@ -344,6 +382,7 @@ def _operator_page_html() -> str:
     const submit = document.getElementById('submit');
     const previewAll = document.getElementById('preview-all');
     const statusFields = document.getElementById('status-fields');
+    const stepProgress = document.getElementById('step-progress');
     const metrics = document.getElementById('metrics');
     const rawJson = document.getElementById('raw-json');
     const metadataView = document.getElementById('metadata-view');
@@ -390,6 +429,7 @@ def _operator_page_html() -> str:
       metrics.innerHTML = '<p class="empty">Metrics appear after an artifact preview.</p>';
       metadataView.innerHTML = '<p class="empty">Metadata artifact data not loaded.</p>';
       rawJson.textContent = 'No artifact preview loaded.';
+      stepProgress.innerHTML = '';
       clearCanvas('waveform');
       clearCanvas('spectrogram');
       visualEmpty.textContent = 'Visualization artifact data not loaded.';
@@ -417,10 +457,7 @@ def _operator_page_html() -> str:
         result.textContent = JSON.stringify(payload, null, 2);
         renderStatus(payload);
         if (response.ok && payload.job_id && Array.isArray(payload.artifacts)) {{
-          for (const name of payload.artifacts) {{
-            const url = `/api/jobs/${{payload.job_id}}/artifacts/${{encodeURIComponent(name)}}`;
-            addArtifactButtons(name, url);
-          }}
+          renderArtifactButtons(payload);
           previewAll.disabled = false;
           await previewArtifacts(payload);
           await loadOperatorData();
@@ -476,6 +513,7 @@ def _operator_page_html() -> str:
       addCard(cards, 'Partial TTL', config.partial_ttl_minutes, ' min');
       addCard(cards, 'Single-file modes', (config.single_file_modes || []).join(', '));
       addCard(cards, 'Two-file modes', (config.two_file_modes || []).join(', '));
+      addCard(cards, 'Workflows', (config.workflow_modes || []).join(', '));
       addCard(cards, 'Deferred', (config.deferred_modes || []).join(', '));
       configView.innerHTML = cards.length ? cards.join('') : '<p class="empty">No safe config returned.</p>';
     }}
@@ -486,40 +524,66 @@ def _operator_page_html() -> str:
         recentJobs.innerHTML = '<p class="empty">No recent jobs found.</p>';
         return;
       }}
-      const rows = jobs.map(job => `<tr><td>${{escapeHtml(String(job.job_id || ''))}}</td><td>${{escapeHtml(String(job.mode || ''))}}</td><td>${{escapeHtml(String(job.status || ''))}}</td><td>${{escapeHtml(String(job.created_at || ''))}}</td><td>${{escapeHtml((job.artifacts || []).join(', '))}}</td></tr>`);
-      recentJobs.innerHTML = `<table><thead><tr><th>Job</th><th>Mode</th><th>Status</th><th>Created</th><th>Artifacts</th></tr></thead><tbody>${{rows.join('')}}</tbody></table>`;
+      const rows = jobs.map(job => `<tr><td>${{escapeHtml(String(job.job_id || ''))}}</td><td>${{escapeHtml(String(job.workflow_label || job.mode || ''))}}</td><td>${{escapeHtml(String(job.status || ''))}}</td><td>${{escapeHtml(String(job.created_at || ''))}}</td><td>${{escapeHtml((job.artifacts || []).join(', '))}}</td></tr>`);
+      recentJobs.innerHTML = `<table><thead><tr><th>Job</th><th>Type</th><th>Status</th><th>Created</th><th>Artifacts</th></tr></thead><tbody>${{rows.join('')}}</tbody></table>`;
     }}
 
-    function addArtifactButtons(name, url) {{
+    function renderArtifactButtons(job) {{
+      const groups = job.artifact_groups || null;
+      if (groups && Object.keys(groups).length) {{
+        for (const [group, names] of Object.entries(groups)) {{
+          const section = document.createElement('div');
+          section.className = 'artifact-group';
+          const heading = document.createElement('h3');
+          heading.textContent = group;
+          section.appendChild(heading);
+          for (const name of names) {{
+            addArtifactButtons(section, job.job_id, name);
+          }}
+          artifacts.appendChild(section);
+        }}
+        return;
+      }}
+      for (const name of job.artifacts || []) {{
+        addArtifactButtons(artifacts, job.job_id, name);
+      }}
+    }}
+
+    function addArtifactButtons(container, jobId, name) {{
+      const url = `/api/jobs/${{jobId}}/artifacts/${{encodeURIComponent(name)}}`;
       const preview = document.createElement('button');
       preview.type = 'button';
       preview.textContent = `Preview ${{name}}`;
       preview.addEventListener('click', async () => {{
-        const report = await fetchJsonArtifact(url);
+        const report = await fetchArtifactPreview(name, url);
         if (report) renderArtifact(name, report);
       }});
       const download = document.createElement('button');
       download.type = 'button';
       download.textContent = `Download ${{name}}`;
       download.addEventListener('click', async () => downloadArtifact(url, name));
-      artifacts.appendChild(preview);
-      artifacts.appendChild(download);
+      container.appendChild(preview);
+      container.appendChild(download);
     }}
 
     async function previewArtifacts(job) {{
       for (const name of job.artifacts || []) {{
         if (name === 'status.json') continue;
         const url = `/api/jobs/${{job.job_id}}/artifacts/${{encodeURIComponent(name)}}`;
-        const report = await fetchJsonArtifact(url);
+        const report = await fetchArtifactPreview(name, url);
         if (report) renderArtifact(name, report);
       }}
     }}
 
-    async function fetchJsonArtifact(url) {{
+    async function fetchArtifactPreview(name, url) {{
+      if (!name.endsWith('.json') && !name.endsWith('.md')) return null;
       const response = await authenticatedFetch(url);
       if (!response.ok) {{
         result.textContent = 'Artifact preview failed safely.';
         return null;
+      }}
+      if (name.endsWith('.md')) {{
+        return {{ markdown: await response.text() }};
       }}
       return await response.json();
     }}
@@ -545,15 +609,29 @@ def _operator_page_html() -> str:
       const values = [
         ['Job ID', job.job_id],
         ['Mode', job.mode],
+        ['Workflow', job.workflow_label],
         ['Status', job.status],
         ['Created', job.created_at],
         ['Completed', job.completed_at],
         ['Failed', job.failed_at]
       ].filter(([, value]) => value);
       statusFields.innerHTML = values.map(([label, value]) => `<div class="card"><span>${{label}}</span><strong>${{escapeHtml(String(value))}}</strong></div>`).join('');
+      renderSteps(job.steps || []);
+    }}
+
+    function renderSteps(steps) {{
+      if (!Array.isArray(steps) || !steps.length) {{
+        stepProgress.innerHTML = '';
+        return;
+      }}
+      stepProgress.innerHTML = steps.map(step => `<div class="step"><span>${{escapeHtml(String(step.label || step.name || 'Step'))}}</span><strong>${{escapeHtml(String(step.status || 'pending'))}}</strong></div>`).join('');
     }}
 
     function renderArtifact(name, report) {{
+      if (report.markdown !== undefined) {{
+        rawJson.textContent = report.markdown;
+        return;
+      }}
       rawJson.textContent = JSON.stringify(report, null, 2);
       renderMetricCards(report);
       if (name === 'visualization.json') renderVisualization(report);
@@ -635,6 +713,11 @@ def _operator_page_html() -> str:
     }}
 
     function renderMetadata(report) {{
+      if (report.metadata && Array.isArray(report.metadata.supported_standard_fields)) {{
+        const fields = report.metadata.supported_standard_fields;
+        metadataView.innerHTML = `<p class="muted">Supported standard fields: ${{fields.length}}</p><table><tbody>${{fields.map(field => `<tr><td>${{escapeHtml(String(field))}}</td><td>present</td></tr>`).join('')}}</tbody></table>`;
+        return;
+      }}
       const display = report.metadata_display;
       if (!display || !display.metadata_values) {{
         metadataView.innerHTML = '<p class="empty">No dashboard metadata summary found.</p>';

@@ -51,6 +51,7 @@ PUBLIC_FILES = (
     "deployment/env/web.env.example",
     "deployment/security-checklist.md",
     "deployment/privacy-beta-checklist.md",
+    "deployment/private-beta-workflows.md",
     "deployment/docker/docker-compose.example.yml",
     "deployment/systemd/audio-quality-humanizer-web.service.example",
     "deployment/server-rollout.md",

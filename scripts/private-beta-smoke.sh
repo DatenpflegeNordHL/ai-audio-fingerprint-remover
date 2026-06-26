@@ -34,6 +34,16 @@ expect_status "dashboard gate" "401" "GET" "$BASE_URL/"
 expect_status "dashboard password" "200" "GET" "$BASE_URL/" -u "beta:$BETA_PASSWORD"
 expect_status "api config without token" "401" "GET" "$BASE_URL/api/config"
 expect_status "api config with token" "200" "GET" "$BASE_URL/api/config" -H "Authorization: Bearer $TOKEN"
+config_body="$(curl -sS -H "Authorization: Bearer $TOKEN" "$BASE_URL/api/config")"
+for workflow_name in quick-scan metadata-clean quality-naturalize full-release-pass; do
+  case "$config_body" in
+    *"$workflow_name"*) printf '%s\n' "OK workflow config: $workflow_name" ;;
+    *)
+      printf '%s\n' "FAIL workflow config: missing $workflow_name" >&2
+      exit 1
+      ;;
+  esac
+done
 expect_status "cleanup with token" "200" "POST" "$BASE_URL/api/maintenance/cleanup" -H "Authorization: Bearer $TOKEN"
 
 printf '%s\n' "Private beta smoke checks passed."

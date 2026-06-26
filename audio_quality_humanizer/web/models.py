@@ -54,6 +54,14 @@ def job_response(status_data: dict[str, Any]) -> dict[str, Any]:
         response["completed_at"] = status_data["completed_at"]
     if status_data.get("failed_at"):
         response["failed_at"] = status_data["failed_at"]
+    if status_data.get("workflow_name"):
+        response["workflow_name"] = status_data["workflow_name"]
+    if status_data.get("workflow_label"):
+        response["workflow_label"] = status_data["workflow_label"]
+    if "steps" in status_data:
+        response["steps"] = status_data["steps"]
+    if "artifact_groups" in status_data:
+        response["artifact_groups"] = status_data["artifact_groups"]
     return response
 
 

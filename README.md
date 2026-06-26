@@ -28,6 +28,8 @@ The v0.17 deployment prep adds private side-project beta documentation and examp
 
 The v0.18 rollout prep adds home-server runbooks, preflight/post-deploy checklists, rollback notes, and an optional smoke-test helper for the existing Cloudflare Tunnel deployment path. It still does not add public launch features or production infrastructure automation.
 
+The current private beta workflow layer adds dashboard and API workflows for quick scan, metadata clean, quality naturalize, and full release pass on `beta.datenpflege-nord.de`. It remains a private beta side-project surface and does not add public launch features, analytics, or production infrastructure automation.
+
 ## v0.10.0 safe core
 
 v0.10.0 adds signal guardrails, optional performance metadata, and synthetic regression scaffolding. These features were designed from Project Reborn planning notes but rewritten from first principles inside the active package. Project Reborn remains non-installed and inert.

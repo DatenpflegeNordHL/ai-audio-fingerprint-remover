@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased private beta
+
+- Added a private beta workflow layer for quick scan, metadata clean, quality naturalize, and full release pass jobs.
+- Exposed workflow definitions through the protected API config endpoint.
+- Added step-level workflow status, grouped artifacts, and safe workflow summaries for the private dashboard.
+- Kept this as a private beta change with no official release, no public launch, no tag, and no production-domain deployment.
+
 ## v0.18.1
 
 - Fixed private beta rollout docs to consistently target `v0.18.0`.

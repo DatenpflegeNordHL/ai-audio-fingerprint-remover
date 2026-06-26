@@ -21,10 +21,20 @@ ALLOWED_ARTIFACT_NAMES = {
     "status.json",
     "analysis.json",
     "release_check.json",
+    "release_check_before.json",
+    "release_check_after.json",
+    "release_check_final.json",
     "metadata.json",
     "metadata_before.json",
     "metadata_after.json",
     "clean_metadata.json",
+    "metadata_diff.md",
+    "metadata_clean_summary.md",
+    "quick_scan_summary.md",
+    "quality_naturalize_summary.md",
+    "workflow_summary.md",
+    "workflow_summary.json",
+    "hashes.json",
     "compare.json",
     "visualization.json",
     "visual_compare.json",
@@ -32,6 +42,18 @@ ALLOWED_ARTIFACT_NAMES = {
 ALLOWED_ARTIFACT_NAMES.update(
     {
         f"cleaned_output{extension}"
+        for extension in (".wav", ".flac", ".mp3", ".m4a", ".aac", ".ogg", ".opus", ".aif", ".aiff")
+    }
+)
+ALLOWED_ARTIFACT_NAMES.update(
+    {
+        f"naturalized_output{extension}"
+        for extension in (".wav", ".flac", ".mp3", ".m4a", ".aac", ".ogg", ".opus", ".aif", ".aiff")
+    }
+)
+ALLOWED_ARTIFACT_NAMES.update(
+    {
+        f"final_output{extension}"
         for extension in (".wav", ".flac", ".mp3", ".m4a", ".aac", ".ogg", ".opus", ".aif", ".aiff")
     }
 )
@@ -145,6 +167,10 @@ def _job_summary(status_data: dict[str, Any]) -> dict[str, Any]:
         summary["completed_at"] = status_data["completed_at"]
     if status_data.get("failed_at"):
         summary["failed_at"] = status_data["failed_at"]
+    if status_data.get("workflow_name"):
+        summary["workflow_name"] = status_data["workflow_name"]
+    if status_data.get("workflow_label"):
+        summary["workflow_label"] = status_data["workflow_label"]
     return summary
 
 
