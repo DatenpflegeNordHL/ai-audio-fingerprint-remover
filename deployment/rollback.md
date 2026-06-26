@@ -27,7 +27,7 @@ Rollback is manual and local to the home server.
    systemctl stop audio-quality-humanizer-web
    ```
 
-2. Check out the previous known-good tag or previous deployment directory.
+2. Check out the previous known-good tag or previous deployment directory. The `v0.17.0` command below is only an example rollback target; use the actual previous known-good tag for the server.
 
    ```bash
    git fetch --tags

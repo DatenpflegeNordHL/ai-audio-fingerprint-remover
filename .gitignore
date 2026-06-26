@@ -232,3 +232,6 @@ v017_web_outputs/
 
 # Local v0.18 private web outputs
 v018_web_outputs/
+
+# Local ad-hoc generated humanize validation outputs
+local_humanize_outputs/

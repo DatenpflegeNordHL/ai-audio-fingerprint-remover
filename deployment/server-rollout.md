@@ -26,7 +26,7 @@ It is not an official public DatenpflegeNord product. Do not advertise it on `da
 
 ```bash
 git fetch --tags
-git checkout v0.17.0
+git checkout v0.18.0
 git status --short
 .venv/bin/ai-humanizer --version
 ```
@@ -34,7 +34,7 @@ git status --short
 Expected version for this rollout target:
 
 ```text
-audio-quality-humanizer 0.17.0
+audio-quality-humanizer 0.18.0
 ```
 
 ## 2. Prepare Server Directory
@@ -46,7 +46,7 @@ mkdir -p /srv/audio-quality-humanizer-private-beta
 cd /srv/audio-quality-humanizer-private-beta
 ```
 
-Clone or update the repository according to the home-server convention, then check out `v0.17.0`.
+Clone or update the repository according to the home-server convention, then check out `v0.18.0`.
 
 ## 3. Create Server-Only Environment File
 

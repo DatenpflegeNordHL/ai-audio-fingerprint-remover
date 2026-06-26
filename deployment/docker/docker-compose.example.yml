@@ -1,6 +1,6 @@
 services:
   audio-quality-humanizer-web:
-    image: audio-quality-humanizer-web:0.17.0-private
+    image: audio-quality-humanizer-web:0.18.0-private
     restart: unless-stopped
     env_file:
       - ../env/web.env.example

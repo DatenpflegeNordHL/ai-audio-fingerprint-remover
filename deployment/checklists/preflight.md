@@ -3,9 +3,9 @@
 ## Release
 
 - `git fetch --tags`
-- `git checkout v0.17.0`
+- `git checkout v0.18.0`
 - `git status --short` is clean
-- `.venv/bin/ai-humanizer --version` reports `audio-quality-humanizer 0.17.0`
+- `.venv/bin/ai-humanizer --version` reports `audio-quality-humanizer 0.18.0`
 
 ## Server Directory
 

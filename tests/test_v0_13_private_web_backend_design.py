@@ -189,6 +189,7 @@ def test_v0_17_private_beta_deployment_docs_are_placeholder_only():
     assert "127.0.0.1:8017:8017" in combined
     assert "AQH_WEB_TOKEN=replace-with-random-private-api-token" in combined
     assert "AQH_BETA_PASSWORD_HASH=sha256:replace-with-real-sha256-password-hash" in combined
+    assert "audio-quality-humanizer-web:0.18.0-private" in combined
     assert "Cloudflare Tunnel already exists" in combined
     assert "Do not expose local ports publicly." in combined
     assert "No analytics." in combined
@@ -212,7 +213,7 @@ def test_v0_18_server_rollout_docs_and_smoke_script_cover_required_steps():
     script = SMOKE_SCRIPT.read_text(encoding="utf-8")
 
     assert "git fetch --tags" in combined
-    assert "git checkout v0.17.0" in combined
+    assert "git checkout v0.18.0" in combined
     assert "AQH_WEB_HOST=127.0.0.1" in combined
     assert "AQH_WEB_PORT=8017" in combined
     assert "AQH_WEB_MAX_UPLOAD_MB=50" in combined
@@ -235,6 +236,20 @@ def test_v0_18_server_rollout_docs_and_smoke_script_cover_required_steps():
     assert "Private beta smoke checks passed." in script
 
 
+def test_v0_18_1_rollout_docs_use_current_rollout_target():
+    rollout = (DEPLOYMENT_ROOT / "server-rollout.md").read_text(encoding="utf-8")
+    preflight = (DEPLOYMENT_ROOT / "checklists" / "preflight.md").read_text(encoding="utf-8")
+    rollback = (DEPLOYMENT_ROOT / "rollback.md").read_text(encoding="utf-8")
+
+    normal_rollout = "\n".join([rollout, preflight])
+    assert "git checkout v0.18.0" in normal_rollout
+    assert "audio-quality-humanizer 0.18.0" in normal_rollout
+    assert "git checkout v0.17.0" not in normal_rollout
+    assert "audio-quality-humanizer 0.17.0" not in normal_rollout
+    assert "git checkout v0.17.0" in rollback
+    assert "example rollback target" in rollback
+
+
 def test_v0_13_generated_outputs_are_ignored():
     text = GITIGNORE.read_text(encoding="utf-8")
 
@@ -244,3 +259,4 @@ def test_v0_13_generated_outputs_are_ignored():
     assert "v016_web_outputs/" in text
     assert "v017_web_outputs/" in text
     assert "v018_web_outputs/" in text
+    assert "local_humanize_outputs/" in text

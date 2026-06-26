@@ -1,9 +1,16 @@
 # Changelog
 
+## v0.18.1
+
+- Fixed private beta rollout docs to consistently target `v0.18.0`.
+- Clarified rollback examples so previous tags such as `v0.17.0` are only rollback targets.
+- Added a documentation consistency test for rollout target versions.
+- Ignored local ad-hoc generated humanize validation outputs.
+
 ## v0.18.0
 
 - Added private beta home-server rollout runbook for `beta.datenpflege-nord.de` behind the existing Cloudflare Tunnel.
-- Added preflight, post-deploy, rollback, and smoke-test documentation for the v0.17.0 private beta deployment.
+- Added preflight, post-deploy, rollback, and smoke-test documentation for the v0.18.0 private beta deployment.
 - Added optional local smoke-test script for health, dashboard gate, API auth, upload limit, and cleanup checks.
 - Kept runtime behavior, audio algorithms, `humanize`, public launch features, provider comparisons, databases, queues, analytics, and official product positioning deferred.
 
