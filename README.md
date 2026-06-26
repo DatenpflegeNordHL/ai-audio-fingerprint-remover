@@ -167,6 +167,20 @@ ai-humanizer compare before.wav after.wav \
 
 `comparison_metrics` are read-only before/after quality deltas. JSON outputs are safe to serialize and unavailable values are reported as `null`. These metrics do not certify distributor or platform acceptance, and they do not evaluate attribution, recognition, provenance, watermark, fingerprint, detector behavior, bypass, evasion, or source attribution.
 
+Generate read-only visualization artifacts for future UI rendering:
+
+```bash
+ai-humanizer visualize input.wav \
+  --report visualization.json
+```
+
+```bash
+ai-humanizer visualize-compare before.wav after.wav \
+  --report visual_compare.json
+```
+
+Visualization artifacts include waveform peaks, downsampled spectrogram summaries, metric cards, before/after difference maps, and safe tooltip-region metadata. They are read-only, do not modify audio, and difference maps show measured technical changes only. They do not make watermark, fingerprint, provenance, detector, platform, or distributor claims.
+
 Apply conservative audio-quality processing:
 
 ```bash

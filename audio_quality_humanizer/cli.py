@@ -21,6 +21,10 @@ from audio_quality_humanizer.reports.json_report import write_json_report
 from audio_quality_humanizer.reports.markdown_report import write_markdown_report
 from audio_quality_humanizer.validation.runner import run_validation
 from audio_quality_humanizer.validation.status import validation_status
+from audio_quality_humanizer.visualization_artifacts import (
+    build_visualization_artifacts,
+    build_visualization_comparison,
+)
 from audio_quality_humanizer.workflows.batch import SUPPORTED_BATCH_MODES, batch_run
 from audio_quality_humanizer.workflows.doctor import doctor_file
 from audio_quality_humanizer.workflows.preset_eval import preset_eval
@@ -135,6 +139,32 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Return exit code 2 when blocking regressions are detected.",
     )
     compare_parser.set_defaults(handler=_handle_compare)
+
+    visualize_parser = subparsers.add_parser(
+        "visualize",
+        help="Generate read-only waveform and spectrum visualization JSON.",
+    )
+    visualize_parser.add_argument("input", type=Path)
+    visualize_parser.add_argument("--report", type=Path, required=True)
+    visualize_parser.add_argument("--max-time-bins", type=int, default=256)
+    visualize_parser.add_argument("--max-frequency-bins", type=int, default=128)
+    visualize_parser.set_defaults(handler=_handle_visualize)
+
+    visualize_compare_parser = subparsers.add_parser(
+        "visualize-compare",
+        help="Generate read-only before/after visualization comparison JSON.",
+    )
+    visualize_compare_parser.add_argument("reference", type=Path)
+    visualize_compare_parser.add_argument("candidate", type=Path)
+    visualize_compare_parser.add_argument(
+        "--target",
+        choices=SUPPORTED_TARGETS,
+        default="streaming",
+    )
+    visualize_compare_parser.add_argument("--report", type=Path, required=True)
+    visualize_compare_parser.add_argument("--max-time-bins", type=int, default=256)
+    visualize_compare_parser.add_argument("--max-frequency-bins", type=int, default=128)
+    visualize_compare_parser.set_defaults(handler=_handle_visualize_compare)
 
     humanize_parser = subparsers.add_parser(
         "humanize",
@@ -314,6 +344,27 @@ def _handle_compare(args: argparse.Namespace) -> dict:
     return compare_audio(args.reference, args.candidate, args.target)
 
 
+def _handle_visualize(args: argparse.Namespace) -> dict:
+    _require_input(args.input)
+    return build_visualization_artifacts(
+        args.input,
+        max_time_bins=args.max_time_bins,
+        max_frequency_bins=args.max_frequency_bins,
+    )
+
+
+def _handle_visualize_compare(args: argparse.Namespace) -> dict:
+    _require_input(args.reference)
+    _require_input(args.candidate)
+    return build_visualization_comparison(
+        args.reference,
+        args.candidate,
+        target=args.target,
+        max_time_bins=args.max_time_bins,
+        max_frequency_bins=args.max_frequency_bins,
+    )
+
+
 def _handle_humanize(args: argparse.Namespace) -> dict:
     _require_input(args.input)
     return humanize_audio(args.input, args.output, preset=args.preset, target=args.target)
@@ -424,6 +475,20 @@ def _status_message(report: dict, report_path: Path | None) -> str:
         return (
             f"compare complete; target {report.get('target')}; score {report.get('score')}; "
             f"passed {report.get('passed')}; regressions {regression_count}{suffix}"
+        )
+    if action == "visualize":
+        source = report.get("source", {})
+        spectrogram = report.get("spectrogram", {}).get("summary", {})
+        return (
+            f"visualization complete; duration {source.get('duration_seconds')}s; "
+            f"time bins {spectrogram.get('time_bin_count')}; "
+            f"frequency bins {spectrogram.get('frequency_bin_count')}{suffix}"
+        )
+    if action == "visualize-compare":
+        summary = report.get("difference_map", {}).get("summary", {})
+        return (
+            f"visualization compare complete; target {report.get('target')}; "
+            f"mean abs delta {summary.get('mean_abs_delta_db')}{suffix}"
         )
     if action == "release_check":
         return (

@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.12.0
+
+- Added read-only visualization artifact generation for future web UI use.
+- Added waveform peaks, spectrogram summaries, and before/after difference-map reports.
+- Added safe tooltip-region metadata based only on measured technical changes.
+- Added tests and real local validation for visualization artifacts.
+
 ## v0.11.3
 
 - Added design notes for a future safe web upload and spectrum visualization MVP.

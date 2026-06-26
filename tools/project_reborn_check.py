@@ -31,6 +31,8 @@ V0_11_COMPARE_MARKDOWN = ROOT / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
 V0_11_RELEASE_NOTES = ROOT / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md"
 V0_11_3_WEB_DESIGN_JSON = ROOT / "docs" / "design" / "v0_11_3_web_upload_visualization_mvp.json"
 V0_11_3_WEB_DESIGN_MARKDOWN = ROOT / "docs" / "design" / "V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md"
+V0_12_VISUALIZATION_JSON = ROOT / "docs" / "design" / "v0_12_0_visualization_artifacts.json"
+V0_12_VISUALIZATION_MARKDOWN = ROOT / "docs" / "design" / "V0_12_0_VISUALIZATION_ARTIFACTS.md"
 README = PROJECT_REBORN_DIR / "README.md"
 REQUIRED_ENTRY_FIELDS = {
     "reborn_id",
@@ -162,6 +164,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
     v0_11_compare_markdown = root / "docs" / "design" / "V0_11_0_COMPARE_METRICS.md"
     v0_11_3_web_design_json = root / "docs" / "design" / "v0_11_3_web_upload_visualization_mvp.json"
     v0_11_3_web_design_markdown = root / "docs" / "design" / "V0_11_3_WEB_UPLOAD_VISUALIZATION_MVP.md"
+    v0_12_visualization_json = root / "docs" / "design" / "v0_12_0_visualization_artifacts.json"
+    v0_12_visualization_markdown = root / "docs" / "design" / "V0_12_0_VISUALIZATION_ARTIFACTS.md"
     readme = project_dir / "README.md"
 
     for path in (
@@ -184,6 +188,8 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
         v0_11_compare_markdown,
         v0_11_3_web_design_json,
         v0_11_3_web_design_markdown,
+        v0_12_visualization_json,
+        v0_12_visualization_markdown,
         root / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md",
         source_drawer,
     ):
@@ -241,6 +247,13 @@ def validate_project_reborn(root: Path = ROOT) -> list[str]:
 
     if v0_11_3_web_design_json.exists() and v0_11_3_web_design_markdown.exists():
         _validate_v0_11_3_web_design(v0_11_3_web_design_json, v0_11_3_web_design_markdown, errors)
+
+    if v0_12_visualization_json.exists() and v0_12_visualization_markdown.exists():
+        _validate_v0_12_visualization_artifacts(
+            v0_12_visualization_json,
+            v0_12_visualization_markdown,
+            errors,
+        )
 
     v0_11_release_notes = root / "docs" / "releases" / "V0_11_0_RELEASE_NOTES.md"
     if v0_11_release_notes.exists():
@@ -950,6 +963,101 @@ def _validate_v0_11_3_web_design(
     ):
         if required_text not in markdown:
             errors.append(f"v0.11.3 web design markdown missing required text: {required_text}")
+
+
+def _validate_v0_12_visualization_artifacts(
+    design_json: Path,
+    design_markdown: Path,
+    errors: list[str],
+) -> None:
+    design = _load_catalog(design_json, errors)
+    if design is None:
+        return
+    if design.get("version_target") != "0.12.0":
+        errors.append("v0.12 visualization artifacts version_target must be 0.12.0.")
+    if design.get("status") != "implemented":
+        errors.append("v0.12 visualization artifacts status must be implemented.")
+    if design.get("deep_search_decision") != "not_needed_internal_repo_only":
+        errors.append("v0.12 visualization artifacts deep_search_decision must be not_needed_internal_repo_only.")
+    if design.get("deep_search_stop_required") is not True:
+        errors.append("v0.12 visualization artifacts deep_search_stop_required must be true.")
+    if design.get("real_local_validation_required") is not True:
+        errors.append("v0.12 visualization artifacts real_local_validation_required must be true.")
+    if design.get("no_op_check_required") is not True:
+        errors.append("v0.12 visualization artifacts no_op_check_required must be true.")
+
+    single_schema = design.get("single_file_schema", {})
+    if not isinstance(single_schema, dict) or single_schema.get("action") != "visualize":
+        errors.append("v0.12 visualization artifacts single_file_schema.action must be visualize.")
+    comparison_schema = design.get("comparison_schema", {})
+    if not isinstance(comparison_schema, dict) or comparison_schema.get("action") != "visualize-compare":
+        errors.append("v0.12 visualization artifacts comparison_schema.action must be visualize-compare.")
+
+    allowed_labels = set(design.get("allowed_labels", []))
+    required_labels = {
+        "clipping reduced",
+        "peak changed",
+        "RMS changed",
+        "dynamic range changed",
+        "spectral centroid changed",
+        "spectral rolloff changed",
+        "stereo correlation changed",
+        "side energy changed",
+        "spectral energy changed",
+        "metadata changed",
+    }
+    if not required_labels <= allowed_labels:
+        errors.append(f"v0.12 visualization artifacts allowed_labels missing {sorted(required_labels - allowed_labels)}.")
+
+    forbidden_text = " ".join(design.get("forbidden_labels", [])).casefold()
+    for required in (
+        "fingerprint",
+        "watermark",
+        "detector",
+        "provenance",
+        "source attribution",
+        "c2pa",
+        "origin",
+        "detectability",
+        "platform",
+        "distributor",
+    ):
+        if required not in forbidden_text:
+            errors.append(f"v0.12 visualization artifacts forbidden_labels missing {required}.")
+
+    future_web = design.get("future_web_use", {})
+    if not isinstance(future_web, dict):
+        errors.append("v0.12 visualization artifacts future_web_use must be an object.")
+    else:
+        for key in ("web_app_implemented", "runtime_frontend_dependencies_added", "deployment_added"):
+            if future_web.get(key) is not False:
+                errors.append(f"v0.12 visualization artifacts future_web_use.{key} must be false.")
+
+    boundary = design.get("project_reborn_boundary", {})
+    if not isinstance(boundary, dict):
+        errors.append("v0.12 visualization artifacts project_reborn_boundary must be an object.")
+    else:
+        if boundary.get("reference_only") is not True:
+            errors.append("v0.12 visualization artifacts project_reborn_boundary.reference_only must be true.")
+        for key in ("executed", "imported", "copied", "packaged", "exposed"):
+            if boundary.get(key) is not False:
+                errors.append(f"v0.12 visualization artifacts project_reborn_boundary.{key} must be false.")
+
+    markdown = design_markdown.read_text(encoding="utf-8")
+    for required_text in (
+        "Implemented.",
+        "`not_needed_internal_repo_only`",
+        "Visualization artifacts show measured technical audio features only.",
+        "Waveform Peaks Design",
+        "Spectrogram Design",
+        "Difference Map Design",
+        "No-Op Check Plan",
+        "Real Local Audio Validation Plan",
+        "`v012_validation_outputs/` is ignored by Git.",
+        "This milestone does not implement a web app",
+    ):
+        if required_text not in markdown:
+            errors.append(f"v0.12 visualization artifacts markdown missing required text: {required_text}")
 
 
 def _validate_v0_11_release_notes(path: Path, errors: list[str]) -> None:

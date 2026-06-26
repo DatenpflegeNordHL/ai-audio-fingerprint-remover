@@ -1,0 +1,96 @@
+{
+  "version_target": "0.12.0",
+  "status": "implemented",
+  "deep_search_decision": "not_needed_internal_repo_only",
+  "deep_search_stop_required": true,
+  "implemented_artifacts": [
+    "single-file visualization JSON",
+    "before/after visualization comparison JSON",
+    "waveform peaks",
+    "downsampled spectrogram summaries",
+    "difference map reports",
+    "safe tooltip-region metadata"
+  ],
+  "single_file_schema": {
+    "action": "visualize",
+    "schema_version": "1.0",
+    "required_sections": [
+      "source",
+      "waveform_peaks",
+      "spectrogram",
+      "metric_cards",
+      "tooltip_regions",
+      "safety_notes"
+    ],
+    "json_safe_required": true
+  },
+  "comparison_schema": {
+    "action": "visualize-compare",
+    "schema_version": "1.0",
+    "required_sections": [
+      "reference",
+      "candidate",
+      "comparison_metrics",
+      "difference_map",
+      "tooltip_regions",
+      "safety_notes"
+    ],
+    "difference_summary_fields": [
+      "mean_abs_delta_db",
+      "max_abs_delta_db",
+      "changed_bin_count",
+      "changed_bin_ratio",
+      "delta_threshold_db"
+    ],
+    "json_safe_required": true
+  },
+  "allowed_labels": [
+    "clipping reduced",
+    "peak changed",
+    "RMS changed",
+    "dynamic range changed",
+    "spectral centroid changed",
+    "spectral rolloff changed",
+    "stereo correlation changed",
+    "side energy changed",
+    "spectral energy changed",
+    "metadata changed"
+  ],
+  "forbidden_labels": [
+    "No label may say fingerprint removed",
+    "No label may say watermark removed",
+    "No label may say AI trace removed",
+    "No label may say detector bypassed",
+    "No label may say undetectable",
+    "No label may say hidden identifier removed",
+    "No label may say provenance removed",
+    "No label may say source attribution removed",
+    "No label may say C2PA removed",
+    "No label may say origin removed",
+    "No label may say detectability reduced",
+    "No label may say platform certified",
+    "No label may say distributor accepted"
+  ],
+  "real_local_validation_required": true,
+  "no_op_check_required": true,
+  "future_web_use": {
+    "supports_release_subdomain_design": "release.datenpflege-nord.de",
+    "web_app_implemented": false,
+    "runtime_frontend_dependencies_added": false,
+    "deployment_added": false
+  },
+  "generated_artifact_policy": {
+    "commit_real_audio": false,
+    "commit_generated_visualization_reports": false,
+    "commit_generated_audio": false,
+    "ignored_validation_directory": "v012_validation_outputs/"
+  },
+  "project_reborn_boundary": {
+    "reference_only": true,
+    "executed": false,
+    "imported": false,
+    "copied": false,
+    "packaged": false,
+    "exposed": false
+  }
+}

@@ -184,6 +184,16 @@ Web read-only modes must not modify files.
 
 Web clean-metadata behavior must only affect documented standard metadata fields.
 
+Visualization artifacts are read-only.
+
+Visualization labels must map to measured technical metrics.
+
+Difference maps must not imply watermark, fingerprint, provenance, detector, origin, C2PA, source-attribution, bypass, evasion, detectability, platform, or distributor outcomes.
+
+Generated visualization reports from real user audio must not be committed.
+
+No web app exists yet.
+
 CI enforces a public-claim safety scan.
 
 CI enforces legacy import guards.
