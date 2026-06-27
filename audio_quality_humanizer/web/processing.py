@@ -42,6 +42,9 @@ STANDARD_METADATA_FIELDS = {
     "year",
 }
 
+AUDIO_ARTIFACT_EXTENSIONS = (".wav", ".flac", ".mp3", ".m4a", ".aac", ".ogg", ".opus", ".aif", ".aiff")
+ARTIFACT_GROUP_ORDER = ("Final Audio", "Intermediate Audio", "Reports", "Metadata", "Hashes", "Visuals")
+
 
 def execute_job(job_dir: Path, input_path: Path, mode: str) -> dict[str, Any]:
     """Execute a safe single-file mode and update status JSON."""
@@ -134,6 +137,7 @@ def execute_workflow_job(job_dir: Path, input_path: Path, workflow_name: str) ->
             "execution": "completed",
             "message": "Private beta workflow completed.",
         }
+        _assert_listed_artifacts_exist(job_dir, artifacts)
         status_data["artifacts"] = artifacts
         status_data["artifact_groups"] = _artifact_groups_for(workflow_name, artifacts)
     except Exception:
@@ -341,6 +345,7 @@ def _run_full_release_pass_workflow(job_dir: Path, input_path: Path, status_data
 
     return [
         "status.json",
+        cleaned_name,
         final_name,
         "workflow_summary.md",
         "workflow_summary.json",
@@ -607,10 +612,43 @@ def _artifact_groups_for(workflow_name: str, artifacts: list[str]) -> dict[str, 
     artifact_set = set(artifacts)
     grouped: dict[str, list[str]] = {}
     for group, names in WORKFLOW_DEFINITIONS[workflow_name]["artifact_groups"].items():
-        present = [name for name in names if name in artifact_set]
+        present = [
+            artifact_name
+            for artifact_name in artifacts
+            if artifact_name != "status.json" and any(_artifact_pattern_matches(pattern, artifact_name) for pattern in names)
+        ]
         if present:
             grouped[group] = present
-    ungrouped = [name for name in artifacts if name != "status.json" and all(name not in values for values in grouped.values())]
-    if ungrouped:
-        grouped["Reports"] = grouped.get("Reports", []) + ungrouped
-    return grouped
+    for artifact_name in artifacts:
+        if artifact_name == "status.json" or any(artifact_name in values for values in grouped.values()):
+            continue
+        fallback_group = _fallback_artifact_group(artifact_name)
+        grouped[fallback_group] = grouped.get(fallback_group, []) + [artifact_name]
+    return {group: grouped[group] for group in ARTIFACT_GROUP_ORDER if group in grouped}
+
+
+def _artifact_pattern_matches(pattern: str, artifact_name: str) -> bool:
+    if pattern.endswith(".*"):
+        return artifact_name.startswith(pattern[:-1])
+    return artifact_name == pattern
+
+
+def _fallback_artifact_group(artifact_name: str) -> str:
+    suffix = Path(artifact_name).suffix.casefold()
+    if suffix in AUDIO_ARTIFACT_EXTENSIONS:
+        if artifact_name.startswith(("final_output", "naturalized_output", "cleaned_output")):
+            return "Final Audio"
+        return "Intermediate Audio"
+    if artifact_name.startswith("metadata_") or artifact_name == "metadata.json":
+        return "Metadata"
+    if artifact_name == "hashes.json":
+        return "Hashes"
+    if "visual" in artifact_name:
+        return "Visuals"
+    return "Reports"
+
+
+def _assert_listed_artifacts_exist(job_dir: Path, artifacts: list[str]) -> None:
+    for artifact_name in artifacts:
+        if not artifact_path(job_dir, artifact_name).is_file():
+            raise FileNotFoundError(f"Expected workflow artifact was not created: {artifact_name}")

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from audio_quality_humanizer.safety import assert_no_unsafe_public_claims
 from audio_quality_humanizer.web.config import load_config
+from audio_quality_humanizer.web.processing import _artifact_groups_for
 from audio_quality_humanizer.web.storage import get_job_directory
 import audio_quality_humanizer.web.processing as web_processing
 from tests.web.helpers import auth_header, call_app, multipart_body, prepare_env
@@ -34,7 +35,7 @@ def test_workflow_jobs_complete_with_steps_and_allowlisted_artifacts(tmp_path, m
         "quick-scan": {"quick_scan_summary.md", "analysis.json", "metadata.json", "release_check.json", "visualization.json"},
         "metadata-clean": {"cleaned_output.wav", "metadata_before.json", "metadata_after.json", "metadata_diff.md", "metadata_clean_summary.md", "hashes.json"},
         "quality-naturalize": {"naturalized_output.wav", "release_check_before.json", "release_check_after.json", "compare.json", "quality_naturalize_summary.md", "hashes.json"},
-        "full-release-pass": {"final_output.wav", "workflow_summary.md", "workflow_summary.json", "metadata_before.json", "metadata_after.json", "metadata_diff.md", "release_check_before.json", "release_check_final.json", "compare.json", "hashes.json"},
+        "full-release-pass": {"cleaned_output.wav", "final_output.wav", "workflow_summary.md", "workflow_summary.json", "metadata_before.json", "metadata_after.json", "metadata_diff.md", "release_check_before.json", "release_check_final.json", "compare.json", "hashes.json"},
     }
 
     for workflow_name in WORKFLOW_NAMES:
@@ -55,11 +56,16 @@ def test_workflow_jobs_complete_with_steps_and_allowlisted_artifacts(tmp_path, m
         assert data["workflow_name"] == workflow_name
         assert {step["status"] for step in data["steps"]} == {"completed"}
         assert expected_artifacts[workflow_name].issubset(set(data["artifacts"]))
-        assert set(data["artifact_groups"]).issubset({"Final Audio", "Reports", "Metadata", "Hashes", "Visuals"})
+        assert set(data["artifact_groups"]).issubset({"Final Audio", "Intermediate Audio", "Reports", "Metadata", "Hashes", "Visuals"})
 
         job_dir = get_job_directory(load_config(), data["job_id"])
         status_data = json.loads((job_dir / "status.json").read_text(encoding="utf-8"))
         assert status_data["steps"] == data["steps"]
+        for artifact_name in data["artifacts"]:
+            artifact_path = job_dir / "status.json" if artifact_name == "status.json" else job_dir / "artifacts" / artifact_name
+            assert artifact_path.is_file()
+        exposed_files = sorted(path.name for path in (job_dir / "artifacts").iterdir() if path.is_file())
+        assert sorted(name for name in data["artifacts"] if name != "status.json") == exposed_files
 
         for artifact_name in data["artifacts"]:
             artifact = call_app(
@@ -76,6 +82,34 @@ def test_workflow_jobs_complete_with_steps_and_allowlisted_artifacts(tmp_path, m
         )
         if workflow_name != "metadata-clean":
             assert blocked.status_code in {400, 404}
+
+
+def test_full_release_pass_mp3_artifact_groups_are_stable():
+    artifacts = [
+        "status.json",
+        "final_output.mp3",
+        "cleaned_output.mp3",
+        "workflow_summary.md",
+        "workflow_summary.json",
+        "metadata_before.json",
+        "metadata_after.json",
+        "metadata_diff.md",
+        "release_check_before.json",
+        "release_check_final.json",
+        "compare.json",
+        "hashes.json",
+    ]
+
+    groups = _artifact_groups_for("full-release-pass", artifacts)
+
+    assert groups["Final Audio"] == ["final_output.mp3"]
+    assert groups["Intermediate Audio"] == ["cleaned_output.mp3"]
+    assert groups["Metadata"] == ["metadata_before.json", "metadata_after.json"]
+    assert groups["Hashes"] == ["hashes.json"]
+    assert "metadata_before.json" not in groups["Reports"]
+    assert "metadata_after.json" not in groups["Reports"]
+    assert "hashes.json" not in groups["Reports"]
+    assert all(not name.endswith((".wav", ".mp3", ".flac", ".m4a", ".aac", ".ogg", ".opus", ".aif", ".aiff")) for name in groups["Reports"])
 
 
 def test_existing_single_file_mode_still_works_after_workflow_addition(tmp_path, monkeypatch):

@@ -33,6 +33,11 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     assert "/api/maintenance/cleanup" in html
     assert "Safety / FAQ" in html
     assert "Preview result" in html
+    assert "Preview is not available for this artifact type. Download the artifact instead." in html
+    assert "function artifactLabel" in html
+    assert "function normalizeArtifactName" in html
+    assert "Download ${label}" in html
+    assert "Preview ${label}" in html
     assert "Waveform preview" in html
     assert "Spectrogram energy preview" in html
     assert "analyze" in html

@@ -532,10 +532,11 @@ def _operator_page_html() -> str:
       const groups = job.artifact_groups || null;
       if (groups && Object.keys(groups).length) {{
         for (const [group, names] of Object.entries(groups)) {{
+          if (!Array.isArray(names) || !names.length) continue;
           const section = document.createElement('div');
           section.className = 'artifact-group';
           const heading = document.createElement('h3');
-          heading.textContent = group;
+          heading.textContent = group || 'Artifacts';
           section.appendChild(heading);
           for (const name of names) {{
             addArtifactButtons(section, job.job_id, name);
@@ -550,18 +551,21 @@ def _operator_page_html() -> str:
     }}
 
     function addArtifactButtons(container, jobId, name) {{
-      const url = `/api/jobs/${{jobId}}/artifacts/${{encodeURIComponent(name)}}`;
+      const artifactName = normalizeArtifactName(name);
+      if (!artifactName) return;
+      const label = artifactLabel(artifactName);
+      const url = `/api/jobs/${{jobId}}/artifacts/${{encodeURIComponent(artifactName)}}`;
       const preview = document.createElement('button');
       preview.type = 'button';
-      preview.textContent = `Preview ${{name}}`;
+      preview.textContent = `Preview ${{label}}`;
       preview.addEventListener('click', async () => {{
-        const report = await fetchArtifactPreview(name, url);
-        if (report) renderArtifact(name, report);
+        const report = await fetchArtifactPreview(artifactName, url);
+        if (report) renderArtifact(artifactName, report);
       }});
       const download = document.createElement('button');
       download.type = 'button';
-      download.textContent = `Download ${{name}}`;
-      download.addEventListener('click', async () => downloadArtifact(url, name));
+      download.textContent = `Download ${{label}}`;
+      download.addEventListener('click', async () => downloadArtifact(url, artifactName));
       container.appendChild(preview);
       container.appendChild(download);
     }}
@@ -576,10 +580,12 @@ def _operator_page_html() -> str:
     }}
 
     async function fetchArtifactPreview(name, url) {{
-      if (!name.endsWith('.json') && !name.endsWith('.md')) return null;
+      if (!name.endsWith('.json') && !name.endsWith('.md')) {{
+        return {{ message: 'Preview is not available for this artifact type. Download the artifact instead.' }};
+      }}
       const response = await authenticatedFetch(url);
       if (!response.ok) {{
-        result.textContent = 'Artifact preview failed safely.';
+        rawJson.textContent = 'Artifact preview failed safely. Download remains available if this artifact is listed for the job.';
         return null;
       }}
       if (name.endsWith('.md')) {{
@@ -628,6 +634,10 @@ def _operator_page_html() -> str:
     }}
 
     function renderArtifact(name, report) {{
+      if (report.message !== undefined) {{
+        rawJson.textContent = report.message;
+        return;
+      }}
       if (report.markdown !== undefined) {{
         rawJson.textContent = report.markdown;
         return;
@@ -735,6 +745,17 @@ def _operator_page_html() -> str:
 
     function escapeHtml(value) {{
       return value.replace(/[&<>"']/g, char => ({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}}[char]));
+    }}
+
+    function normalizeArtifactName(value) {{
+      if (typeof value === 'string') return value.trim();
+      if (value && typeof value.name === 'string') return value.name.trim();
+      if (value && typeof value.artifact_name === 'string') return value.artifact_name.trim();
+      return '';
+    }}
+
+    function artifactLabel(name) {{
+      return name && name.trim() ? name : 'artifact';
     }}
   </script>
 </body>

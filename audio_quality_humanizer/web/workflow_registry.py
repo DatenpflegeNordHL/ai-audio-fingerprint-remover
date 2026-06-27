@@ -39,7 +39,7 @@ WORKFLOW_DEFINITIONS: dict[str, dict[str, Any]] = {
         ],
         "options": {"metadata_scope": "supported-standard-fields"},
         "artifact_groups": {
-            "Final Audio": ["cleaned_output.wav"],
+            "Final Audio": ["cleaned_output.*"],
             "Reports": ["metadata_clean_summary.md", "metadata_diff.md"],
             "Metadata": ["metadata_before.json", "metadata_after.json"],
             "Hashes": ["hashes.json"],
@@ -59,7 +59,7 @@ WORKFLOW_DEFINITIONS: dict[str, dict[str, Any]] = {
         ],
         "options": {"preset": "subtle", "target": "streaming"},
         "artifact_groups": {
-            "Final Audio": ["naturalized_output.wav"],
+            "Final Audio": ["naturalized_output.*"],
             "Reports": ["quality_naturalize_summary.md", "release_check_before.json", "release_check_after.json", "compare.json"],
             "Hashes": ["hashes.json"],
         },
@@ -82,7 +82,8 @@ WORKFLOW_DEFINITIONS: dict[str, dict[str, Any]] = {
         ],
         "options": {"preset": "subtle", "target": "streaming"},
         "artifact_groups": {
-            "Final Audio": ["final_output.wav"],
+            "Final Audio": ["final_output.*"],
+            "Intermediate Audio": ["cleaned_output.*"],
             "Reports": ["workflow_summary.md", "workflow_summary.json", "release_check_before.json", "release_check_final.json", "compare.json", "metadata_diff.md"],
             "Metadata": ["metadata_before.json", "metadata_after.json"],
             "Hashes": ["hashes.json"],
