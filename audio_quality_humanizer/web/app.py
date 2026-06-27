@@ -446,6 +446,7 @@ def _operator_page_html() -> str:
       }} else {{
         data.append('file', singleFileInput.files[0]);
       }}
+      let payload = null;
       try {{
         const response = await fetch(isTwoFileMode ? '/api/compare-jobs' : '/api/jobs', {{
           method: 'POST',
@@ -456,15 +457,28 @@ def _operator_page_html() -> str:
           setJobStatusError(`Create job request failed. ${{messageForStatus(response.status)}}`);
           return;
         }}
-        const payload = await response.json();
-        latestJob = payload;
-        renderStatus(payload);
-        if (response.ok && payload.job_id && Array.isArray(payload.artifacts)) {{
-          await loadJobStatus(payload.job_id);
-          await loadOperatorData();
-        }}
+        payload = await response.json();
       }} catch (error) {{
         setJobStatusError(`Create job request failed. ${{networkFailureMessage()}}`);
+        submit.disabled = false;
+        return;
+      }}
+
+      const jobId = extractJobId(payload);
+      latestJob = payload;
+      setJobStatusMessage(JSON.stringify(payload, null, 2));
+      if (!jobId) {{
+        setJobStatusMessage('The job was created, but the response did not include a job id. Refresh the job list.');
+        await loadJobList();
+        submit.disabled = false;
+        return;
+      }}
+      try {{
+        await loadJobList();
+        await loadJobStatus(jobId);
+        await loadConfig();
+      }} catch (error) {{
+        setJobStatusError('The job was created, but the dashboard could not render the updated job view. Refresh the job list.');
       }} finally {{
         submit.disabled = false;
       }}
@@ -523,7 +537,10 @@ def _operator_page_html() -> str:
         }}
         const payload = await response.json();
         latestJob = payload;
-        renderCompletedJob(payload);
+        if (!renderCompletedJob(payload)) {{
+          setJobStatusError('The job was created, but the dashboard could not render the updated job view. Refresh the job list.');
+          return null;
+        }}
         return payload;
       }} catch (error) {{
         setJobStatusError(`Job status request failed. ${{networkFailureMessage()}}`);
@@ -563,13 +580,19 @@ def _operator_page_html() -> str:
     }}
 
     function renderCompletedJob(job) {{
-      renderStatus(job);
-      renderArtifactButtons(job);
-      previewAll.disabled = false;
-      result.textContent = JSON.stringify(job, null, 2);
-      if (job.status === 'completed') {{
+      try {{
+        renderStatus(job);
         result.textContent = JSON.stringify(job, null, 2);
+      }} catch (error) {{
+        return false;
       }}
+      try {{
+        renderArtifactButtons(job);
+        previewAll.disabled = false;
+      }} catch (error) {{
+        rawJson.textContent = 'Artifact rendering failed. Download buttons may be incomplete. Refresh the job list.';
+      }}
+      return true;
     }}
 
     function renderArtifactButtons(job) {{
@@ -821,6 +844,12 @@ def _operator_page_html() -> str:
 
     function artifactLabel(name) {{
       return name && name.trim() ? name : 'artifact';
+    }}
+
+    function extractJobId(payload) {{
+      if (payload && typeof payload.job_id === 'string' && payload.job_id.trim()) return payload.job_id.trim();
+      if (payload && payload.job && typeof payload.job.job_id === 'string' && payload.job.job_id.trim()) return payload.job.job_id.trim();
+      return '';
     }}
   </script>
 </body>

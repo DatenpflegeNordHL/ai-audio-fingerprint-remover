@@ -7,6 +7,7 @@
 - Added step-level workflow status, grouped artifacts, and safe workflow summaries for the private dashboard.
 - Fixed workflow artifact grouping and dashboard preview handling for audio, report, metadata, hash, and intermediate artifacts.
 - Fixed stale private dashboard request errors so successful job status, config, and job list responses clear older failures.
+- Fixed create-job dashboard handling so successful `201 Created` responses are not overwritten by later status, list, or artifact rendering errors.
 - Kept this as a private beta change with no official release, no public launch, no tag, and no production-domain deployment.
 
 ## v0.18.1

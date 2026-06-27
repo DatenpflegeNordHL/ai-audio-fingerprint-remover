@@ -40,10 +40,14 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     assert "function renderCompletedJob" in html
     assert "function messageForStatus" in html
     assert "function networkFailureMessage" in html
+    assert "function extractJobId" in html
     assert "Job status request failed." in html
     assert "Job list request failed." in html
     assert "Config request failed." in html
     assert "Artifact preview request failed." in html
+    assert "The job was created, but the response did not include a job id. Refresh the job list." in html
+    assert "The job was created, but the dashboard could not render the updated job view. Refresh the job list." in html
+    assert "Artifact rendering failed. Download buttons may be incomplete. Refresh the job list." in html
     assert "Bearer token is missing or invalid." in html
     assert "This job no longer exists or has expired." in html
     assert "The submitted data was invalid." in html
@@ -52,6 +56,7 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     assert "Request failed safely." not in html
     assert "result.textContent = `Artifact preview" not in html
     assert "rawJson.textContent = `Artifact preview" in html
+    assert "rawJson.textContent = 'Artifact rendering failed" in html
     assert "Download ${label}" in html
     assert "Preview ${label}" in html
     assert "Waveform preview" in html
@@ -71,3 +76,24 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     for fake in ("Naturalness", "Rauschreduktion", "noise reduction", "undetectable"):
         assert fake not in html
     assert assert_no_unsafe_public_claims(html) == []
+
+
+def test_operator_page_separates_create_job_success_from_followup_errors(tmp_path, monkeypatch):
+    prepare_env(monkeypatch, tmp_path)
+
+    response = call_app("GET", "/")
+
+    assert response.status_code == 200
+    html = response.body.decode("utf-8")
+    assert html.count("Create job request failed.") == 2
+    assert "if (!response.ok)" in html
+    assert "payload = await response.json();" in html
+    assert "const jobId = extractJobId(payload);" in html
+    assert "setJobStatusMessage(JSON.stringify(payload, null, 2));" in html
+    assert "await loadJobList();" in html
+    assert "await loadJobStatus(jobId);" in html
+    assert "await loadConfig();" in html
+    assert "Job status request failed." in html
+    assert "The job was created, but the dashboard could not render the updated job view. Refresh the job list." in html
+    assert "Artifact preview request failed." in html
+    assert "Artifact rendering failed. Download buttons may be incomplete. Refresh the job list." in html
