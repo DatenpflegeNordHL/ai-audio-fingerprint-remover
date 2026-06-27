@@ -36,6 +36,22 @@ def test_operator_page_returns_useful_private_beta_html(tmp_path, monkeypatch):
     assert "Preview is not available for this artifact type. Download the artifact instead." in html
     assert "function artifactLabel" in html
     assert "function normalizeArtifactName" in html
+    assert "function loadJobStatus" in html
+    assert "function renderCompletedJob" in html
+    assert "function messageForStatus" in html
+    assert "function networkFailureMessage" in html
+    assert "Job status request failed." in html
+    assert "Job list request failed." in html
+    assert "Config request failed." in html
+    assert "Artifact preview request failed." in html
+    assert "Bearer token is missing or invalid." in html
+    assert "This job no longer exists or has expired." in html
+    assert "The submitted data was invalid." in html
+    assert "The server could not complete the request. Check logs." in html
+    assert "The request could not reach the private beta API." in html
+    assert "Request failed safely." not in html
+    assert "result.textContent = `Artifact preview" not in html
+    assert "rawJson.textContent = `Artifact preview" in html
     assert "Download ${label}" in html
     assert "Preview ${label}" in html
     assert "Waveform preview" in html

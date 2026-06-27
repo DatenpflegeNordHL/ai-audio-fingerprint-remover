@@ -434,7 +434,7 @@ def _operator_page_html() -> str:
       clearCanvas('spectrogram');
       visualEmpty.textContent = 'Visualization artifact data not loaded.';
       submit.disabled = true;
-      result.textContent = 'Creating job...';
+      setJobStatusMessage('Creating job...');
       const token = document.getElementById('token').value;
       const selectedMode = modeSelect.value;
       const isTwoFileMode = twoFileModes.has(selectedMode);
@@ -452,18 +452,19 @@ def _operator_page_html() -> str:
           headers: {{ Authorization: `Bearer ${{token}}` }},
           body: data
         }});
+        if (!response.ok) {{
+          setJobStatusError(`Create job request failed. ${{messageForStatus(response.status)}}`);
+          return;
+        }}
         const payload = await response.json();
         latestJob = payload;
-        result.textContent = JSON.stringify(payload, null, 2);
         renderStatus(payload);
         if (response.ok && payload.job_id && Array.isArray(payload.artifacts)) {{
-          renderArtifactButtons(payload);
-          previewAll.disabled = false;
-          await previewArtifacts(payload);
+          await loadJobStatus(payload.job_id);
           await loadOperatorData();
         }}
       }} catch (error) {{
-        result.textContent = 'Request failed safely.';
+        setJobStatusError(`Create job request failed. ${{networkFailureMessage()}}`);
       }} finally {{
         submit.disabled = false;
       }}
@@ -483,17 +484,50 @@ def _operator_page_html() -> str:
     }}
 
     async function loadOperatorData() {{
+      await loadConfig();
+      await loadJobList();
+    }}
+
+    async function loadConfig() {{
       try {{
-        const configResponse = await authenticatedFetch('/api/config');
-        if (configResponse.ok) {{
-          renderConfig(await configResponse.json());
+        const response = await authenticatedFetch('/api/config');
+        if (!response.ok) {{
+          configView.innerHTML = `<p class="empty">Config request failed. ${{escapeHtml(messageForStatus(response.status))}}</p>`;
+          return;
         }}
-        const jobsResponse = await authenticatedFetch('/api/jobs');
-        if (jobsResponse.ok) {{
-          renderRecentJobs(await jobsResponse.json());
-        }}
+        renderConfig(await response.json());
       }} catch (error) {{
-        configView.innerHTML = '<p class="empty">Operator data request failed safely.</p>';
+        configView.innerHTML = `<p class="empty">Config request failed. ${{escapeHtml(networkFailureMessage())}}</p>`;
+      }}
+    }}
+
+    async function loadJobList() {{
+      try {{
+        const response = await authenticatedFetch('/api/jobs');
+        if (!response.ok) {{
+          recentJobs.innerHTML = `<p class="empty">Job list request failed. ${{escapeHtml(messageForStatus(response.status))}}</p>`;
+          return;
+        }}
+        renderRecentJobs(await response.json());
+      }} catch (error) {{
+        recentJobs.innerHTML = `<p class="empty">Job list request failed. ${{escapeHtml(networkFailureMessage())}}</p>`;
+      }}
+    }}
+
+    async function loadJobStatus(jobId) {{
+      try {{
+        const response = await authenticatedFetch(`/api/jobs/${{encodeURIComponent(jobId)}}`);
+        if (!response.ok) {{
+          setJobStatusError(`Job status request failed. ${{messageForStatus(response.status)}}`);
+          return null;
+        }}
+        const payload = await response.json();
+        latestJob = payload;
+        renderCompletedJob(payload);
+        return payload;
+      }} catch (error) {{
+        setJobStatusError(`Job status request failed. ${{networkFailureMessage()}}`);
+        return null;
       }}
     }}
 
@@ -528,7 +562,18 @@ def _operator_page_html() -> str:
       recentJobs.innerHTML = `<table><thead><tr><th>Job</th><th>Type</th><th>Status</th><th>Created</th><th>Artifacts</th></tr></thead><tbody>${{rows.join('')}}</tbody></table>`;
     }}
 
+    function renderCompletedJob(job) {{
+      renderStatus(job);
+      renderArtifactButtons(job);
+      previewAll.disabled = false;
+      result.textContent = JSON.stringify(job, null, 2);
+      if (job.status === 'completed') {{
+        result.textContent = JSON.stringify(job, null, 2);
+      }}
+    }}
+
     function renderArtifactButtons(job) {{
+      artifacts.textContent = '';
       const groups = job.artifact_groups || null;
       if (groups && Object.keys(groups).length) {{
         for (const [group, names] of Object.entries(groups)) {{
@@ -585,7 +630,7 @@ def _operator_page_html() -> str:
       }}
       const response = await authenticatedFetch(url);
       if (!response.ok) {{
-        rawJson.textContent = 'Artifact preview failed safely. Download remains available if this artifact is listed for the job.';
+        rawJson.textContent = `Artifact preview request failed. ${{messageForStatus(response.status)}} Download buttons remain available.`;
         return null;
       }}
       if (name.endsWith('.md')) {{
@@ -597,7 +642,7 @@ def _operator_page_html() -> str:
     async function downloadArtifact(url, name) {{
       const artifactResponse = await authenticatedFetch(url);
       if (!artifactResponse.ok) {{
-        result.textContent = 'Artifact download failed safely.';
+        rawJson.textContent = `Artifact download request failed. ${{messageForStatus(artifactResponse.status)}}`;
         return;
       }}
       const blob = await artifactResponse.blob();
@@ -623,6 +668,26 @@ def _operator_page_html() -> str:
       ].filter(([, value]) => value);
       statusFields.innerHTML = values.map(([label, value]) => `<div class="card"><span>${{label}}</span><strong>${{escapeHtml(String(value))}}</strong></div>`).join('');
       renderSteps(job.steps || []);
+    }}
+
+    function setJobStatusMessage(message) {{
+      result.textContent = message;
+    }}
+
+    function setJobStatusError(message) {{
+      result.textContent = message;
+    }}
+
+    function messageForStatus(statusCode) {{
+      if (statusCode === 401) return 'Bearer token is missing or invalid.';
+      if (statusCode === 404) return 'This job no longer exists or has expired.';
+      if (statusCode === 422) return 'The submitted data was invalid.';
+      if (statusCode >= 500) return 'The server could not complete the request. Check logs.';
+      return `The private beta API returned HTTP ${{statusCode}}.`;
+    }}
+
+    function networkFailureMessage() {{
+      return 'The request could not reach the private beta API.';
     }}
 
     function renderSteps(steps) {{
